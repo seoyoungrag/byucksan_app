@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 전자결재 처리 -->
+	<definition name="ApprovalController.createAppDoc" template="/app/jsp/approval/InsertAppDoc.jsp"/>
+	<definition name="ApprovalController.insertAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.insertTemporary" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.updateTemporary" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.processAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.holdoffAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.withdrawAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.returnAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.readafterAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.informAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.selectAppDoc" template="/app/jsp/approval/SelectAppDoc.jsp"/>
+	<definition name="ApprovalController.displayAppDoc" template="/app/jsp/approval/DisplayAppDoc.jsp"/>
+	<definition name="ApprovalController.listAppDoc" template="/app/jsp/approval/ListAppDoc.jsp"/>
+	<definition name="ApprovalController.selectTemporary" template="/app/jsp/approval/SelectTemporary.jsp"/>
+	<definition name="ApprovalController.invalidAppDoc" template="/app/jsp/approval/InvalidAppDoc.jsp"/>
+	<definition name="ApprovalController.deleteAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.unregistAppDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.deleteTemporary" template="/app/jsp/approval/ProcResult.jsp"/>
+    <definition name="ApprovalController.deleteNonEleDoc" template="/app/jsp/approval/SelectProNonElecDoc.jsp"/>
+    <definition name="ApprovalController.deleteNonEleEnfDoc" template="/app/jsp/enforce/InsertEnfNonEleDoc.jsp"/>
+	<definition name="ApprovalController.openAppBody" template="/app/jsp/approval/OpenAppBody.jsp"/>
+	<definition name="ApprovalController.createDocInfo" template="/app/jsp/approval/InsertDocInfo.jsp"/>
+	<definition name="ApprovalController.selectDocInfo" template="/app/jsp/approval/SelectDocInfo.jsp"/>
+	<definition name="ApprovalController.updateDocInfo" template="/app/jsp/approval/UpdateDocInfo.jsp"/>
+	<definition name="ApprovalController.listAppLineHis" template="/app/jsp/approval/ListAppLineHis.jsp"/>
+	<definition name="ApprovalController.modifyDocInfo" template="/app/jsp/appcom/ProcResult.jsp"/>
+	<definition name="ApprovalController.uploadBizBody" template="/app/jsp/appcom/attach/UploadAttach.jsp"/>
+	<definition name="ApprovalController.updateBody" template="/app/jsp/appcom/attach/UpdateBody.jsp"/>
+	<definition name="ApprovalController.selectBodyHis" template="/app/jsp/appcom/SelectBodyHis.jsp"/>
+	<definition name="ApprovalController.selectPersonalInfo" template="/app/jsp/approval/SelectPersonalInfo.jsp"/>
+	<definition name="ApprovalController.insertStatement" template="/app/jsp/approval/InsertStatement.jsp"/>
+	<definition name="ApprovalController.searchAccount" template="/app/jsp/approval/searchAccount.jsp"/>
+	<definition name="ApprovalController.searchMaster" template="/app/jsp/approval/searchMaster.jsp"/>
+	<definition name="ApprovalController.searchSub" template="/app/jsp/approval/searchSub.jsp"/>
+	<definition name="ApprovalController.searchPlant" template="/app/jsp/approval/searchPlant.jsp"/>
+	<definition name="ApprovalController.searchDept" template="/app/jsp/approval/searchDept.jsp"/>
+	<definition name="ApprovalController.searchUser" template="/app/jsp/approval/searchUser.jsp"/>
+	<definition name="ApprovalController.searchBubcard" template="/app/jsp/approval/searchBubcard.jsp"/>
+	<definition name="ApprovalController.searchFunc01" template="/app/jsp/approval/searchFunc01.jsp"/>
+	
+	<definition name="ApprovalController.selectProcessAppDoc" template="/app_mobile/approval/approval_selectProcessAppDoc.jsp"/>
+	<definition name="ApprovalController.selectProcessEnfDoc" template="/app_mobile/approval/approval_selectProcessEnfDoc.jsp"/>
+	<definition name="ApprovalController.selectAppDocInfo" template="/app_mobile/approval/approval_selectAppDoc.jsp"/>
+	<definition name="ApprovalController.rejectAppDoc" template="/app_mobile/approval/approval_rejectAction.jsp"/>
+	<definition name="ApprovalController.receive" template="/app_mobile/approval/approval_receiveBox.jsp"/>
+	<definition name="ApprovalController.opinion" template="/app_mobile/approval/approval_processAction.jsp"/>
+	
+	
+	<!-- 모바일 -->
+	<definition name="ApprovalController.recoverBody" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="ApprovalController.processMobile" template="/app/jsp/approval/ProcessMobile.jsp"/>
+	<definition name="ApprovalServlet.createMobileDoc" template="/app/jsp/approval/ProcessMobile.jsp"/>
+
+	<definition name="ApprovalServlet.createPassword" template="/app/jsp/approval/InsertPassword.jsp"/>
+	<definition name="ApprovalServlet.createDocPassword" template="/app/jsp/approval/InsertDocPassword.jsp"/>
+	<definition name="ApprovalServlet.createSummary" template="/app/jsp/approval/InsertSummary.jsp"/>
+	<definition name="ApprovalServlet.createOpinion" template="/app/jsp/approval/InsertOpinion.jsp"/>
+	<definition name="ApprovalServlet.createReason" template="/app/jsp/approval/InsertReason.jsp"/>
+	<definition name="ApprovalServlet.createItemList" template="/app/jsp/approval/ListItem.jsp"/>
+	<definition name="ApprovalServlet.selectOpinion" template="/app/jsp/approval/SelectOpinion.jsp"/>
+	<definition name="ApprovalServlet.selectOpenLevel" template="/app/jsp/approval/SelectOpenLevel.jsp" />
+	
+	<definition name="ApprovalController.displayAppDocTransfer" template="/app/jsp/approval/DisplayAppDocTransfer.jsp"/>
+	
+	<!-- 결재경로 -->
+	<definition name="ApprovalLineController.getApprovalLine" template="/app/jsp/approval/ApprovalLinePop.jsp" />
+	<definition name="ApprovalServlet.selectAppLine" template="/app/jsp/approval/SelectAppLine.jsp" />
+	<!-- 수신자경로 -->
+	<definition name="ApprovalLineController.getApprovalRecip" template="/app/jsp/approval/ApprovalRecipientPop.jsp" />
+	<!-- 관련문서 -->
+	<definition name="ApprovalServlet.selectRelatedDoc" template="/app/jsp/approval/SelectRelatedDoc.jsp" />
+	<!-- 관련규정 -->
+	<definition name="ApprovalServlet.selectRelatedRule" template="/app/jsp/approval/SelectRelatedRule.jsp" />
+	<definition name="ApprovalServlet.processRelatedRule" template="/app/jsp/approval/ProcessRelatedRule.jsp" />
+	<definition name="ApprovalServlet.setRelatedRule" template="/app/jsp/approval/SetRelatedRule.jsp" />
+	<!-- 거래처 -->
+	<definition name="ApprovalServlet.selectCustomer" template="/app/jsp/approval/SelectCustomer.jsp" />
+	<definition name="ApprovalController.listCustomer" template="/app/jsp/approval/ListCustomer.jsp" />
+	
+	<!-- 공람경로 -->
+	<definition name="ApprovalLineController.getApprovalPubReader" template="/app/jsp/approval/ApprovalPubReaderPop.jsp" />
+	<!-- 선람, 담당 경로 -->
+	<definition name="ApprovalLineController.getApprovalPreReader" template="/app/jsp/approval/ApprovalPreReaderPop.jsp" />
+	
+	<!-- 사용자직인이미지 -->
+	<definition name="ApprovalController.selectUserSeal" template="/app/jsp/approval/SelectUserSeal.jsp" />
+	
+	<!-- 조직직인이미지 -->
+	<definition name="ApprovalController.selectOrgSeal" template="/app/jsp/approval/SelectOrgSeal.jsp" />
+ 
+ 	<!-- 생산용 비전자 문서 -->
+	<definition name="ProNonElecDocController.insertProNonElecDoc" template="/app/jsp/approval/InsertProNonElecDoc.jsp" />
+	<definition name="ProNonElecDocController.selectProNonElecDoc" template="/app/jsp/approval/SelectProNonElecDoc.jsp" />
+	<definition name="ProNonElecDocController.updateProNonElecDoc" template="/app/jsp/approval/UpdateProNonElecDoc.jsp" />
+	
+	<!-- 거래처 목록 -->
+	<definition name="ApprovalController.listGwPibsv" template="/app/jsp/approval/ListGwPibsv.jsp" />
+	<!-- 투자조합 목록 -->
+	<definition name="ApprovalController.listGwAccgv" template="/app/jsp/approval/ListGwAccgv.jsp" />
+	
+	<!-- 첨부날인 -->
+	<definition name="ApprovalController.stampAttach" template="/app/jsp/approval/StampAttach.jsp" />
+	<definition name="ApprovalController.stampAttachUpload" template="/app/jsp/approval/ProcResult.jsp" />
+	
+	<!--  사내메일 -->
+	<definition name="ApprovalController.writeInnerMail" template="/app/jsp/approval/WriteInnerMail.jsp" />
+	
+	<!--  본문파일 -->
+	<definition name="ApprovalController.getBodyFile" template="/app/jsp/approval/getBodyFile.jsp" />
+	
+	<!--  본문파일 -->
+	<definition name="MigController.mig" template="/app/jsp/mig/mig.jsp" />
+	<definition name="MigController.oldOpener" template="/app/jsp/old/oldOpener.jsp" />
+	
+	
+	
+</tiles-definitions>

@@ -1,0 +1,3359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!-- bind -->
+		<query id="bind.list">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, UNIT_TYPE,
+                       UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD,
+                       CREATED, CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED,
+                       ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION, 
+                       SHARE_COUNT, DOC_COUNT, TOTAL_COUNT
+  				FROM (
+  					SELECT RNUM, COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION, 
+                       SHARE_COUNT, DOC_COUNT, TOTAL_COUNT
+					FROM (
+						SELECT ROWNUM RNUM, 
+						   COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+	                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+	                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+	                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+	                       SHARE_COUNT, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT,
+	                       COUNT(*) OVER() TOTAL_COUNT
+					  	FROM (SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+							   T1.COMP_ID,
+				               T1.DEPT_ID,
+				               T1.BIND_ID,
+				               T1.BIND_NAME,
+				               T1.UNIT_ID,
+				               T1.UNIT_TYPE,
+				               T2.UNIT_NAME,
+				               T1.CREATE_YEAR,
+				               T1.EXPIRE_YEAR,
+				               T1.DOC_TYPE,
+				               T1.RETENTION_PERIOD,
+				               T1.CREATED,
+				               T1.CREATED_ID,
+				               T1.MODIFIED,
+				               T1.MODIFIED_ID,
+				               T1.ORDERED,
+				               T1.ARRANGE,
+				               T1.BINDING,
+				               T1.SEND_TYPE,
+				               T1.IS_ACTIVE,
+				               T1.PARENT_BIND_ID,
+				               T1.BIND_ORDER,
+				               T1.BIND_DEPTH,
+				               T1.DESCRIPTION,
+                               (SELECT COUNT(*)
+                                  FROM TGW_APP_BIND
+                                 WHERE COMP_ID = T1.COMP_ID
+                                   AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+                                   AND CREATE_YEAR = T1.CREATE_YEAR
+                                   AND SEND_DEPT_ID = T1.DEPT_ID
+                                   AND SEND_TYPE = 'DST004') SHARE_COUNT,
+				               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+				                  FROM TGW_APP_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+				                 ) APP_COUNT, -- 생산문서
+				               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+				                  FROM TGW_ENF_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+				                 ) ENF_COUNT, -- 접수문서
+				               (SELECT COUNT(*)
+				                  FROM TGW_APP_BOARD T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                 ) NORMAL_COUNT -- 일반문서
+				          FROM TGW_APP_BIND T1,
+				               TGW_APP_BIND_UNIT T2
+				         WHERE T1.UNIT_ID = T2.UNIT_ID
+				           AND T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_TYPE = T2.UNIT_TYPE
+				           AND T1.DEPT_ID = :vo.deptId
+				           AND T1.COMP_ID = :vo.compId
+				           AND T1.CREATE_YEAR = :vo.createYear
+				           AND T1.BIND_NAME like DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+				           AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+				           AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+				           AND T2.UNIT_NAME like DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+				           AND T1.IS_ACTIVE = 'Y'
+                         ORDER BY DEPT_ID, ORDERED, BIND_NAME ASC )
+					   )
+			         WHERE RNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount ) T1
+				 WHERE RNUM BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				   AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<!-- bind -->
+		<query id="bind.list2">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, UNIT_TYPE,
+                       UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD,
+                       CREATED, CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED,
+                       ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION, 
+                       SHARE_COUNT, DOC_COUNT, TOTAL_COUNT
+  				FROM (
+  					SELECT RNUM, COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION, 
+                       SHARE_COUNT, DOC_COUNT, TOTAL_COUNT
+					FROM (
+						SELECT ROWNUM RNUM, 
+						   COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+	                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+	                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+	                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+	                       SHARE_COUNT, APP_COUNT + ENF_COUNT DOC_COUNT,
+	                       COUNT(*) OVER() TOTAL_COUNT
+					  	FROM (SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+							   T1.COMP_ID,
+				               T1.DEPT_ID,
+				               T1.BIND_ID,
+				               T1.BIND_NAME,
+				               T1.UNIT_ID,
+				               T1.UNIT_TYPE,
+				               T2.UNIT_NAME,
+				               T1.CREATE_YEAR,
+				               T1.EXPIRE_YEAR,
+				               T1.DOC_TYPE,
+				               T1.RETENTION_PERIOD,
+				               T1.CREATED,
+				               T1.CREATED_ID,
+				               T1.MODIFIED,
+				               T1.MODIFIED_ID,
+				               T1.ORDERED,
+				               T1.ARRANGE,
+				               T1.BINDING,
+				               T1.SEND_TYPE,
+				               T1.IS_ACTIVE,
+				               T1.PARENT_BIND_ID,
+				               T1.BIND_ORDER,
+				               T1.BIND_DEPTH,
+				               T1.DESCRIPTION,
+                               (SELECT COUNT(*)
+                                  FROM TGW_APP_BIND
+                                 WHERE COMP_ID = T1.COMP_ID
+                                   AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+                                   AND CREATE_YEAR = T1.CREATE_YEAR
+                                   AND SEND_DEPT_ID = T1.DEPT_ID
+                                   AND SEND_TYPE = 'DST004') SHARE_COUNT,
+				               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+				                  FROM TGW_APP_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+				                 ) APP_COUNT, -- 생산문서
+				               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+				                  FROM TGW_ENF_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+				                 ) ENF_COUNT -- 접수문서
+				          FROM TGW_APP_BIND T1,
+				               TGW_APP_BIND_UNIT T2
+				         WHERE T1.UNIT_ID = T2.UNIT_ID
+				           AND T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_TYPE = T2.UNIT_TYPE
+				           AND T1.DEPT_ID = :vo.deptId
+				           AND T1.COMP_ID = :vo.compId
+				           AND T1.CREATE_YEAR = :vo.createYear
+				           AND T1.BIND_NAME like DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+				           AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+				           AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+				           AND T2.UNIT_NAME like DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+				           AND T1.IS_ACTIVE = 'Y'
+                         ORDER BY DEPT_ID, ORDERED, BIND_NAME ASC )
+					   )
+			         WHERE RNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount ) T1
+				 WHERE RNUM BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				   AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.listTreebind">
+			<statement>
+			<![CDATA[
+				SELECT ROWNUM RNUM, 
+					COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+					UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, CREATED,
+					CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID,
+					BIND_ORDER, BIND_DEPTH, DESCRIPTION, SHARE_COUNT, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT,
+					COUNT(*) OVER() TOTAL_COUNT
+				FROM
+					(SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+						T1.COMP_ID, T1.DEPT_ID, T1.BIND_ID, T1.BIND_NAME, T1.UNIT_ID, T1.UNIT_TYPE, T2.UNIT_NAME,
+						T1.CREATE_YEAR, T1.EXPIRE_YEAR, T1.DOC_TYPE, T1.RETENTION_PERIOD, T1.CREATED, T1.CREATED_ID,
+						T1.MODIFIED, T1.MODIFIED_ID, T1.ORDERED, T1.ARRANGE, T1.BINDING, T1.SEND_TYPE, T1.IS_ACTIVE,
+						T1.PARENT_BIND_ID, T1.BIND_ORDER, T1.BIND_DEPTH, T1.DESCRIPTION,
+						(SELECT COUNT(*)
+							FROM TGW_APP_BIND
+							WHERE COMP_ID = T1.COMP_ID
+								AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+								AND CREATE_YEAR = T1.CREATE_YEAR
+								AND SEND_DEPT_ID = T1.DEPT_ID
+								AND SEND_TYPE = 'DST004') SHARE_COUNT,
+						(SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+							FROM TGW_APP_DOC T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+								AND COMP_ID = T1.COMP_ID
+								AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+						) APP_COUNT, -- 생산문서
+						(SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+							FROM TGW_ENF_DOC T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+								AND COMP_ID = T1.COMP_ID
+								AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+						) ENF_COUNT, -- 접수문서
+						(SELECT COUNT(*)
+							FROM TGW_APP_BOARD T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+						) NORMAL_COUNT -- 일반문서
+					FROM TGW_APP_BIND T1,
+						TGW_APP_BIND_UNIT T2
+					WHERE T1.UNIT_ID = T2.UNIT_ID
+						AND T1.COMP_ID = T2.COMP_ID
+						AND T1.UNIT_TYPE = T2.UNIT_TYPE
+						AND T1.COMP_ID = :vo.compId
+						#if ($vo.bindType=="DOC_BOARD") 
+							AND (T1.BIND_ID IN (SELECT BIND_ID from TGW_APP_BIND_AUTHORITY 
+									WHERE AUTH_DEPT_ID = :vo.deptId AND DEPT_ID = :vo.deptId))
+						#else
+							AND T1.DEPT_ID = :vo.deptId
+						#end
+						AND T1.CREATE_YEAR = :vo.createYear
+						#if ($vo.sendType && $vo.sendType.equals("DST003"))
+							AND T1.SEND_TYPE = :vo.sendType
+						#elseif ($vo.bindType=="SHARE") 
+							AND T1.SEND_TYPE IN('DST001', 'DST002', 'DST004')
+						#else
+							AND T1.SEND_TYPE IN('DST001', 'DST002')
+						#end
+						#if ($vo.bindType!="SIMPLE") 
+							AND T1.BIND_NAME like DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+							AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+							AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+							AND T2.UNIT_NAME like DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+						#end
+						AND T1.IS_ACTIVE = 'Y'
+						#if ($vo.isSelectType && $vo.isSelectType != "") 
+							#if ($vo.isSelectType.equals("C"))
+								AND PARENT_BIND_ID = :vo.bindId 
+							#else
+								AND BIND_ID = :vo.parentBindId 
+							#end 
+						#end
+					)
+					ORDER BY BIND_DEPTH, BIND_ORDER, BIND_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.listTreebindShare">
+		<statement>
+			<![CDATA[
+				SELECT --ROWNUM RNUM,
+					DISTINCT   
+					COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+					UNIT_ID, UNIT_TYPE, 
+					--UNIT_NAME, 
+					CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, CREATED,
+					CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID,
+					BIND_ORDER, BIND_DEPTH, DESCRIPTION, SHARE_COUNT, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT,
+					COUNT(*) OVER() TOTAL_COUNT
+				FROM
+					(SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+						T1.COMP_ID, T1.DEPT_ID, T1.BIND_ID, T1.BIND_NAME, T1.UNIT_ID, T1.UNIT_TYPE, T2.UNIT_NAME,
+						T1.CREATE_YEAR, T1.EXPIRE_YEAR, T1.DOC_TYPE, T1.RETENTION_PERIOD, T1.CREATED, T1.CREATED_ID,
+						T1.MODIFIED, T1.MODIFIED_ID, T1.ORDERED, T1.ARRANGE, T1.BINDING, T1.SEND_TYPE, T1.IS_ACTIVE,
+						T1.PARENT_BIND_ID, T1.BIND_ORDER, T1.BIND_DEPTH, T1.DESCRIPTION,
+						(SELECT COUNT(*)
+							FROM TGW_APP_BIND_OLD
+							WHERE COMP_ID = T1.COMP_ID
+								AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+								AND CREATE_YEAR = T1.CREATE_YEAR
+								AND SEND_DEPT_ID = T1.DEPT_ID
+								AND SEND_TYPE = 'DST001') SHARE_COUNT,
+						(SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+							FROM TGW_APP_DOC T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+								AND COMP_ID = T1.COMP_ID
+								AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+						) APP_COUNT, -- 생산문서
+						(SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+							FROM TGW_ENF_DOC T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+								AND COMP_ID = T1.COMP_ID
+								AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+						) ENF_COUNT, -- 접수문서
+						(SELECT COUNT(*)
+							FROM TGW_APP_BOARD T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+						) NORMAL_COUNT -- 일반문서
+					FROM TGW_APP_BIND_OLD T1,
+						TGW_APP_BIND_UNIT_OLD T2
+					WHERE T1.UNIT_ID = T2.UNIT_ID
+						AND T1.COMP_ID = T2.COMP_ID
+						AND T1.UNIT_TYPE = T2.UNIT_TYPE
+						AND T1.COMP_ID = :vo.compId
+						--AND T1.DEPT_ID = :vo.deptId
+						AND T1.CREATE_YEAR = :vo.createYear 
+						--AND T1.SEND_TYPE = 'DST004'
+						AND T1.BIND_NAME like DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+						AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+						--AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+						AND T2.UNIT_NAME like DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+						AND T1.IS_ACTIVE = 'Y'
+						#if ($vo.isSelectType && $vo.isSelectType != "") 
+							#if ($vo.isSelectType.equals("C"))
+								AND PARENT_BIND_ID = :vo.bindId 
+							#else
+								AND BIND_ID = :vo.parentBindId 
+							#end 
+						#end)
+					ORDER BY BIND_DEPTH, BIND_ORDER, BIND_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.listTreeShareBind">
+			<statement>
+			<![CDATA[
+				SELECT --ROWNUM RNUM,
+					DISTINCT  
+					COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+					UNIT_ID, UNIT_TYPE, 
+					--UNIT_NAME, 
+					CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, CREATED,
+					CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID,
+					BIND_ORDER, BIND_DEPTH, DESCRIPTION, SHARE_COUNT, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT,
+					COUNT(*) OVER() TOTAL_COUNT
+				FROM
+					(SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+						T1.COMP_ID, T1.DEPT_ID, T1.BIND_ID, T1.BIND_NAME, T1.UNIT_ID, T1.UNIT_TYPE, T2.UNIT_NAME,
+						T1.CREATE_YEAR, T1.EXPIRE_YEAR, T1.DOC_TYPE, T1.RETENTION_PERIOD, T1.CREATED, T1.CREATED_ID,
+						T1.MODIFIED, T1.MODIFIED_ID, T1.ORDERED, T1.ARRANGE, T1.BINDING, T1.SEND_TYPE, T1.IS_ACTIVE,
+						T1.PARENT_BIND_ID, T1.BIND_ORDER, T1.BIND_DEPTH, T1.DESCRIPTION,
+						(SELECT COUNT(*)
+							FROM TGW_APP_BIND
+							WHERE COMP_ID = T1.COMP_ID
+								AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+								AND CREATE_YEAR = T1.CREATE_YEAR
+								AND SEND_DEPT_ID = T1.DEPT_ID
+								AND SEND_TYPE = 'DST004') SHARE_COUNT,
+						(SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+							FROM TGW_APP_DOC T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+								AND COMP_ID = T1.COMP_ID
+								AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+						) APP_COUNT, -- 생산문서
+						(SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+							FROM TGW_ENF_DOC T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+								AND COMP_ID = T1.COMP_ID
+								AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+						) ENF_COUNT, -- 접수문서
+						(SELECT COUNT(*)
+							FROM TGW_APP_BOARD T3
+							WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+						) NORMAL_COUNT -- 일반문서
+					FROM TGW_APP_BIND T1,
+						TGW_APP_BIND_UNIT T2
+					WHERE T1.UNIT_ID = T2.UNIT_ID
+						AND T1.COMP_ID = T2.COMP_ID
+						AND T1.UNIT_TYPE = T2.UNIT_TYPE
+						AND T1.COMP_ID = :vo.compId
+						AND T1.DEPT_ID = :vo.deptId
+						AND T1.CREATE_YEAR = :vo.createYear 
+						AND T1.SEND_TYPE = 'DST004'
+						AND T1.BIND_NAME like DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+						AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+						AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+						AND T2.UNIT_NAME like DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+						AND T1.IS_ACTIVE = 'Y'
+						#if ($vo.isSelectType && $vo.isSelectType != "") 
+							#if ($vo.isSelectType.equals("C"))
+								AND PARENT_BIND_ID = :vo.bindId 
+							#else
+								AND BIND_ID = :vo.parentBindId 
+							#end 
+						#end)
+					ORDER BY BIND_DEPTH, BIND_ORDER, BIND_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.listResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, 
+				       FNC_GET_RESOURCE_NAME(:vo.compId , BIND_NAME, :vo.langType) AS BIND_NAME,
+  					   BIND_NAME AS RESOURCE_ID,
+				       UNIT_ID, UNIT_TYPE,
+					   FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+                       CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD,
+                       CREATED, CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED,
+                       ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+                       SHARE_COUNT, DOC_COUNT, TOTAL_COUNT
+  				FROM (
+  					SELECT RNUM, COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+                       SHARE_COUNT, DOC_COUNT, TOTAL_COUNT
+					FROM (
+						SELECT ROWNUM RNUM, 
+						   COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+	                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+	                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+	                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+	                       SHARE_COUNT, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT,
+	                       COUNT(*) OVER() TOTAL_COUNT
+					  	FROM (SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+							   T1.COMP_ID,
+				               T1.DEPT_ID,
+				               T1.BIND_ID,
+				               T1.BIND_NAME,
+				               T1.UNIT_ID,
+				               T1.UNIT_TYPE,
+				               T2.UNIT_NAME,
+				               T1.CREATE_YEAR,
+				               T1.EXPIRE_YEAR,
+				               T1.DOC_TYPE,
+				               T1.RETENTION_PERIOD,
+				               T1.CREATED,
+				               T1.CREATED_ID,
+				               T1.MODIFIED,
+				               T1.MODIFIED_ID,
+				               T1.ORDERED,
+				               T1.ARRANGE,
+				               T1.BINDING,
+				               T1.SEND_TYPE,
+				               T1.IS_ACTIVE,
+				               T1.PARENT_BIND_ID,
+				               T1.BIND_ORDER,
+				               T1.BIND_DEPTH,
+				               T1.DESCRIPTION,
+                               (SELECT COUNT(*)
+                                  FROM TGW_APP_BIND
+                                 WHERE COMP_ID = T1.COMP_ID
+                                   AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+                                   AND CREATE_YEAR = T1.CREATE_YEAR
+                                   AND SEND_DEPT_ID = T1.DEPT_ID
+                                   AND SEND_TYPE = 'DST004') SHARE_COUNT,
+				               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+				                  FROM TGW_APP_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+				                 ) APP_COUNT, -- 생산문서
+				               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+				                  FROM TGW_ENF_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+				                 ) ENF_COUNT, -- 접수문서
+				               (SELECT COUNT(*)
+				                  FROM TGW_APP_BOARD T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                 ) NORMAL_COUNT -- 일반문서
+				          FROM TGW_APP_BIND T1,
+				               TGW_APP_BIND_UNIT T2
+				         WHERE T1.UNIT_ID = T2.UNIT_ID
+				           AND T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_TYPE = T2.UNIT_TYPE
+				           AND T1.DEPT_ID = :vo.deptId
+				           AND T1.COMP_ID = :vo.compId
+				           AND T1.CREATE_YEAR = :vo.createYear
+						   AND (
+				                T1.BIND_NAME IN (
+				                                 SELECT RESOURCE_ID 
+				                                 FROM TGW_APP_RESOURCE 
+				                                 WHERE COMP_ID = :vo.compId 
+				                                   AND LANG_TYPE = :vo.langType 
+				                                   AND RESOURCE_NAME LIKE DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+				                                )
+                   				OR
+                   				T1.BIND_NAME LIKE DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+                   			   )	
+				           AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+				           AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+						   AND (
+				                T2.UNIT_NAME IN (
+				                                 SELECT RESOURCE_ID 
+				                                 FROM TGW_APP_RESOURCE 
+				                                 WHERE COMP_ID = :vo.compId 
+				                                   AND LANG_TYPE = :vo.langType 
+				                                   AND RESOURCE_NAME LIKE DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+				                                )
+                   				OR
+                   				T2.UNIT_NAME LIKE DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+                   			   )	
+				           AND T1.IS_ACTIVE = 'Y'
+                         ORDER BY DEPT_ID, ORDERED, UNIT_ID, BIND_ID ASC )
+					   )
+			         WHERE RNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount ) T1
+				 WHERE RNUM BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				   AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+
+		<!-- 다국어 추가 -->
+		<query id="bind.listTreebindResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID,
+						   FNC_GET_RESOURCE_NAME(:vo.compId , BIND_NAME, :vo.langType) AS BIND_NAME,
+						    BIND_NAME AS RESOURCE_ID,
+	                       UNIT_ID, UNIT_TYPE, 
+						   FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME, 
+						   CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+	                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+	                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+	                       SHARE_COUNT, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT,
+	                       COUNT(*) OVER() TOTAL_COUNT
+					  	FROM (SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+							   T1.COMP_ID,
+				               T1.DEPT_ID,
+				               T1.BIND_ID,
+				               T1.BIND_NAME,
+				               T1.UNIT_ID,
+				               T1.UNIT_TYPE,
+				               T2.UNIT_NAME,
+				               T1.CREATE_YEAR,
+				               T1.EXPIRE_YEAR,
+				               T1.DOC_TYPE,
+				               T1.RETENTION_PERIOD,
+				               T1.CREATED,
+				               T1.CREATED_ID,
+				               T1.MODIFIED,
+				               T1.MODIFIED_ID,
+				               T1.ORDERED,
+				               T1.ARRANGE,
+				               T1.BINDING,
+				               T1.SEND_TYPE,
+				               T1.IS_ACTIVE,
+				               T1.PARENT_BIND_ID,
+				               T1.BIND_ORDER,
+				               T1.BIND_DEPTH,
+				               T1.DESCRIPTION,
+                               (SELECT COUNT(*)
+                                  FROM TGW_APP_BIND
+                                 WHERE COMP_ID = T1.COMP_ID
+                                   AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+                                   AND CREATE_YEAR = T1.CREATE_YEAR
+                                   AND SEND_DEPT_ID = T1.DEPT_ID
+                                   AND SEND_TYPE = 'DST004') SHARE_COUNT,
+				               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+				                  FROM TGW_APP_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+				                 ) APP_COUNT, -- 생산문서
+				               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+				                  FROM TGW_ENF_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+				                 ) ENF_COUNT, -- 접수문서
+				               (SELECT COUNT(*)
+				                  FROM TGW_APP_BOARD T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                 ) NORMAL_COUNT -- 일반문서
+				          FROM TGW_APP_BIND T1,
+				               TGW_APP_BIND_UNIT T2
+				         WHERE T1.UNIT_ID = T2.UNIT_ID
+				           AND T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_TYPE = T2.UNIT_TYPE
+				           AND T1.DEPT_ID = :vo.deptId
+				           AND T1.COMP_ID = :vo.compId
+				           AND T1.CREATE_YEAR = :vo.createYear
+						   AND (
+				                T1.BIND_NAME IN (
+				                                 SELECT RESOURCE_ID 
+				                                 FROM TGW_APP_RESOURCE 
+				                                 WHERE COMP_ID = :vo.compId 
+				                                   AND LANG_TYPE = :vo.langType 
+				                                   AND RESOURCE_NAME LIKE DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+				                                )
+                   				OR
+                   				T1.BIND_NAME LIKE DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+                   			   )	
+				           AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+				           AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+						   AND (
+				                T2.UNIT_NAME IN (
+				                                 SELECT RESOURCE_ID 
+				                                 FROM TGW_APP_RESOURCE 
+				                                 WHERE COMP_ID = :vo.compId 
+				                                   AND LANG_TYPE = :vo.langType 
+				                                   AND RESOURCE_NAME LIKE DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+				                                )
+                   				OR
+                   				T2.UNIT_NAME LIKE DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+                   			   )	
+				           AND T1.IS_ACTIVE = 'Y'
+				           #if ($vo.isSelectType && $vo.isSelectType != "") 
+						        #if ($vo.isSelectType.equals("C"))
+						            AND PARENT_BIND_ID = :vo.bindId 
+						        #else
+						            AND BIND_ID = :vo.parentBindId 
+						        #end 
+						   #end
+                         	ORDER BY BIND_DEPTH, BIND_ORDER, BIND_ID ASC )
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+				
+		<query id="bind.share.list">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, UNIT_TYPE,
+                       UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD,
+                       CREATED, CREATED_ID, MODIFIED, MODIFIED_ID, ORDERED,
+                       ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+                       DOC_COUNT, TOTAL_COUNT
+  				FROM (
+  					SELECT RNUM, COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+                       DOC_COUNT, TOTAL_COUNT
+					FROM (
+						SELECT ROWNUM RNUM, 
+						   COMP_ID, DEPT_ID, BIND_ID, BIND_NAME,
+	                       UNIT_ID, UNIT_TYPE, UNIT_NAME, CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE,
+	                       RETENTION_PERIOD, CREATED, CREATED_ID, MODIFIED, MODIFIED_ID,
+	                       ORDERED, ARRANGE, BINDING, SEND_TYPE, IS_ACTIVE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION,
+	                       APP_COUNT + ENF_COUNT DOC_COUNT,
+	                       COUNT(*) OVER() TOTAL_COUNT
+					  	FROM (SELECT /*+ INDEX(T1 IDX_TGW_APP_BIND) */
+							   T1.COMP_ID,
+				               T1.DEPT_ID,
+				               T1.BIND_ID,
+				               T1.BIND_NAME,
+				               T1.UNIT_ID,
+				               T1.UNIT_TYPE,
+				               T2.UNIT_NAME,
+				               T1.CREATE_YEAR,
+				               T1.EXPIRE_YEAR,
+				               T1.DOC_TYPE,
+				               T1.RETENTION_PERIOD,
+				               T1.CREATED,
+				               T1.CREATED_ID,
+				               T1.MODIFIED,
+				               T1.MODIFIED_ID,
+				               T1.ORDERED,
+				               T1.ARRANGE,
+				               T1.BINDING,
+				               T1.SEND_TYPE,
+				               T1.IS_ACTIVE,
+				               T1.PARENT_BIND_ID,
+				               T1.BIND_ORDER,
+				               T1.BIND_DEPTH,
+				               T1.DESCRIPTION,
+				               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+				                  FROM TGW_APP_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                   --AND DEPT_ID = T1.DEPT_ID
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+				                 ) APP_COUNT,
+				               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+				                  FROM TGW_ENF_DOC T3
+				                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+				                   --AND DEPT_ID = T1.DEPT_ID
+				                   AND COMP_ID = T1.COMP_ID
+				                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+				                 ) ENF_COUNT
+				          FROM TGW_APP_BIND T1,
+				               TGW_APP_BIND_UNIT T2
+				         WHERE T1.UNIT_ID = T2.UNIT_ID
+				           AND T1.COMP_ID = T2.COMP_ID
+				           #if ($vo.deptId)
+				           AND T1.SEND_DEPT_ID = :vo.deptId
+				           #end
+				           AND T1.COMP_ID = :vo.compId
+				           AND T1.CREATE_YEAR = :vo.createYear
+				           AND T1.BIND_NAME like DECODE(NVL(:vo.bindName, ''), '', '%%', '%' || :vo.bindName || '%')
+				           AND DECODE(NVL(:vo.docType, ''), '', 'T', T1.DOC_TYPE) like DECODE(NVL(:vo.docType, ''), '', 'T', :vo.docType)
+				           AND DECODE(NVL(:vo.expireYear, ''), '', 'T', T1.EXPIRE_YEAR) like DECODE(NVL(:vo.expireYear, ''), '', 'T', :vo.expireYear)
+				           AND T2.UNIT_NAME like DECODE(NVL(:vo.unitName, ''), '', '%%', '%' || :vo.unitName || '%')
+				           AND T1.SEND_TYPE = 'DST004'
+				           AND T1.IS_ACTIVE = 'Y'
+                         ORDER BY DEPT_ID, ORDERED, UNIT_ID ASC )
+					   )
+			         WHERE RNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount ) T1
+				 WHERE RNUM BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				   AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="list.listBindUnit">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, DEPT_ID, UNIT_ID, UNIT_NAME, UNIT_TYPE,
+					RETENTION_PERIOD, APPLIED, CREATED, MODIFIED, SERIAL_NUMBER, DESCRIPTION,
+					PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+					,  (SELECT COUNT(*)
+                          FROM TGW_APP_BIND
+                         WHERE COMP_ID = T1.COMP_ID
+						   AND UNIT_ID = T1.UNIT_ID ) BIND_COUNT
+				FROM TGW_APP_BIND_UNIT T1
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId  
+				ORDER BY UNIT_ID
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+
+		<query id="list.listTreeBindUnit">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, DEPT_ID, UNIT_ID, UNIT_NAME, UNIT_TYPE,
+					RETENTION_PERIOD, APPLIED, CREATED, MODIFIED, SERIAL_NUMBER, DESCRIPTION,
+					PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+					,  (SELECT COUNT(*)
+                          FROM TGW_APP_BIND
+                         WHERE COMP_ID = T1.COMP_ID
+						   AND UNIT_ID = T1.UNIT_ID ) BIND_COUNT
+				FROM 
+					(
+						select * from TGW_APP_BIND_UNIT
+						union all
+						select * from TGW_APP_BIND_UNIT_OLD
+					) T1
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId
+			      #if ($vo.isSelectType && $vo.isSelectType != "") 
+			        #if ($vo.isSelectType.equals("C"))
+			            AND PARENT_UNIT_ID = :vo.unitId 
+			        #else
+			            AND UNIT_ID = :vo.parentUnitId 
+			        #end 
+			      #end
+				ORDER BY UNIT_DEPTH, UNIT_ORDER, UNIT_NAME
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+		
+		<query id="list.listTreeShareBindUnit">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, DEPT_ID, UNIT_ID, UNIT_NAME, UNIT_TYPE,
+					RETENTION_PERIOD, APPLIED, CREATED, MODIFIED, SERIAL_NUMBER, DESCRIPTION,
+					PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+					,  (SELECT COUNT(*)
+                          FROM TGW_APP_BIND_OLD
+                         WHERE COMP_ID = T1.COMP_ID
+						   AND UNIT_ID = T1.UNIT_ID ) BIND_COUNT
+				FROM TGW_APP_BIND_UNIT_OLD T1
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId
+			   #if ($vo.isSelectType && $vo.isSelectType != "") 
+			        #if ($vo.isSelectType.equals("C"))
+			            AND PARENT_UNIT_ID = :vo.unitId 
+			        #else
+			            AND UNIT_ID = :vo.parentUnitId 
+			        #end 
+			   #end
+				ORDER BY UNIT_DEPTH, UNIT_ORDER, UNIT_NAME
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+				
+		<!-- 다국어때문에 추가 -->
+		<query id="list.listBindUnitResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, 
+				       DEPT_ID, 
+				       UNIT_ID, 
+					   FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+			           UNIT_NAME AS RESOURCE_ID, 				       
+				       UNIT_TYPE,
+					   RETENTION_PERIOD, 
+					   APPLIED, 
+					   CREATED, 
+					   MODIFIED, 
+					   SERIAL_NUMBER, 
+					   DESCRIPTION,
+					   PARENT_UNIT_ID,
+					   UNIT_ORDER,
+					   UNIT_DEPTH,
+					   (
+					    SELECT COUNT(*)
+                        FROM TGW_APP_BIND
+                        WHERE COMP_ID = T1.COMP_ID
+						  AND UNIT_ID = T1.UNIT_ID 
+					   ) BIND_COUNT
+				FROM TGW_APP_BIND_UNIT T1
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId  
+				ORDER BY UNIT_DEPTH, UNIT_ORDER
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+				
+		<!-- 다국어때문에 추가 -->
+		<query id="list.listTreeBindUnitResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, 
+				       DEPT_ID, 
+				       UNIT_ID, 
+					   FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+			           UNIT_NAME AS RESOURCE_ID, 				       
+				       UNIT_TYPE,
+					   RETENTION_PERIOD, 
+					   APPLIED, 
+					   CREATED, 
+					   MODIFIED, 
+					   SERIAL_NUMBER, 
+					   DESCRIPTION,
+					   PARENT_UNIT_ID,
+					   UNIT_ORDER,
+					   UNIT_DEPTH,
+					   (
+					    SELECT COUNT(*)
+                        FROM TGW_APP_BIND
+                        WHERE COMP_ID = T1.COMP_ID
+						  AND UNIT_ID = T1.UNIT_ID 
+					   ) BIND_COUNT
+				FROM TGW_APP_BIND_UNIT T1
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId  
+			   #if ($vo.isSelectType && $vo.isSelectType != "") 
+			        #if ($vo.isSelectType.equals("C"))
+			            AND PARENT_UNIT_ID = :vo.unitId 
+			        #else
+			            AND UNIT_ID = :vo.parentUnitId 
+			        #end 
+			   #end
+				ORDER BY UNIT_DEPTH, UNIT_ORDER, UNIT_ID
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+
+		<query id="bind.nextVal">
+			<statement>
+			<![CDATA[
+				SELECT TGW_APP_BIND_SEQ.NEXTVAL BIND_ID FROM DUAL
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND (
+				    COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, UNIT_TYPE,
+				    CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, ORDERED,
+				    CREATED, CREATED_ID, SEND_TYPE, PREFIX,
+				    PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION)
+				VALUES ( 
+				    :vo.compId, :vo.deptId, :vo.bindId, :vo.bindName, :vo.unitId, :vo.unitType,
+				    :vo.createYear, :vo.expireYear, :vo.docType, :vo.retentionPeriod, 0,
+				    :vo.created, :vo.createdId, 'DST001', :vo.prefix,
+				    :vo.parentBindId, :vo.bindOrder, :vo.bindDepth, :vo.description)
+			]]>
+			</statement>
+		</query>
+		
+		<query id="bind.insertShare">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_OLD (
+				    COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, UNIT_TYPE,
+				    CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, ORDERED,
+				    CREATED, CREATED_ID, SEND_TYPE, PREFIX,
+				    PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION)
+				VALUES ( 
+				    :vo.compId, :vo.deptId, :vo.bindId, :vo.bindName, :vo.unitId, :vo.unitType,
+				    :vo.createYear, :vo.expireYear, :vo.docType, :vo.retentionPeriod, 0,
+				    :vo.created, :vo.createdId, 'DST001', :vo.prefix,
+				    :vo.parentBindId, :vo.bindOrder, :vo.bindDepth, :vo.description)
+			]]>
+			</statement>
+		</query>
+		
+		
+		<query id="bind.select">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       UNIT_TYPE,
+				       ORG_BIND_ID,
+				       (SELECT UNIT_NAME
+				          FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2
+				         WHERE T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_ID = T2.UNIT_ID
+						   AND T2.BIND_ID = :vo.bindId) UNIT_NAME,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', (SELECT UNIT_NAME
+						          FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2
+						         WHERE T1.COMP_ID = T2.COMP_ID
+						           AND T1.UNIT_ID = T2.UNIT_ID
+								   AND T2.BIND_ID = :vo.bindId)) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.selectShare">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       UNIT_TYPE,
+				       ORG_BIND_ID,
+				       (SELECT UNIT_NAME
+				          FROM TGW_APP_BIND_UNIT_OLD T1, TGW_APP_BIND_OLD T2
+				         WHERE T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_ID = T2.UNIT_ID
+						   AND T2.BIND_ID = :vo.bindId) UNIT_NAME,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', (SELECT UNIT_NAME
+						          FROM TGW_APP_BIND_UNIT_OLD T1, TGW_APP_BIND_OLD T2
+						         WHERE T1.COMP_ID = T2.COMP_ID
+						           AND T1.UNIT_ID = T2.UNIT_ID
+								   AND T2.BIND_ID = :vo.bindId)) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND_OLD T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.selectResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+					   FNC_GET_RESOURCE_NAME(:vo.compId , BIND_NAME, :vo.langType) AS BIND_NAME,
+  					   BIND_NAME AS RESOURCE_ID,				       
+				       UNIT_ID,
+				       UNIT_TYPE,
+				       ORG_BIND_ID,
+				       FNC_GET_RESOURCE_NAME(:vo.compId , (SELECT T1.UNIT_NAME FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2 WHERE T1.COMP_ID = T2.COMP_ID AND T1.UNIT_ID = T2.UNIT_ID AND T2.BIND_ID = :vo.bindId), :vo.langType) AS UNIT_NAME,				       
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', (SELECT UNIT_NAME
+						          FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2
+						         WHERE T1.COMP_ID = T2.COMP_ID
+						           AND T1.UNIT_ID = T2.UNIT_ID
+								   AND T2.BIND_ID = :vo.bindId)) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.select.minor">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       UNIT_TYPE,
+				       (SELECT UNIT_NAME
+				          FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2
+				         WHERE T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_ID = T2.UNIT_ID
+						   AND T2.BIND_ID = :vo.bindId
+						   AND T1.DEPT_ID = :vo.deptId) UNIT_NAME,
+				       ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.select.minorShare">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       UNIT_TYPE,
+				       (SELECT UNIT_NAME
+				          FROM TGW_APP_BIND_UNIT_OLD T1, TGW_APP_BIND_OLD T2
+				         WHERE T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_ID = T2.UNIT_ID
+						   AND T2.BIND_ID = :vo.bindId
+						   AND T1.DEPT_ID = :vo.deptId) UNIT_NAME,
+				       ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND_OLD T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.select.minorResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+					   FNC_GET_RESOURCE_NAME(:vo.compId , BIND_NAME, :vo.langType) AS BIND_NAME,
+  					   BIND_NAME AS RESOURCE_ID,				       
+				       UNIT_ID,
+				       UNIT_TYPE,
+				       FNC_GET_RESOURCE_NAME(:vo.compId , (SELECT T1.UNIT_NAME FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2 WHERE T1.COMP_ID = T2.COMP_ID AND T1.UNIT_ID = T2.UNIT_ID AND T2.BIND_ID = :vo.bindId), :vo.langType) AS UNIT_NAME,
+				       ORG_BIND_ID
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+
+		<query id="bind.selectBindList">
+			<statement>
+			<![CDATA[
+				SELECT 
+				    BIND_ID,
+				    BIND_NAME,
+				    RETENTION_PERIOD,
+			        PARENT_BIND_ID,
+			        BIND_ORDER,
+			        BIND_DEPTH
+				FROM TGW_APP_BIND
+				WHERE 
+					COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND UNIT_ID = :vo.unitId
+					AND CREATE_YEAR = :vo.createYear
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+
+		<query id="bind.update">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BIND
+				   SET BIND_NAME = NVL(:vo.bindName, BIND_NAME),
+				       UNIT_ID = NVL(:vo.unitId, UNIT_ID),
+				       UNIT_TYPE = NVL(:vo.modifiedUnitType, UNIT_TYPE),
+				       EXPIRE_YEAR = NVL(:vo.expireYear, EXPIRE_YEAR),
+				       DOC_TYPE = NVL(:vo.docType, DOC_TYPE),
+				       RETENTION_PERIOD = NVL(:vo.retentionPeriod, RETENTION_PERIOD),
+				       MODIFIED = :vo.currentTime,
+				       MODIFIED_ID = :vo.modifiedId,
+				       ARRANGE = NVL(:vo.arrange, ARRANGE),
+				       BINDING = NVL(:vo.binding, BINDING),
+				       IS_ACTIVE = NVL(:vo.isActive, IS_ACTIVE),
+				       PREFIX = NVL(:vo.prefix, PREFIX),
+				       BIND_ORDER = :vo.bindOrder
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId 
+			]]>
+			</statement>
+		</query>
+		
+		<query id="bind.updateShare">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BIND_OLD
+				   SET BIND_NAME = NVL(:vo.bindName, BIND_NAME),
+				       UNIT_ID = NVL(:vo.unitId, UNIT_ID),
+				       UNIT_TYPE = NVL(:vo.modifiedUnitType, UNIT_TYPE),
+				       EXPIRE_YEAR = NVL(:vo.expireYear, EXPIRE_YEAR),
+				       DOC_TYPE = NVL(:vo.docType, DOC_TYPE),
+				       RETENTION_PERIOD = NVL(:vo.retentionPeriod, RETENTION_PERIOD),
+				       MODIFIED = :vo.currentTime,
+				       MODIFIED_ID = :vo.modifiedId,
+				       ARRANGE = NVL(:vo.arrange, ARRANGE),
+				       BINDING = NVL(:vo.binding, BINDING),
+				       IS_ACTIVE = NVL(:vo.isActive, IS_ACTIVE),
+				       PREFIX = NVL(:vo.prefix, PREFIX),
+				       BIND_ORDER = :vo.bindOrder
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId 
+			]]>
+			</statement>
+		</query>
+		
+		
+		<query id="bind.delete">
+			<statement>
+			<![CDATA[
+				DELETE
+				  FROM TGW_APP_BIND
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.share.delete">
+			<statement>
+			<![CDATA[
+				DELETE
+				  FROM TGW_APP_BIND_OLD
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.selectList">
+			<statement>
+			<![CDATA[
+				SELECT T1.COMP_ID,
+				       T1.DEPT_ID,
+				       T1.BIND_ID,
+				       T1.BIND_NAME,
+				       T1.UNIT_ID,
+				       T2.UNIT_NAME,
+				       T1.CREATE_YEAR,
+				       T1.EXPIRE_YEAR,
+				       T1.DOC_TYPE,
+				       T1.RETENTION_PERIOD,
+				       T1.CREATED,
+                       T1.CREATED_ID,
+                       T1.MODIFIED,
+                       T1.MODIFIED_ID,
+				       T1.ORDERED,
+                       T1.ARRANGE,
+                       T1.BINDING,
+					   T1.SEND_TYPE,
+       				   T1.IS_ACTIVE,
+       				   T1.PREFIX,
+		               T1.PARENT_BIND_ID,
+		               T1.BIND_ORDER,
+		               T1.BIND_DEPTH,
+		               T1.DESCRIPTION
+				  FROM TGW_APP_BIND T1,
+				       TGW_APP_BIND_UNIT T2
+				 WHERE T1.UNIT_ID = T2.UNIT_ID
+				   AND T1.COMP_ID = T2.COMP_ID
+				   AND T1.DEPT_ID = :vo.deptId
+				   AND T1.COMP_ID = :vo.compId
+				   
+				   #if ($vo.sendType && $vo.sendType.equals("DST003"))
+				   AND T1.SEND_TYPE = :vo.sendType
+				   #else
+				   AND T1.SEND_TYPE IN('DST001', 'DST002', 'DST004')
+				   #end
+				   
+				   #if ($vo.serialNumber)
+				   AND T2.SERIAL_NUMBER = :vo.serialNumber
+				   #end
+				   
+                   AND T1.CREATE_YEAR = :vo.createYear
+                   AND T1.IS_ACTIVE = 'Y'
+                   #if ($vo.binding) 
+                   AND T1.BINDING = 'N'
+                   #end
+                   #if ($vo.arrange)
+                   AND T1.ARRANGE = 'N'
+                   #end
+				 ORDER BY T1.ORDERED, T1.UNIT_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.selectListResource">
+			<statement>
+			<![CDATA[
+				SELECT T1.COMP_ID,
+				       T1.DEPT_ID,
+				       T1.BIND_ID,
+					   FNC_GET_RESOURCE_NAME(:vo.compId, T1.BIND_NAME, :vo.langType) AS BIND_NAME,
+					   T1.BIND_NAME AS RESOURCE_ID,
+				       T1.UNIT_ID,
+				       T2.UNIT_NAME,
+				       T1.CREATE_YEAR,
+				       T1.EXPIRE_YEAR,
+				       T1.DOC_TYPE,
+				       T1.RETENTION_PERIOD,
+				       T1.CREATED,
+                       T1.CREATED_ID,
+                       T1.MODIFIED,
+                       T1.MODIFIED_ID,
+				       T1.ORDERED,
+                       T1.ARRANGE,
+                       T1.BINDING,
+					   T1.SEND_TYPE,
+       				   T1.IS_ACTIVE,
+       				   T1.PREFIX,
+		               T1.PARENT_BIND_ID,
+		               T1.BIND_ORDER,
+		               T1.BIND_DEPTH,
+		               T1.DESCRIPTION
+				  FROM TGW_APP_BIND T1,
+				       TGW_APP_BIND_UNIT T2
+				 WHERE T1.UNIT_ID = T2.UNIT_ID
+				   AND T1.COMP_ID = T2.COMP_ID
+				   AND T1.DEPT_ID = :vo.deptId
+				   AND T1.COMP_ID = :vo.compId
+				   
+				   #if ($vo.sendType && $vo.sendType.equals("DST003"))
+				   AND T1.SEND_TYPE = :vo.sendType
+				   #else
+				   AND T1.SEND_TYPE IN('DST001', 'DST002', 'DST004')
+				   #end
+				   
+				   #if ($vo.serialNumber)
+				   AND T2.SERIAL_NUMBER = :vo.serialNumber
+				   #end
+				   
+                   AND T1.CREATE_YEAR = :vo.createYear
+                   AND T1.IS_ACTIVE = 'Y'
+                   #if ($vo.binding) 
+                   AND T1.BINDING = 'N'
+                   #end
+                   #if ($vo.arrange)
+                   AND T1.ARRANGE = 'N'
+                   #end
+				 ORDER BY T1.ORDERED, T1.UNIT_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.target.selectList">
+			<statement>
+			<![CDATA[
+				SELECT T1.COMP_ID,
+				       T1.DEPT_ID,
+				       T1.BIND_ID,
+				       T1.BIND_NAME,
+				       T1.UNIT_ID,
+				       T2.UNIT_NAME,
+				       T1.CREATE_YEAR,
+				       T1.EXPIRE_YEAR,
+				       T1.DOC_TYPE,
+				       T1.RETENTION_PERIOD,
+				       T1.CREATED,
+                       T1.CREATED_ID,
+                       T1.MODIFIED,
+                       T1.MODIFIED_ID,
+				       T1.ORDERED,
+                       T1.ARRANGE,
+                       T1.BINDING,
+					   T1.SEND_TYPE,
+       				   T1.IS_ACTIVE,
+       				   T1.PREFIX,
+		               T1.PARENT_BIND_ID,
+		               T1.BIND_ORDER,
+		               T1.BIND_DEPTH,
+		               T1.DESCRIPTION
+				  FROM TGW_APP_BIND T1,
+				       TGW_APP_BIND_UNIT T2
+				 WHERE T1.UNIT_ID = T2.UNIT_ID
+				   AND T1.COMP_ID = T2.COMP_ID
+				   AND T1.DEPT_ID = :vo.deptId
+				   AND T1.COMP_ID = :vo.compId
+				   AND T1.SEND_TYPE IN('DST001', 'DST002')
+				   
+				   #if ($vo.serialNumber)
+				   AND T2.SERIAL_NUMBER = :vo.serialNumber
+				   #end
+				   
+                   AND T1.CREATE_YEAR = :vo.createYear
+                   AND T1.IS_ACTIVE = 'Y'
+                   #if ($vo.binding) 
+                   AND T1.BINDING = 'N'
+                   #end
+                   #if ($vo.arrange)
+                   AND T1.ARRANGE = 'N'
+                   #end
+				 ORDER BY T1.ORDERED, T1.UNIT_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.target.selectListResource">
+			<statement>
+			<![CDATA[
+				SELECT T1.COMP_ID,
+				       T1.DEPT_ID,
+				       T1.BIND_ID,
+				       FNC_GET_RESOURCE_NAME(:vo.compId, T1.BIND_NAME, :vo.langType) AS BIND_NAME,
+				       T1.BIND_NAME AS RESOURCE_ID,
+				       T1.UNIT_ID,
+				       FNC_GET_RESOURCE_NAME(:vo.compId, T2.UNIT_NAME, :vo.langType) AS UNIT_NAME,
+				       T1.CREATE_YEAR,
+				       T1.EXPIRE_YEAR,
+				       T1.DOC_TYPE,
+				       T1.RETENTION_PERIOD,
+				       T1.CREATED,
+                       T1.CREATED_ID,
+                       T1.MODIFIED,
+                       T1.MODIFIED_ID,
+				       T1.ORDERED,
+                       T1.ARRANGE,
+                       T1.BINDING,
+					   T1.SEND_TYPE,
+       				   T1.IS_ACTIVE,
+       				   T1.PREFIX,
+		               T1.PARENT_BIND_ID,
+		               T1.BIND_ORDER,
+		               T1.BIND_DEPTH,
+		               T1.DESCRIPTION
+				  FROM TGW_APP_BIND T1,
+				       TGW_APP_BIND_UNIT T2
+				 WHERE T1.UNIT_ID = T2.UNIT_ID
+				   AND T1.COMP_ID = T2.COMP_ID
+				   AND T1.DEPT_ID = :vo.deptId
+				   AND T1.COMP_ID = :vo.compId
+				   AND T1.SEND_TYPE IN('DST001', 'DST002')
+				   
+				   #if ($vo.serialNumber)
+				   AND T2.SERIAL_NUMBER = :vo.serialNumber
+				   #end
+				   
+                   AND T1.CREATE_YEAR = :vo.createYear
+                   AND T1.IS_ACTIVE = 'Y'
+                   #if ($vo.binding) 
+                   AND T1.BINDING = 'N'
+                   #end
+                   #if ($vo.arrange)
+                   AND T1.ARRANGE = 'N'
+                   #end
+				 ORDER BY T1.ORDERED, T1.UNIT_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.target.selectTreeList">
+			<statement>
+			<![CDATA[
+				SELECT T1.COMP_ID,
+				       T1.DEPT_ID,
+				       T1.BIND_ID,
+				       T1.BIND_NAME,
+				       T1.UNIT_ID,
+				       T2.UNIT_NAME,
+				       T1.CREATE_YEAR,
+				       T1.EXPIRE_YEAR,
+				       T1.DOC_TYPE,
+				       T1.RETENTION_PERIOD,
+				       T1.CREATED,
+                       T1.CREATED_ID,
+                       T1.MODIFIED,
+                       T1.MODIFIED_ID,
+				       T1.ORDERED,
+                       T1.ARRANGE,
+                       T1.BINDING,
+					   T1.SEND_TYPE,
+       				   T1.IS_ACTIVE,
+       				   T1.PREFIX,
+		               T1.PARENT_BIND_ID,
+		               T1.BIND_ORDER,
+		               T1.BIND_DEPTH,
+		               T1.DESCRIPTION
+				  FROM TGW_APP_BIND T1,
+				       (
+						select * from TGW_APP_BIND_UNIT
+						union all
+						select * from TGW_APP_BIND_UNIT_OLD
+					    ) T2
+				 WHERE T1.UNIT_ID = T2.UNIT_ID
+				   AND T1.COMP_ID = T2.COMP_ID
+				   AND T1.DEPT_ID = :vo.deptId
+				   AND T1.COMP_ID = :vo.compId
+				   AND T1.SEND_TYPE IN('DST001', 'DST002')
+				   
+				   #if ($vo.serialNumber)
+				   AND T2.SERIAL_NUMBER = :vo.serialNumber
+				   #end
+				   
+                   AND T1.CREATE_YEAR = :vo.createYear
+                   AND T1.IS_ACTIVE = 'Y'
+                   #if ($vo.binding) 
+                   AND T1.BINDING = 'N'
+                   #end
+                   #if ($vo.arrange)
+                   AND T1.ARRANGE = 'N'
+                   #end
+		           #if ($vo.isSelectType && $vo.isSelectType != "") 
+				        #if ($vo.isSelectType.equals("C"))
+				            AND T1.PARENT_BIND_ID = :vo.bindId 
+				        #else
+				            AND T1.BIND_ID = :vo.parentBindId 
+				        #end 
+				   #end
+				 ORDER BY T1.BIND_DEPTH, T1.BIND_ORDER, T1.BIND_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.transfer.document.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_TRANSFER_HISTORY (COMP_ID, BIND_ID, DOC_ID, DOC_NUMBER, TITLE, SEND_ORG_NAME, RECEIVERS,
+														   ELECTRON_DOC_YN, DOC_TYPE, APPROVAL_DATE, TRANSFER_YN, SEQ )
+				SELECT COMP_ID,
+				       BINDING_ID,
+				       DOC_ID,
+				       DECODE(SIGN(SERIAL_NUMBER), 1, DEPT_CATEGORY || '-' || SERIAL_NUMBER, '') || DECODE(SIGN(SUBSERIAL_NUMBER), 1, '-' || SUBSERIAL_NUMBER, '') DOC_NUMBER,
+				       TITLE,
+				       SEND_ORG_NAME,
+				       RECEIVERS,
+				       ELECTRON_DOC_YN,
+				       DOC_TYPE,
+				       APPROVAL_DATE,
+				       TRANSFER_YN,
+				       ROWNUM SEQ
+				  FROM (SELECT COMP_ID,
+				               DOC_ID,
+				               BINDING_ID,
+				               UNIT_ID,
+				               DEPT_CATEGORY,
+				               SERIAL_NUMBER,
+				               SUBSERIAL_NUMBER,
+				               TITLE,
+				               SEND_ORG_NAME,
+				               RECEIVERS,
+				               ELECTRON_DOC_YN,
+				               DOC_TYPE,
+				               APPROVAL_DATE,
+				               TRANSFER_YN,
+				               COUNT(*) OVER() TOTAL_COUNT
+				          FROM (SELECT /*+ ORDRED USE_NL(T1 T2) */
+				                       T1.BINDING_ID,
+				                       T1.COMP_ID,
+				                       T1.DOC_ID,
+				                       (SELECT UNIT_ID
+				                          FROM TGW_APP_BIND T3
+				                         WHERE T3.COMP_ID = T1.COMP_ID
+				                           AND T3.BIND_ID = T1.BINDING_ID
+				                           AND T3.SEND_TYPE != 'DST004') UNIT_ID,
+				                       T1.DEPT_CATEGORY,
+				                       T1.SERIAL_NUMBER,
+				                       T1.SUBSERIAL_NUMBER,
+				                       T1.TITLE,
+				                       T2.SEND_ORG_NAME,
+				                       T2.RECEIVERS,
+				                       T1.ELECTRON_DOC_YN,
+				                       'DPI001' DOC_TYPE,
+				                       APPROVAL_DATE,
+				                       TRANSFER_YN
+				                  FROM TGW_APP_DOC T1, TGW_SEND_INFO T2, TGW_OWN_DEPT T3
+				                 WHERE T1.COMP_ID = T2.COMP_ID(+)
+		                           AND T1.DOC_ID = T2.DOC_ID(+)
+		                           AND T1.COMP_ID = T3.COMP_ID
+		                           AND T1.DOC_ID = T3.DOC_ID
+				                   AND T1.APPROVAL_DATE IS NOT NULL
+				                   AND T3.OWN_YN = 'Y'
+				                   AND T1.BINDING_ID = :vo.bindId
+				                   AND T1.COMP_ID = :vo.compId
+				                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+				                 UNION ALL
+				                SELECT /*+ ORDRED USE_NL(T1 T2) */
+				                       T1.BINDING_ID,
+				                       T1.COMP_ID,
+				                       T1.DOC_ID,
+				                       (SELECT UNIT_ID
+				                          FROM TGW_APP_BIND T3
+				                         WHERE T3.COMP_ID = T1.COMP_ID
+				                           AND T3.BIND_ID = T1.BINDING_ID
+				                           AND T3.SEND_TYPE != 'DST004') UNIT_ID,
+				                       T1.DEPT_CATEGORY,
+				                       T1.SERIAL_NUMBER,
+				                       T1.SUBSERIAL_NUMBER,
+				                       T1.TITLE,
+				                       T1.SENDER_DEPT_NAME SEND_ORG_NAME,
+				                       '' RECEIVERS,
+				                       T1.ELECTRON_DOC_YN,
+				                       'DPI002' DOC_TYPE,
+				                       ACCEPT_DATE APPROVAL_DATE,
+				                       TRANSFER_YN
+				                  FROM TGW_ENF_DOC T1, TGW_OWN_DEPT T2
+								 WHERE T1.COMP_ID = T2.COMP_ID
+			                       AND T1.DOC_ID = T2.DOC_ID
+			                       AND T1.ACCEPT_DATE IS NOT NULL
+				                   AND T1.BINDING_ID = :vo.bindId
+				                   AND T1.COMP_ID = :vo.compId
+				                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+				                   AND T2.OWN_YN = 'Y' 
+				                 ORDER BY APPROVAL_DATE DESC ) )
+			]]>
+			</statement>
+		</query>
+		<query id="bind.transfer.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND (
+				  	COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, ORG_BIND_ID,
+					CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, ORDERED,
+					CREATED, CREATED_ID, MODIFIED, MODIFIED_ID, ARRANGE,
+                    BINDING, SEND_TYPE, SEND_DEPT_ID, SEND_UNIT_ID, SEND_CREATE_YEAR,
+                    SENDED, IS_ACTIVE, PREFIX, UNIT_TYPE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION )
+				SELECT COMP_ID,
+				       :vo.targetId DEPT_ID,
+				       :vo.nextBindId BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       NVL(ORG_BIND_ID, BIND_ID) ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       0,
+				       CREATED,
+                       CREATED_ID,
+                       '' MODIFIED,
+                       '' MODIFIED_ID,
+                       ARRANGE,
+                       BINDING,
+                       'DST002' SEND_TYPE,
+				       DEPT_ID SEND_DEPT_ID ,
+				       UNIT_ID SEND_UNIT_ID ,
+				       CREATE_YEAR SEND_CREATE_YEAR,
+                       :vo.currentTime SENDED,
+                       IS_ACTIVE,
+                       PREFIX,
+                       UNIT_TYPE,
+				       :vo.parentBindId PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND BIND_ID = :vo.bindId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.transfer.insert2">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND (
+				  	COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, ORG_BIND_ID,
+					CREATE_YEAR, EXPIRE_YEAR, DOC_TYPE, RETENTION_PERIOD, ORDERED,
+					CREATED, CREATED_ID, MODIFIED, MODIFIED_ID, ARRANGE,
+                    BINDING, SEND_TYPE, SEND_DEPT_ID, SEND_UNIT_ID, SEND_CREATE_YEAR,
+                    SENDED, IS_ACTIVE, PREFIX, UNIT_TYPE, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION )
+				SELECT COMP_ID,
+				       :vo.targetId DEPT_ID,
+				       :vo.nextBindId BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       NVL(ORG_BIND_ID, BIND_ID) ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       0,
+				       CREATED,
+                       CREATED_ID,
+                       '' MODIFIED,
+                       '' MODIFIED_ID,
+                       ARRANGE,
+                       BINDING,
+                       'DST002' SEND_TYPE,
+				       DEPT_ID SEND_DEPT_ID ,
+				       UNIT_ID SEND_UNIT_ID ,
+				       CREATE_YEAR SEND_CREATE_YEAR,
+                       :vo.currentTime SENDED,
+                       IS_ACTIVE,
+                       PREFIX,
+                       UNIT_TYPE,
+				       :vo.parentBindId PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND BIND_ID = :vo.bindId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.transfer.board.update">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BOARD SET
+					BINDING_ID =  NVL(:vo.nextBindId, BINDING_ID)
+				WHERE 	BINDING_ID = :vo.bindId
+			]]>
+			</statement>
+		</query>
+
+		<query id="bind.transfer.update">
+			<statement>
+			<![CDATA[
+				UPDATE (SELECT UNIT_ID,
+				               CREATE_YEAR,
+				               SEND_TYPE,
+				               SEND_DEPT_ID,
+				               SEND_UNIT_ID,
+				               SEND_CREATE_YEAR,
+				               SENDED,
+						       PARENT_BIND_ID,
+						       BIND_ORDER,
+						       BIND_DEPTH,
+						       DESCRIPTION
+				          FROM TGW_APP_BIND
+				         WHERE COMP_ID = :vo.compId
+				           AND DEPT_ID = :vo.deptId
+				           AND BIND_ID = :vo.bindId
+				           AND SEND_TYPE != 'DST004' )
+				   SET SEND_TYPE = 'DST003',
+				       SEND_DEPT_ID = :vo.targetId,
+				       SEND_UNIT_ID = UNIT_ID,
+				       SEND_CREATE_YEAR = CREATE_YEAR,
+				       SENDED = :vo.currentTime
+			]]>
+			</statement>
+		</query>
+		<query id="bind.transfer.bindAuthInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_AUTHORITY (
+				  	COMP_ID, DEPT_ID, BIND_ID, AUTH_DEPT_ID, BIND_AUTHORITY)
+				SELECT COMP_ID, :vo.targetId DEPT_ID, :vo.nextBindId BIND_ID, AUTH_DEPT_ID, BIND_AUTHORITY
+				FROM TGW_APP_BIND_AUTHORITY
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId 
+			]]>
+			</statement>
+		</query>
+		<query id="bind.transfer.bindAdminInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_MANAGER (
+				  	COMP_ID, DEPT_ID, BIND_ID, MANAGER_ID)
+				SELECT COMP_ID, :vo.targetId DEPT_ID, :vo.nextBindId BIND_ID, MANAGER_ID
+				FROM TGW_APP_BIND_MANAGER
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.unit.simple.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_UNIT_OLD(
+				    COMP_ID, DEPT_ID, UNIT_ID, UNIT_NAME, UNIT_TYPE,
+				    RETENTION_PERIOD, APPLIED, CREATED, MODIFIED, SERIAL_NUMBER, DESCRIPTION,
+				    PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+				)
+				VALUES(
+				    :vo.compId, :vo.deptId, :vo.unitId, :vo.unitName, :vo.unitType,
+				    :vo.retentionPeriod, :vo.applied, :vo.created, :vo.modified, :vo.serialNumber, :vo.description,
+				    :vo.parentUnitId, :vo.unitOrder, :vo.unitDepth
+				)
+			]]>
+			</statement>
+		</query>
+		<query id="bind.unit.simple.rename">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BIND_UNIT_OLD
+				SET UNIT_NAME = :vo.unitName,
+					MODIFIED = :vo.modified
+				WHERE UNIT_ID = :vo.unitId
+				  AND COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.unit.select">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, DEPT_ID, UNIT_ID, UNIT_NAME, UNIT_TYPE, SERIAL_NUMBER
+					, RETENTION_PERIOD, APPLIED, CREATED, MODIFIED, DESCRIPTION
+					, PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+				FROM TGW_APP_BIND_UNIT_OLD
+				WHERE UNIT_ID = :vo.unitId
+				  AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.unit.selectResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, 
+				       DEPT_ID, 
+				       UNIT_ID, 
+					   FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+			           UNIT_NAME AS RESOURCE_ID, 				       
+				       UNIT_TYPE, 
+				       SERIAL_NUMBER, 
+				       RETENTION_PERIOD, 
+				       APPLIED, 
+				       CREATED, 
+				       MODIFIED, 
+				       DESCRIPTION,
+					   PARENT_UNIT_ID,
+					   UNIT_ORDER,
+					   UNIT_DEPTH
+				FROM TGW_APP_BIND_UNIT_OLD
+				WHERE UNIT_ID = :vo.unitId
+				  AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+		
+		<query id="bind.unit.simple.select">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, DEPT_ID, UNIT_ID, UNIT_NAME, UNIT_TYPE, SERIAL_NUMBER
+					, RETENTION_PERIOD, APPLIED, CREATED, MODIFIED, DESCRIPTION, PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+				FROM TGW_APP_BIND_UNIT_OLD
+				WHERE UNIT_ID = :vo.unitId
+				  AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.unit.simple.selectResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, 
+				       DEPT_ID, 
+				       UNIT_ID, 
+					   FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+			           UNIT_NAME AS RESOURCE_ID, 						       
+				       UNIT_TYPE, 
+				       SERIAL_NUMBER, 
+				       RETENTION_PERIOD, 
+				       APPLIED, 
+				       CREATED, 
+				       MODIFIED, 
+				       DESCRIPTION,
+					   PARENT_UNIT_ID,
+					   UNIT_ORDER,
+					   UNIT_DEPTH
+				FROM TGW_APP_BIND_UNIT_OLD
+				WHERE UNIT_ID = :vo.unitId
+				  AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+		
+		<query id="bind.unit.simple.select.for.bind">
+			<statement>
+			<![CDATA[
+				SELECT UNIT_TYPE, UNIT_ID, UNIT_NAME, PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+				FROM APP_USER.TGW_APP_BIND_UNIT_OLD
+				WHERE COMP_ID = :vo.compId
+				  AND UNIT_TYPE = 'UTT001'
+				UNION ALL
+				SELECT UNIT_TYPE, UNIT_ID, UNIT_NAME, PARENT_UNIT_ID, UNIT_ORDER, UNIT_DEPTH
+				FROM APP_USER.TGW_APP_BIND_UNIT_OLD
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId
+				  AND UNIT_TYPE = 'UTT002'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.unit.simple.select.for.bindResource">
+			<statement>
+			<![CDATA[
+				SELECT UNIT_TYPE, 
+				       UNIT_ID, 
+				       FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+					   UNIT_NAME AS RESOURCE_ID,
+					   PARENT_UNIT_ID,
+					   UNIT_ORDER,
+					   UNIT_DEPTH
+				FROM APP_USER.TGW_APP_BIND_UNIT_OLD
+				WHERE COMP_ID = :vo.compId
+				  AND UNIT_TYPE = 'UTT001'
+				UNION ALL
+				SELECT UNIT_TYPE, 
+				       UNIT_ID, 
+				       FNC_GET_RESOURCE_NAME(:vo.compId, UNIT_NAME, :vo.langType) AS UNIT_NAME,
+					   UNIT_NAME AS RESOURCE_ID,
+					   PARENT_UNIT_ID,
+					   UNIT_ORDER,
+					   UNIT_DEPTH				       
+				FROM APP_USER.TGW_APP_BIND_UNIT_OLD
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId
+				  AND UNIT_TYPE = 'UTT002'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindUnitVO" />
+		</query>		
+		
+		<query id="bind.unit.simple.update">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BIND_UNIT_OLD
+				SET UNIT_NAME = :vo.unitName,
+					RETENTION_PERIOD = :vo.retentionPeriod,
+					APPLIED = :vo.applied,
+					MODIFIED = :vo.modified,
+					SERIAL_NUMBER = :vo.serialNumber,
+					DESCRIPTION = :vo.description
+				WHERE UNIT_ID = :vo.unitId
+				  AND COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.unit.simple.delete">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_BIND_UNIT_OLD
+				 WHERE UNIT_ID = :vo.unitId
+			       AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.unit.useRows">
+			<!-- 클라이언트 사이드에서 제어 -->
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND
+				 WHERE UNIT_ID = :vo.unitId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+
+
+
+		<!-- bind history -->
+		<query id="bind.history.list">
+			<statement>
+			<![CDATA[
+				SELECT RNUM NUM,
+					   COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+                       MODIFIED,
+				       MODIFIED_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ARRANGE,
+                       BINDING,
+                       SEND_TYPE,
+                       SEND_DEPT_ID,
+                       SEND_UNIT_ID,
+                       SEND_CREATE_YEAR,
+                       SENDED,
+				       TOTAL_COUNT
+				  FROM (
+                        SELECT RNUM,
+                               COMP_ID,
+                               DEPT_ID,
+				               BIND_ID,
+                               MODIFIED,
+				               MODIFIED_ID,
+				               BIND_NAME,
+				               UNIT_ID,
+				               CREATE_YEAR,
+				               EXPIRE_YEAR,
+				               DOC_TYPE,
+				               RETENTION_PERIOD,
+				               ARRANGE,
+                               BINDING,
+                               SEND_TYPE,
+                               SEND_DEPT_ID,
+                               SEND_UNIT_ID,
+                               SEND_CREATE_YEAR,
+                               SENDED,
+                               TOTAL_COUNT
+                          FROM (
+	                            SELECT ROWNUM RNUM,
+					               COMP_ID,
+					               DEPT_ID,
+					               BIND_ID,
+	                               MODIFIED,
+					               MODIFIED_ID,
+					               BIND_NAME,
+					               UNIT_ID,
+					               CREATE_YEAR,
+					               EXPIRE_YEAR,
+					               DOC_TYPE,
+					               RETENTION_PERIOD,
+					               ARRANGE,
+	                               BINDING,
+	                               SEND_TYPE,
+	                               SEND_DEPT_ID,
+	                               SEND_UNIT_ID,
+	                               SEND_CREATE_YEAR,
+	                               SENDED,
+					               COUNT(*) OVER() TOTAL_COUNT
+					          FROM TGW_APP_BIND_HISTORY
+					         WHERE COMP_ID = :vo.compId
+					           AND DEPT_ID = :vo.deptId
+					           AND BIND_ID = :vo.bindId
+					         ORDER BY MODIFIED DESC )
+                    	WHERE RNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount ) T1
+				 WHERE RNUM BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				   AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.history.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_HISTORY
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       :vo.modified,
+				       :vo.modifiedId,
+				       BIND_NAME,
+				       UNIT_ID,
+				       ( SELECT T1.UNIT_NAME 
+					       FROM TGW_APP_BIND_UNIT T1, TGW_APP_BIND T2
+					      WHERE T1.COMP_ID = T2.COMP_ID
+					        AND T1.UNIT_ID = T2.UNIT_ID 
+					        AND T2.BIND_ID = :vo.bindId
+				       ) AS
+				       UNIT_NAME,
+				       UNIT_TYPE,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       SENDED
+				  FROM TGW_APP_BIND T1
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.history.select">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       UNIT_NAME,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', UNIT_NAME) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED
+				  FROM TGW_APP_BIND_HISTORY T1
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND BIND_ID = :vo.bindId
+				   AND MODIFIED = :vo.modified
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- Bind Document -->
+		<query id="bind.document.rows">
+			<statement>
+			<![CDATA[
+				SELECT IDX, DOC_ID, DOC_NUMBER, TITLE, SEND_ORG_NAME SENDER_NAME, RECEIVERS, ELECTRON_DOC_YN, DOC_TYPE, APPROVAL_DATE, TRANSFER_YN, TOTAL_COUNT, UNREGIST_YN,
+				SECURITY_PASS, SECURITY_YN, SECURITY_START_DATE, SECURITY_END_DATE
+				FROM (
+				    SELECT ROWNUM IDX,
+				           DOC_ID,
+				           DECODE(SIGN(SERIAL_NUMBER), 1, DEPT_CATEGORY || '-' || SERIAL_NUMBER, '') || DECODE(SIGN(SUBSERIAL_NUMBER), 1, '-' || SUBSERIAL_NUMBER, '') DOC_NUMBER,
+				           TITLE,
+				           SEND_ORG_NAME,
+				           RECEIVERS,
+				           ELECTRON_DOC_YN,
+				           DOC_TYPE,
+				           APPROVAL_DATE,
+				           TRANSFER_YN,
+				           TOTAL_COUNT,
+				           UNREGIST_YN
+				           ,SECURITY_PASS, SECURITY_YN, SECURITY_START_DATE, SECURITY_END_DATE
+				    FROM (
+                        SELECT COMP_ID,
+                        	   DOC_ID,
+                               DEPT_CATEGORY,
+                               SERIAL_NUMBER,
+                               SUBSERIAL_NUMBER,
+                               TITLE,
+                               SEND_ORG_NAME,
+                               RECEIVERS,
+                               ELECTRON_DOC_YN,
+                               DOC_TYPE,
+                               APPROVAL_DATE,
+                               TRANSFER_YN,
+                               COUNT(*) OVER() TOTAL_COUNT,
+                               UNREGIST_YN,
+                               SECURITY_PASS, 
+                               SECURITY_YN, SECURITY_START_DATE, SECURITY_END_DATE
+                          FROM (
+                            SELECT /*+ ORDRED USE_NL(T1 T2) */
+                            	   DISTINCT T1.COMP_ID,
+                            	   T1.DOC_ID,
+                                   T1.DEPT_CATEGORY,
+                                   T1.SERIAL_NUMBER,
+                                   T1.SUBSERIAL_NUMBER,
+                                   T1.TITLE,
+                                   T2.SEND_ORG_NAME,
+                                   T2.RECEIVERS,
+                                   T1.ELECTRON_DOC_YN,
+                                   'DPI001' DOC_TYPE,
+                                   APPROVAL_DATE,
+                                   TRANSFER_YN,
+                                   T1.UNREGIST_YN,
+                                   T1.SECURITY_PASS, 
+                                   T1.SECURITY_YN, 
+                                   TO_CHAR(T1.SECURITY_START_DATE,'yyyyMMdd') SECURITY_START_DATE,
+				       		       TO_CHAR(T1.SECURITY_END_DATE,'yyyyMMdd') SECURITY_END_DATE
+							  FROM TGW_APP_DOC T1, TGW_SEND_INFO T2, TGW_OWN_DEPT T3, TGW_APP_BIND T4
+	                         WHERE T1.COMP_ID = T2.COMP_ID(+)
+	                           AND T1.DOC_ID = T2.DOC_ID(+)
+	                           AND T1.COMP_ID = T3.COMP_ID
+	                           AND T1.DOC_ID = T3.DOC_ID
+	                           AND T1.COMP_ID = T4.COMP_ID
+	                           AND T1.APPROVAL_DATE IS NOT NULL
+	                           AND T3.OWN_YN = 'Y'
+                               AND (T4.ORG_BIND_ID = :vo.bindId OR T4.BIND_ID = :vo.bindId)
+                               AND (T1.BINDING_ID = T4.BIND_ID OR T1.BINDING_ID = T4.ORG_BIND_ID)
+                               AND T1.COMP_ID = :vo.compId
+                               AND UPPER(T1.TITLE) LIKE UPPER(DECODE(:vo.title, '', '%%', '%' || :vo.title || '%'))
+                               AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+                               
+                               #if ($vo.docNumber)
+                               AND T1.DEPT_CATEGORY || '-' || T1.SERIAL_NUMBER || '-' || T1.SUBSERIAL_NUMBER LIKE :vo.docNumber || '%'
+                               AND SERIAL_NUMBER > 0
+                               #end
+                               
+							   #if ($vo.sendName)
+                               AND (T2.SEND_ORG_NAME LIKE '%' || :vo.sendName || '%' OR T2.RECEIVERS LIKE '%' || :vo.sendName || '%')
+							   #end
+
+                            UNION ALL
+                            SELECT /*+ ORDRED USE_NL(T1 T2) */
+                            	   T1.COMP_ID,
+                            	   T1.DOC_ID,
+                                   T1.DEPT_CATEGORY,
+                                   T1.SERIAL_NUMBER,
+                                   T1.SUBSERIAL_NUMBER,
+                                   T1.TITLE,
+                                   T1.SENDER_DEPT_NAME SEND_ORG_NAME,
+                                   '' RECEIVERS,
+                                   T1.ELECTRON_DOC_YN,
+                                   'DPI002' DOC_TYPE,
+                                   ACCEPT_DATE APPROVAL_DATE,
+                                   TRANSFER_YN,
+                                   T1.UNREGIST_YN,'','','',''
+	                          FROM TGW_ENF_DOC T1, TGW_OWN_DEPT T2
+	                          WHERE T1.COMP_ID = T2.COMP_ID
+	                           AND T1.DOC_ID = T2.DOC_ID
+	                           AND T1.ACCEPT_DATE IS NOT NULL
+	                           AND T2.OWN_YN = 'Y' 
+                               AND T1.BINDING_ID = :vo.bindId
+                               AND T1.COMP_ID = :vo.compId
+                               AND UPPER(T1.TITLE) LIKE UPPER(DECODE(:vo.title, '', '%%', '%' || :vo.title || '%'))
+                               AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+                               
+                               #if ($vo.docNumber)
+                               AND T1.DEPT_CATEGORY || '-' || T1.SERIAL_NUMBER || '-' || T1.SUBSERIAL_NUMBER LIKE :vo.docNumber || '%'
+                               AND SERIAL_NUMBER > 0
+                               #end
+							   
+							   #if ($vo.sendName)
+                               AND UPPER(T1.SENDER_DEPT_NAME) LIKE UPPER('%' || :vo.sendName || '%')
+							   #end
+
+							ORDER BY APPROVAL_DATE DESC )
+						)
+				    WHERE ROWNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount
+				    ORDER BY IDX ASC )
+				WHERE IDX BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				  AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindDocVO" />
+		</query>
+		<query id="bind.document.selectRow">
+			<statement>
+			<![CDATA[
+	           SELECT T1.COMP_ID,
+	           	   	  T1.DOC_ID,
+					  DECODE(SIGN(SERIAL_NUMBER), 1, DEPT_CATEGORY || '-' || SERIAL_NUMBER, '') || DECODE(SIGN(SUBSERIAL_NUMBER), 1, '-' || SUBSERIAL_NUMBER, '') DOC_NUMBER,
+	                  T1.TITLE,
+	                  T2.SEND_ORG_NAME,
+	                  T2.RECEIVERS,
+	                  T1.ELECTRON_DOC_YN,
+	                  'DPI001' DOC_TYPE,
+	                  APPROVAL_DATE,
+	                  TRANSFER_YN
+                 FROM TGW_APP_DOC T1, TGW_SEND_INFO T2, TGW_OWN_DEPT T3
+                WHERE T1.COMP_ID = T2.COMP_ID(+)
+                  AND T1.DOC_ID = T2.DOC_ID(+)
+                  AND T1.COMP_ID = T3.COMP_ID
+                  AND T1.DOC_ID = T3.DOC_ID
+                  AND T1.APPROVAL_DATE IS NOT NULL
+                  AND T3.OWN_YN = 'Y'
+	              AND T1.COMP_ID = :vo.compId
+	              AND T1.DOC_ID = :vo.docId
+	           UNION ALL
+	           SELECT T1.COMP_ID,
+	           	   	  T1.DOC_ID,
+	   				  DECODE(SIGN(SERIAL_NUMBER), 1, DEPT_CATEGORY || '-' || SERIAL_NUMBER, '') || DECODE(SIGN(SUBSERIAL_NUMBER), 1, '-' || SUBSERIAL_NUMBER, '') DOC_NUMBER,
+	                  T1.TITLE,
+	                  T1.SENDER_DEPT_NAME SEND_ORG_NAME,
+	                  '' RECEIVERS,
+	                  T1.ELECTRON_DOC_YN,
+	                  'DPI002' DOC_TYPE,
+	                  ACCEPT_DATE APPROVAL_DATE,
+	                  TRANSFER_YN
+                 FROM TGW_ENF_DOC T1, TGW_OWN_DEPT T2
+                 WHERE T1.COMP_ID = T2.COMP_ID
+                  AND T1.DOC_ID = T2.DOC_ID
+                  AND T1.ACCEPT_DATE IS NOT NULL
+                  AND T2.OWN_YN = 'Y'
+	              AND T1.COMP_ID = :vo.compId
+	              AND T1.DOC_ID = :vo.docId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindDocVO" />
+		</query>
+
+		<query id="bind.document.non.bind">
+			<statement>
+			<![CDATA[
+				SELECT IDX, DOC_ID, DOC_NUMBER, TITLE, SEND_ORG_NAME SENDER_NAME, RECEIVERS, ELECTRON_DOC_YN, DOC_TYPE, APPROVAL_DATE, TOTAL_COUNT
+				FROM (
+				    SELECT ROWNUM IDX,
+				           DOC_ID,
+				           DECODE(SIGN(SERIAL_NUMBER), 1, DEPT_CATEGORY || '-' || SERIAL_NUMBER, '') || DECODE(SIGN(SUBSERIAL_NUMBER), 1, '-' || SUBSERIAL_NUMBER, '') DOC_NUMBER,
+				           TITLE,
+				           SEND_ORG_NAME,
+				           RECEIVERS,
+				           ELECTRON_DOC_YN,
+				           DOC_TYPE,
+				           APPROVAL_DATE,
+				           TOTAL_COUNT
+				    FROM (
+                        SELECT DOC_ID,
+                               DEPT_CATEGORY,
+                               SERIAL_NUMBER,
+                               SUBSERIAL_NUMBER,
+                               TITLE,
+                               SEND_ORG_NAME,
+                               RECEIVERS,
+                               ELECTRON_DOC_YN,
+                               DOC_TYPE,
+                               APPROVAL_DATE,
+                               COUNT(*) OVER() TOTAL_COUNT
+                          FROM (
+                            SELECT /*+ INDEX(T1 IDX_TGW_APP_DOC_11) */
+                            	   T1.DOC_ID,
+                                   T1.DEPT_CATEGORY,
+                                   T1.SERIAL_NUMBER,
+                                   T1.SUBSERIAL_NUMBER,
+                                   T1.TITLE,
+                                   T2.SEND_ORG_NAME,
+                                   T2.RECEIVERS,
+                                   T1.ELECTRON_DOC_YN,
+                                   'DPI001' DOC_TYPE,
+                                   APPROVAL_DATE
+	                          FROM TGW_APP_DOC T1, TGW_SEND_INFO T2, TGW_OWN_DEPT T3
+	                         WHERE T1.COMP_ID = T2.COMP_ID(+)
+	                           AND T1.DOC_ID = T2.DOC_ID(+)
+	                           AND T1.COMP_ID = T3.COMP_ID
+	                           AND T1.DOC_ID = T3.DOC_ID
+	                           AND T1.APPROVAL_DATE IS NOT NULL
+	                           AND T3.OWN_YN = 'Y'
+                               AND T1.BINDING_ID IS NULL
+                               AND T1.APPROVAL_DATE BETWEEN TO_DATE(:vo.startdate, 'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.enddate, 'yyyy-MM-dd hh24:mi:ss')
+                               AND T1.COMP_ID = :vo.compId
+                               AND UPPER(T1.TITLE) LIKE UPPER(DECODE(:vo.title, '', '%%', '%' || :vo.title || '%'))
+                               AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+                               AND T3.OWN_DEPT_ID = :vo.deptId
+                               
+                               #if ($vo.docNumber)
+                               AND T1.DEPT_CATEGORY || '-' || T1.SERIAL_NUMBER || '-' || T1.SUBSERIAL_NUMBER LIKE :vo.docNumber || '%'
+                               AND SERIAL_NUMBER > 0
+                               #end
+							   
+							   #if ($vo.sendName)
+                               AND (T2.SEND_ORG_NAME LIKE '%' || :vo.sendName || '%' OR T2.RECEIVERS LIKE '%' || :vo.sendName || '%')
+							   #end
+
+                            UNION ALL
+                            
+                            SELECT /*+ INDEX(T1 IDX_TGW_ENF_DOC_11) */
+                            	   T1.DOC_ID,
+                                   T1.DEPT_CATEGORY,
+                                   T1.SERIAL_NUMBER,
+                                   T1.SUBSERIAL_NUMBER,
+                                   T1.TITLE,
+                                   T1.SENDER_DEPT_NAME SEND_ORG_NAME,
+                                   '' RECEIVERS,
+                                   T1.ELECTRON_DOC_YN,
+                                   'DPI002' DOC_TYPE,
+                                   ACCEPT_DATE APPROVAL_DATE
+							  FROM TGW_ENF_DOC T1, TGW_OWN_DEPT T2
+	                         WHERE T1.COMP_ID = T2.COMP_ID
+	                           AND T1.DOC_ID = T2.DOC_ID
+	                           AND T1.ACCEPT_DATE IS NOT NULL
+	                           AND T2.OWN_YN = 'Y'
+                               AND T1.BINDING_ID IS NULL
+                               AND T1.ACCEPT_DATE BETWEEN TO_DATE(:vo.startdate, 'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.enddate, 'yyyy-MM-dd hh24:mi:ss')
+                               AND T1.COMP_ID = :vo.compId
+                               AND UPPER(T1.TITLE) LIKE UPPER(DECODE(:vo.title, '', '%%', '%' || :vo.title || '%'))
+                               AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+                               AND T2.OWN_DEPT_ID = :vo.deptId
+                               
+                               #if ($vo.docNumber)
+                               AND T1.DEPT_CATEGORY || '-' || T1.SERIAL_NUMBER || '-' || T1.SUBSERIAL_NUMBER LIKE :vo.docNumber || '%'
+                               AND SERIAL_NUMBER > 0
+                               #end
+                               
+							   #if ($vo.sendName)
+                               AND T1.SENDER_DEPT_NAME LIKE '%' || :vo.sendName || '%'
+							   #end
+
+							ORDER BY APPROVAL_DATE DESC )
+						)
+				    WHERE ROWNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount
+				    ORDER BY IDX ASC )
+				WHERE IDX BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				  AND ROWNUM <= :vo.listNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindDocVO" />
+		</query>
+		
+		<query id="bind.document.transfer">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       BIND_ID,
+				       DOC_ID,
+				       DOC_NUMBER,
+				       TITLE,
+				       SEND_ORG_NAME,
+				       RECEIVERS,
+				       ELECTRON_DOC_YN,
+				       DOC_TYPE,
+				       APPROVAL_DATE,
+				       TRANSFER_YN,
+				       SEQ,
+				       TOTAL_COUNT
+				  FROM (SELECT ROWNUM RNUM,
+				               COMP_ID,
+				               BIND_ID,
+				               DOC_ID,
+				               DOC_NUMBER,
+				               TITLE,
+				               SEND_ORG_NAME,
+				               RECEIVERS,
+				               ELECTRON_DOC_YN,
+				               DOC_TYPE,
+				               APPROVAL_DATE,
+				               TRANSFER_YN,
+				               SEQ,
+				               COUNT(*) OVER() TOTAL_COUNT
+				          FROM (SELECT COMP_ID,
+				                       BIND_ID,
+				                       DOC_ID,
+				                       DOC_NUMBER,
+				                       TITLE,
+				                       SEND_ORG_NAME,
+				                       RECEIVERS,
+				                       ELECTRON_DOC_YN,
+				                       DOC_TYPE,
+				                       APPROVAL_DATE,
+				                       TRANSFER_YN,
+				                       SEQ
+				                  FROM TGW_APP_BIND_TRANSFER_HISTORY
+				                 WHERE COMP_ID = :vo.compId
+				                   AND BIND_ID = :vo.bindId
+								   AND UPPER(TITLE) LIKE UPPER(DECODE(:vo.title, '', '%%', '%' || :vo.title || '%'))
+								   AND DOC_NUMBER LIKE DECODE(:vo.docNumber, '', '%%', '%' || :vo.docNumber || '%')
+								   
+								   #if ($vo.sendName)
+								   AND (SEND_ORG_NAME LIKE '%' || :vo.sendName || '%' OR RECEIVERS LIKE '%' || :vo.sendName || '%')
+								   #end
+								   
+				                 ORDER BY SEQ ASC )
+				         WHERE ROWNUM <= :vo.listNum * :vo.screenCount + 1 + FLOOR((:vo.pageNo - 1) / :vo.screenCount) * :vo.listNum * :vo.screenCount
+				         ORDER BY RNUM ASC )
+				 WHERE RNUM BETWEEN :vo.listNum * (:vo.pageNo - 1) + 1 and :vo.pageNo * :vo.listNum
+				   AND ROWNUM <= :vo.listNum 
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindDocVO" />
+		</query>
+		
+		<query id="bind.document.move.app_doc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC T1
+				   SET BINDING_ID = :vo.bindId
+				 WHERE DOC_ID = :vo.docId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="bind.document.move.enf_doc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC T1
+				   SET BINDING_ID = :vo.bindId
+				 WHERE DOC_ID = :vo.docId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.share.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND
+				SELECT COMP_ID,
+				       :vo.targetId DEPT_ID,
+				       :vo.nextBindId BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       NVL(ORG_BIND_ID, BIND_ID) ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       'DST004' SEND_TYPE,
+				       :vo.deptId SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       :vo.currentTime SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       UNIT_TYPE,
+				       :vo.parentBindId PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND BIND_ID = :vo.bindId
+				   AND NOT EXISTS (SELECT 1
+			          FROM TGW_APP_BIND
+			         WHERE ORG_BIND_ID = NVL(:vo.orgBindId, :vo.bindId)
+			           AND SEND_TYPE = 'DST004'
+			           AND COMP_ID = :vo.compId
+			           AND DEPT_ID = :vo.targetId)
+			]]>
+			</statement>
+		</query>
+		
+		
+		<!-- bind Batch -->
+		<query id="bind.batch.list">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       YEAR,
+				       START_DATE,
+				       END_DATE,
+				       EXECUTE_TIME
+				  FROM TGW_APP_BIND_BATCH T1
+				 WHERE COMP_ID = :vo.compId
+                 ORDER BY YEAR DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BatchVO" />
+		</query>
+		<query id="bind.batch.execute">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       TGW_APP_BIND_SEQ.NEXTVAL BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       '' ORG_BIND_ID,
+				       :vo.createYear CREATE_YEAR,
+				       :vo.expireYear EXPIRE_YEAR,
+				       'DTY001' DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ROW_NUMBER() OVER(PARTITION BY COMP_ID, DEPT_ID ORDER BY UNIT_ID ASC) ORDERED,
+				       :vo.created CREATED,
+				       :vo.createdId CREATED_ID,
+				       '' MODIFIED,
+				       '' MODIFIED_ID,
+				       'N' ARRANGE,
+				       'N' BINDING,
+				       'DST001' SEND_TYPE,
+				       '' SEND_DEPT_ID,
+				       '' SEND_UNIT_ID,
+				       '' SEND_CREATE_YEAR,
+				       '' SENDED,
+				       'Y' IS_ACTIVE,
+				       PREFIX,
+				       UNIT_TYPE
+				  FROM (SELECT T1.COMP_ID,
+				               DEPT_ID,
+				               DISPLAY_NAME AS BIND_NAME,
+				               T2.UNIT_ID,
+				               T2.RETENTION_PERIOD,
+				               T2.PREFIX,
+				               T1.UNIT_TYPE
+				          FROM (SELECT COMP_ID,
+				                       DEPT_ID, 
+				                       UNIT_TYPE
+				                  FROM TGW_APP_BIND
+				                 WHERE COMP_ID = :vo.compId
+				                   AND CREATE_YEAR = :vo.beforeYear
+				                 GROUP BY COMP_ID, DEPT_ID, UNIT_TYPE ) T1,
+				               TGW_APP_BIND_CLASSIFICATION T2
+				         WHERE T1.COMP_ID = T2.COMP_ID
+				           AND T1.UNIT_TYPE = T2.UNIT_TYPE
+				         ORDER BY COMP_ID, DEPT_ID, UNIT_ID )
+			]]>
+			</statement>
+		</query>
+		<!-- 이전년도 기준으로 편철 등록 -->
+		<query id="bind.batch.execute2">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       TGW_APP_BIND_SEQ.NEXTVAL BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       '' ORG_BIND_ID,
+				       :vo.createYear CREATE_YEAR,
+				       :vo.expireYear EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ROW_NUMBER() OVER(PARTITION BY COMP_ID, DEPT_ID ORDER BY UNIT_ID ASC) ORDERED,
+				       :vo.created CREATED,
+				       :vo.createdId CREATED_ID,
+				       '' MODIFIED,
+				       '' MODIFIED_ID,
+				       'N' ARRANGE,
+				       'N' BINDING,
+				       'DST001' SEND_TYPE,
+				       '' SEND_DEPT_ID,
+				       '' SEND_UNIT_ID,
+				       '' SEND_CREATE_YEAR,
+				       '' SENDED,
+				       'Y' IS_ACTIVE,
+				       PREFIX,
+				       UNIT_TYPE
+				  FROM TGW_APP_BIND
+				 WHERE CREATE_YEAR = :vo.beforeYear
+				   AND SEND_TYPE != 'DST003'
+				   AND IS_ACTIVE = 'Y'
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.batch.delete">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_BIND
+				WHERE COMP_ID = :vo.compId
+				  AND CREATE_YEAR = :vo.createYear
+			]]>
+			</statement>
+		</query>
+		<query id="bind.batch.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_BATCH (COMP_ID, YEAR, START_DATE, END_DATE, EXECUTE_TIME)
+				VALUES(:vo.compId, :vo.year, :vo.startDate, :vo.endDate, :vo.executeTime)
+			]]>
+			</statement>
+		</query>
+		<query id="bind.batch.delete.log">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_BIND_BATCH
+				WHERE COMP_ID = :vo.compId
+				  AND YEAR = :vo.year
+			]]>
+			</statement>
+		</query>
+		<query id="bind.batch.select">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       YEAR,
+				       START_DATE,
+				       END_DATE,
+				       EXECUTE_TIME
+				  FROM TGW_APP_BIND_BATCH T1
+				 WHERE COMP_ID = :vo.compId
+				   AND YEAR = :vo.year
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BatchVO" />
+		</query>
+		<query id="bind.search.year">
+			<statement>
+			<![CDATA[
+				SELECT /*+ INDEX_DESC(T TGW_APP_BIND_BATCH_PK) */
+				       COMP_ID,
+				       YEAR,
+				       START_DATE,
+				       END_DATE,
+				       EXECUTE_TIME
+				  FROM TGW_APP_BIND_BATCH T
+				 WHERE COMP_ID = :vo.compId
+				   AND ROWNUM = 1
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BatchVO" />
+		</query>
+		
+		<query id="bind.update.ordered">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BIND
+				SET ORDERED = NVL(:vo.ordered)
+				WHERE COMP_ID = :vo.compId
+				  AND DEPT_ID = :vo.deptId 
+				  AND BIND_ID =  :vo.bindId
+			]]>
+			</statement>
+		</query>
+		<!-- 편철자동생성 -->
+		<query id="bind.auto.create">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND
+				SELECT COMP_ID,
+				       :vo.deptId DEPT_ID,
+				       TGW_APP_BIND_SEQ.NEXTVAL BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       '' ORG_BIND_ID,
+				       :vo.period CREATE_YEAR,
+				       :vo.period EXPIRE_YEAR,
+				       'DTY001' DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ROWNUM ORDERED,
+				       :vo.created CREATED,
+				       :vo.createdId CREATED_ID,
+				       '' MODIFIED,
+				       '' MODIFIED_ID,
+				       'N' ARRANGE,
+				       'N' BINDING,
+				       'DST001' SEND_TYPE,
+				       '' SEND_DEPT_ID,
+				       '' SEND_UNIT_ID,
+				       '' SEND_CREATE_YEAR,
+				       '' SENDED,
+				       'Y' IS_ACTIVE,
+				       PREFIX,
+				       UNIT_TYPE
+				  FROM (SELECT COMP_ID,
+				               DISPLAY_NAME BIND_NAME,
+				               UNIT_ID,
+				               RETENTION_PERIOD,
+				               PREFIX,
+				               UNIT_TYPE
+				          FROM TGW_APP_BIND_CLASSIFICATION
+				         WHERE COMP_ID = :vo.compId
+				         ORDER BY UNIT_ID ASC)
+			]]>
+			</statement>
+		</query>
+		<query id="bind.exist">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       ORG_BIND_ID,
+				       (SELECT UNIT_NAME
+				          FROM TGW_APP_BIND_UNIT
+				         WHERE UNIT_ID = T1.UNIT_ID
+				           AND COMP_ID = T1.COMP_ID) UNIT_NAME,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', (SELECT UNIT_NAME
+				                  FROM TGW_APP_BIND_UNIT
+				                 WHERE UNIT_ID = T1.SEND_UNIT_ID
+				                   AND COMP_ID = T1.COMP_ID)) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND CREATE_YEAR = :vo.createYear
+				   AND BIND_NAME = :vo.bindName
+				   #if ($vo.bindId)
+		           AND BIND_ID != :vo.bindId
+		           #end
+				   and ROWNUM = 1
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.existShare">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       ORG_BIND_ID,
+				       (SELECT UNIT_NAME
+				          FROM TGW_APP_BIND_UNIT_OLD
+				         WHERE UNIT_ID = T1.UNIT_ID
+				           AND COMP_ID = T1.COMP_ID) UNIT_NAME,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', (SELECT UNIT_NAME
+				                  FROM TGW_APP_BIND_UNIT_OLD
+				                 WHERE UNIT_ID = T1.SEND_UNIT_ID
+				                   AND COMP_ID = T1.COMP_ID)) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND_OLD T1
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND CREATE_YEAR = :vo.createYear
+				   AND BIND_NAME = :vo.bindName
+				   #if ($vo.bindId)
+		           AND BIND_ID != :vo.bindId
+		           #end
+				   and ROWNUM = 1
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="bind.existResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       ORG_BIND_ID,
+				       FNC_GET_RESOURCE_NAME(:vo.compId, (SELECT UNIT_NAME FROM TGW_APP_BIND_UNIT WHERE UNIT_ID = T1.UNIT_ID AND COMP_ID = T1.COMP_ID), :vo.langType) AS UNIT_NAME,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       DECODE(SEND_UNIT_ID, '', '', (SELECT UNIT_NAME
+				                  FROM TGW_APP_BIND_UNIT
+				                 WHERE UNIT_ID = T1.SEND_UNIT_ID
+				                   AND COMP_ID = T1.COMP_ID)) SEND_UNIT_NAME,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND T1
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND CREATE_YEAR = :vo.createYear
+				   AND (
+						BIND_NAME IN (SELECT RESOURCE_ID FROM TGW_APP_RESOURCE WHERE COMP_ID = :vo.compId AND LANG_TYPE = :vo.langType AND RESOURCE_NAME = :vo.bindName)
+						OR				   
+				   		BIND_NAME = :vo.bindName
+				       ) 
+				   #if ($vo.bindId)
+		           AND BIND_ID != :vo.bindId
+		           #end
+				   and ROWNUM = 1
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.share.bindlist">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, UNIT_ID, ORG_BIND_ID, PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION
+				FROM TGW_APP_BIND
+				WHERE ORG_BIND_ID = :vo.bindId
+				  AND COMP_ID = :vo.compId
+				  AND SEND_TYPE = 'DST004'
+				ORDER BY DEPT_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.batch.target.list">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, UNIT_ID, UNIT_NAME, DISPLAY_NAME, RETENTION_PERIOD, PREFIX, UNIT_TYPE
+				FROM TGW_APP_BIND_CLASSIFICATION
+				WHERE COMP_ID = :vo.compId
+				ORDER BY UNIT_ID, UNIT_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindBatchVO" />
+		</query>
+		<query id="bind.batch.create">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_CLASSIFICATION (COMP_ID, UNIT_ID, UNIT_NAME, DISPLAY_NAME, RETENTION_PERIOD, PREFIX, UNIT_TYPE)
+				SELECT COMP_ID, UNIT_ID, UNIT_NAME, :vo.displayName, :vo.retentionPeriod, :vo.prefix, UNIT_TYPE
+				FROM TGW_APP_BIND_UNIT
+				WHERE COMP_ID = :vo.compId
+				  AND UNIT_ID = :vo.unitId
+				  AND UNIT_TYPE = :vo.unitType
+			]]>
+			</statement>
+		</query>
+		<query id="bind.batch.exist">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, UNIT_ID, UNIT_NAME, DISPLAY_NAME, RETENTION_PERIOD, PREFIX
+				FROM TGW_APP_BIND_CLASSIFICATION
+				WHERE COMP_ID = :vo.compId
+				  AND UNIT_TYPE = :vo.unitType
+				  AND DISPLAY_NAME = :vo.displayName
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindBatchVO" />
+		</query>
+		<query id="bind.batch.remove">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_BIND_CLASSIFICATION
+				WHERE COMP_ID = :vo.compId
+				  AND UNIT_TYPE = :vo.unitType
+				  AND DISPLAY_NAME = :vo.displayName
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 편철 일괄생성 관리 - 수정 (키값이 없으므로 수정페이지 사용안함) -->
+		<query id="bind.batch.target">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, UNIT_ID, UNIT_NAME, DISPLAY_NAME, RETENTION_PERIOD, PREFIX
+				FROM TGW_APP_BIND_CLASSIFICATION
+				WHERE COMP_ID = :vo.compId
+				  AND UNIT_ID = :vo.unitId
+				  AND DISPLAY_NAME = :vo.displayName
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindBatchVO" />
+		</query>
+		<query id="bind.select.prefix">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND CREATE_YEAR = :vo.createYear
+				   AND PREFIX = :vo.prefix
+				   AND ARRANGE = 'N'
+				   AND BINDING = 'N'				  
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.select.prefixSendType">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DEPT_ID,
+				       BIND_ID,
+				       BIND_NAME,
+				       UNIT_ID,
+				       ORG_BIND_ID,
+				       CREATE_YEAR,
+				       EXPIRE_YEAR,
+				       DOC_TYPE,
+				       RETENTION_PERIOD,
+				       ORDERED,
+				       CREATED,
+				       CREATED_ID,
+				       MODIFIED,
+				       MODIFIED_ID,
+				       ARRANGE,
+				       BINDING,
+				       SEND_TYPE,
+				       SEND_DEPT_ID,
+				       SEND_UNIT_ID,
+				       SEND_CREATE_YEAR,
+				       SENDED,
+				       IS_ACTIVE,
+				       PREFIX,
+				       PARENT_BIND_ID,
+				       BIND_ORDER,
+				       BIND_DEPTH,
+				       DESCRIPTION
+				  FROM TGW_APP_BIND
+				 WHERE COMP_ID = :vo.compId
+				   AND DEPT_ID = :vo.deptId
+				   AND CREATE_YEAR = :vo.createYear
+				   AND PREFIX = :vo.prefix
+				   AND SEND_TYPE = :vo.sendType
+				   AND ARRANGE = 'N'
+				   AND BINDING = 'N'				  
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		<query id="bind.select.selectBind">
+			<statement>
+			<![CDATA[
+			SELECT COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, CREATE_YEAR, EXPIRE_YEAR, IS_ACTIVE,
+					PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION, SEND_TYPE, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT
+				FROM
+				(SELECT T1.COMP_ID, T1.DEPT_ID, T1.BIND_ID, T1.BIND_NAME, T1.CREATE_YEAR, T1.EXPIRE_YEAR, T1.IS_ACTIVE,
+					T1.PARENT_BIND_ID, T1.BIND_ORDER, T1.BIND_DEPTH, T1.DESCRIPTION, T1.SEND_TYPE,
+					(SELECT COUNT(*)
+						FROM TGW_APP_BIND
+						WHERE COMP_ID = T1.COMP_ID
+							AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+							AND CREATE_YEAR = T1.CREATE_YEAR
+							AND SEND_DEPT_ID = T1.DEPT_ID
+							AND SEND_TYPE = 'DST004') SHARE_COUNT,
+	               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+	                  FROM TGW_APP_DOC T3
+	                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+	                   AND COMP_ID = T1.COMP_ID
+	                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+	                 ) APP_COUNT, -- 생산문서
+	               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+	                  FROM TGW_ENF_DOC T3
+	                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+	                   AND COMP_ID = T1.COMP_ID
+	                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+	                 ) ENF_COUNT, -- 접수문서
+					(SELECT COUNT(*)
+					   FROM TGW_APP_BOARD T3
+					  WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+					  ) NORMAL_COUNT-- 일반문서
+				FROM TGW_APP_BIND T1
+				WHERE COMP_ID = :vo.compId
+				AND BIND_ID = :vo.bindId 
+				#if ($vo.sendType == "DST004")
+					AND T1.SEND_TYPE = 'DST004'
+				#end
+				)
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		<query id="bind.select.selectBindShare">
+			<statement>
+			<![CDATA[
+			SELECT COMP_ID, DEPT_ID, BIND_ID, BIND_NAME, CREATE_YEAR, EXPIRE_YEAR, IS_ACTIVE,
+					PARENT_BIND_ID, BIND_ORDER, BIND_DEPTH, DESCRIPTION, SEND_TYPE, APP_COUNT + ENF_COUNT + NORMAL_COUNT DOC_COUNT
+				FROM
+				(SELECT T1.COMP_ID, T1.DEPT_ID, T1.BIND_ID, T1.BIND_NAME, T1.CREATE_YEAR, T1.EXPIRE_YEAR, T1.IS_ACTIVE,
+					T1.PARENT_BIND_ID, T1.BIND_ORDER, T1.BIND_DEPTH, T1.DESCRIPTION, T1.SEND_TYPE,
+					(SELECT COUNT(*)
+						FROM TGW_APP_BIND_OLD
+						WHERE COMP_ID = T1.COMP_ID
+							AND ORG_BIND_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+							AND CREATE_YEAR = T1.CREATE_YEAR
+							AND SEND_DEPT_ID = T1.DEPT_ID
+							AND SEND_TYPE = 'DST004') SHARE_COUNT,
+	               (SELECT /*+ INDEX(T3 IDX_TGW_APP_DOC) */ COUNT(*)
+	                  FROM TGW_APP_DOC T3
+	                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID) -- 편철존재하는 문서
+	                   AND COMP_ID = T1.COMP_ID
+	                   AND (DOC_STATE >= 'APP600' OR TRANSFER_YN = 'Y')
+	                 ) APP_COUNT, -- 생산문서
+	               (SELECT /*+ INDEX(T3 IDX_TGW_ENF_DOC) */ COUNT(*)
+	                  FROM TGW_ENF_DOC T3
+	                 WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+	                   AND COMP_ID = T1.COMP_ID
+	                   AND (DOC_STATE >= 'ENF300' OR TRANSFER_YN = 'Y')
+	                 ) ENF_COUNT, -- 접수문서
+					(SELECT COUNT(*)
+					   FROM TGW_APP_BOARD T3
+					  WHERE BINDING_ID = NVL(T1.ORG_BIND_ID, T1.BIND_ID)
+					  ) NORMAL_COUNT-- 일반문서
+				FROM TGW_APP_BIND_OLD T1
+				WHERE COMP_ID = :vo.compId
+				AND BIND_ID = :vo.bindId 
+				#if ($vo.sendType == "DST004")
+					AND T1.SEND_TYPE = 'DST004'
+				#end
+				)
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+		
+		
+		<query id="list.listBindAdminInfo">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, MANAGER_ID
+				FROM TGW_APP_BIND_MANAGER
+				WHERE COMP_ID = :vo.compId
+				#if ($vo.deptId)
+					AND DEPT_ID = :vo.deptId
+				#end
+				AND BIND_ID = :vo.bindId 
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindManagerVO" />
+		</query>
+		<!-- 등록 된 관리자 조회 -->
+		<query id="bindAdminInfo.select">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, MANAGER_ID
+				FROM TGW_APP_BIND_MANAGER
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId
+				AND MANAGER_ID = :vo.managerId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindManagerVO" />
+		</query>
+		<query id="bindAdminInfo.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_MANAGER (COMP_ID, DEPT_ID, BIND_ID, MANAGER_ID)
+				VALUES (:vo.compId, :vo.deptId, :vo.bindId, :vo.managerId)
+			]]>
+			</statement>
+		</query>
+		<!-- 기존에 등록되어 있는 관리자 수정 시 -->
+		<query id="bindAdminInfo.update">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BIND_MANAGER
+				SET MANAGER_ID = :vo.managerId
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId
+			]]>
+			</statement>
+		</query>
+		<query id="bindAdminInfo.delete">
+			<statement>
+			<![CDATA[
+				DELETE
+				  FROM TGW_APP_BIND_MANAGER
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+				   AND MANAGER_ID = :vo.managerId 
+			]]>
+			</statement>
+		</query>
+		<query id="bindAdminInfo.deleteAll">
+			<statement>
+			<![CDATA[
+				DELETE
+				  FROM TGW_APP_BIND_MANAGER
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="list.listBindAuthInfo">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, AUTH_DEPT_ID, BIND_AUTHORITY
+				FROM TGW_APP_BIND_AUTHORITY
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId 
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindAuthVO" />
+		</query>
+		<!-- 등록 된 문서권한 조회 -->
+		<query id="bindAuthInfo.select">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, AUTH_DEPT_ID, BIND_AUTHORITY
+				FROM TGW_APP_BIND_AUTHORITY
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId
+				AND AUTH_DEPT_ID = :vo.authDeptId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindAuthVO" />
+		</query>
+		<query id="bindAuthInfo.insert">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BIND_AUTHORITY (COMP_ID, DEPT_ID, BIND_ID, AUTH_DEPT_ID, BIND_AUTHORITY)
+				VALUES (:vo.compId, :vo.deptId, :vo.bindId, :vo.authDeptId, :vo.bindAuthority)
+			]]>
+			</statement>
+		</query>
+		<!-- 기존에 등록되어 있는 문서권한 수정 시 -->
+		<query id="bindAuthInfo.update">
+			<statement>
+			<![CDATA[
+			UPDATE TGW_APP_BIND_AUTHORITY
+				   SET BIND_AUTHORITY = :vo.bindAuthority
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindId
+			]]>
+			</statement>
+		</query>
+		<query id="bindAuthInfo.delete">
+			<statement>
+			<![CDATA[
+				DELETE
+				  FROM TGW_APP_BIND_AUTHORITY
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+				   AND AUTH_DEPT_ID = :vo.authDeptId 
+			]]>
+			</statement>
+		</query>
+		<query id="bindAuthInfo.deleteAll">
+			<statement>
+			<![CDATA[
+				DELETE
+				  FROM TGW_APP_BIND_AUTHORITY
+				 WHERE BIND_ID = :vo.bindId
+				   AND DEPT_ID = :vo.deptId
+				   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		<query id="bind.board.checkroot">
+			<statement>
+			<![CDATA[
+				select parent_bind_id
+				  from TGW_APP_BIND_OLD
+				start with bind_id = :vo.bindId
+				connect by BIND_ID = prior PARENT_BIND_ID and parent_bind_id  = 'ROOT'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.bind.vo.BindVO" />
+		</query>
+	</queries>
+</queryservice>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="convert.doc.list">
+			<statement>
+			<![CDATA[
+				SELECT MONTH, COUNT, SUM(COUNT) OVER() TOTAL_COUNT
+				FROM (
+					SELECT MONTH, SUM(CNT) COUNT
+					FROM  (
+					    SELECT /*+ INDEX(T1 IDX2_TGW_APP_DOC) */ TO_CHAR(APPROVAL_DATE, 'MM') MONTH, COUNT(*) CNT
+					    FROM TGW_APP_DOC T1
+					    WHERE COMP_ID = :vo.compId
+					      AND DOC_STATE >= 'APP600'
+					      AND APPROVAL_DATE BETWEEN TO_DATE(:vo.year || '0101', 'YYYYMMDD') AND TO_DATE(:vo.year || '1231-235959', 'YYYYMMDD-HH24MISS')
+					    GROUP BY TO_CHAR(APPROVAL_DATE, 'MM')
+					    UNION ALL
+					    SELECT /*+ INDEX(T1 IDX2_TGW_ENF_DOC) */ TO_CHAR(ACCEPT_DATE, 'MM') MONTH, COUNT(*) CNT
+					    FROM TGW_ENF_DOC T1
+					    WHERE COMP_ID = :vo.compId
+					      AND DOC_STATE >= 'ENF600'
+					      AND ACCEPT_DATE BETWEEN TO_DATE(:vo.year || '0101', 'YYYYMMDD') AND TO_DATE(:vo.year || '1231-235959', 'YYYYMMDD-HH24MISS')
+					    GROUP BY TO_CHAR(ACCEPT_DATE, 'MM')
+					)
+					GROUP BY MONTH
+				)
+				ORDER BY MONTH ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.exchange.vo.ConvertVO" />
+		</query>
+		<query id="convert.doc.month.list">
+			<statement>
+			<![CDATA[
+				SELECT DAY, COUNT, SUM(COUNT) OVER() TOTAL_COUNT
+				  FROM (SELECT DAY,
+				               SUM(CNT) COUNT
+				          FROM (SELECT /*+ INDEX(T1 IDX2_TGW_APP_DOC) */TO_CHAR(APPROVAL_DATE, 'DD') DAY,
+				                       COUNT(*) CNT
+				                  FROM TGW_APP_DOC T1
+				                 WHERE COMP_ID = :vo.compId
+				                   AND DOC_STATE >= 'APP600'
+				                   AND APPROVAL_DATE BETWEEN TO_DATE(:vo.startDay, 'YYYYMMDD') AND TO_DATE(:vo.endDay || '-235959', 'YYYYMMDD-HH24MISS')
+				                 GROUP BY TO_CHAR(APPROVAL_DATE, 'DD')
+				                 UNION ALL
+				                SELECT /*+ INDEX(T1 IDX2_TGW_ENF_DOC) */TO_CHAR(ACCEPT_DATE, 'DD') MONTH,
+				                       COUNT(*) CNT
+				                  FROM TGW_ENF_DOC T1
+				                 WHERE COMP_ID = :vo.compId
+				                   AND DOC_STATE >= 'ENF600'
+				                   AND ACCEPT_DATE BETWEEN TO_DATE(:vo.startDay, 'YYYYMMDD') AND TO_DATE(:vo.endDay || '-235959', 'YYYYMMDD-HH24MISS')
+				                 GROUP BY TO_CHAR(ACCEPT_DATE, 'DD') )
+				         GROUP BY DAY )
+				 ORDER BY DAY ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.exchange.vo.ConvertVO" />
+		</query>
+		<query id="convert.error.list">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DOC_ID, USING_TYPE, EXEC_DATE, MESSAGE
+				FROM DOC_CONVERSION
+				WHERE COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.exchange.vo.ConvertVO" />
+		</query>
+		<query id="convert.error.remove">
+			<statement>
+			<![CDATA[
+				DELETE FROM DOC_CONVERSION
+				WHERE COMP_ID = :vo.compId
+				  AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+		<query id="convert.doc.target">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID,
+				       DOC_ID,
+				       USING_TYPE,
+				       EXEC_DATE
+				  FROM (SELECT /*+ INDEX(T1 IDX2_TGW_APP_DOC) */
+				               COMP_ID,
+				               DOC_ID,
+				               'DPI001' USING_TYPE,
+				               APPROVAL_DATE EXEC_DATE
+				          FROM TGW_APP_DOC T1
+				         WHERE COMP_ID = :vo.compId
+				           AND DOC_STATE >= 'APP600'
+				           AND APPROVAL_DATE BETWEEN TO_DATE(:vo.startDay, 'YYYYMMDD') AND TO_DATE(:vo.endDay || '-235959', 'YYYYMMDD-HH24MISS')
+				         UNION ALL
+				        SELECT /*+ INDEX(T1 IDX2_TGW_ENF_DOC) */
+				               COMP_ID,
+				               DOC_ID,
+				               'DPI002' USING_TYPE,
+				               ACCEPT_DATE EXEC_DATE
+				          FROM TGW_ENF_DOC T1
+				         WHERE COMP_ID = :vo.compId
+				           AND DOC_STATE >= 'ENF600'
+				           AND ACCEPT_DATE BETWEEN TO_DATE(:vo.startDay, 'YYYYMMDD') AND TO_DATE(:vo.endDay || '-235959', 'YYYYMMDD-HH24MISS') )
+				 ORDER BY EXEC_DATE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.exchange.vo.ConvertVO" />
+		</query>
+		<query id="convert.input.error">
+			<statement>
+			<![CDATA[
+				MERGE /*+ INDEX(T1 DOC_CONVERSION_PK) */ INTO DOC_CONVERSION T1
+			    USING(
+			        SELECT :vo.compId COMP_ID, :vo.docId DOC_ID, :vo.usingType USING_TYPE,
+			               :vo.execDate EXEC_DATE, :vo.message MESSAGE
+			        FROM DUAL) T2
+			    ON (T1.COMP_ID = T2.COMP_ID AND T1.DOC_ID = T2.DOC_ID)
+			    WHEN MATCHED THEN
+			        UPDATE SET T1.USING_TYPE = T2.USING_TYPE,
+			                   T1.EXEC_DATE = T2.EXEC_DATE,
+			                   T1.MESSAGE = T2.MESSAGE
+			    WHEN NOT MATCHED THEN
+			        INSERT(COMP_ID, DOC_ID, USING_TYPE, EXEC_DATE, MESSAGE)
+			        VALUES(T2.COMP_ID, T2.DOC_ID, T2.USING_TYPE, T2.EXEC_DATE, T2.MESSAGE)
+			]]>
+			</statement>
+		</query>
+	</queries>
+</queryservice>

@@ -1,0 +1,1 @@
+var ALERT_SELECT_ONE_SIGNATURE			= "을 선택하십시오.";

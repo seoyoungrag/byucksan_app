@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<!--  각종그룹 생성(산업은행:공람자그룹, 대우증권/산은캐피탈:수신자그룹) - 일 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<!-- bean id="manageAnyGroupSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="manageAnyCTBean"/>
+			</list>
+		</property>
+	</bean -->
+	<!-- CronTriggerBean -->
+	<!-- bean id="manageAnyCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="manageAnyGroup" /> 
+		<property name="cronExpression" value="0 0 0 * * ?" /> 
+	</bean -->		
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<!-- bean id="manageAnyGroup" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[각종그룹 생성(산업은행/대우증권/산은캐피탈:수신자그룹)]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>manageAnyGroup</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean -->
+
+
+	<!-- 업무시스템 ACK 발송 - 20초 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="sendLegacyServiceSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="sendLegacyServiceCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="sendLegacyServiceCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sendLegacyService" /> 
+		<property name="cronExpression" value="* * 1 * * ?" />
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="sendLegacyService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[Legacy 연계 ACK 발송]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>sendLegacy</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+	
+	<!-- 업무시스템 수신 - 20초 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="receiveLegacyServiceSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="receiveLegacyServiceCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="receiveLegacyServiceCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="receiveLegacyService" /> 
+		<property name="cronExpression" value="* * 1 * * ?" />
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="receiveLegacyService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[Legacy 연계 수신]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>receiveLegacy</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+	
+	<!-- 업무시스템 폴더 삭제 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="legayDeleteServiceSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="legayDeleteServiceCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="legayDeleteServiceCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="legayDeleteService" /> 
+		<property name="cronExpression" value="0 0 1 * * ?" /> 
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="legayDeleteService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[Legacy 연계 폴더 삭제]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>legacyDelete</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+
+
+	<!-- 문서관리시스템 연계 - 일 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<!-- bean id="toDocmgrSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="toDocmgrCTBean"/>
+			</list>
+		</property>
+	</bean -->
+	<!-- CronTriggerBean -->
+	<!-- bean id="toDocmgrCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sendDocMgrService" /> 
+		<property name="cronExpression" value="0 0 1,2,3,4 * * ?" /> 
+	</bean -->		
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<!-- bean id="sendDocMgrService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[문서관리시스템]]></description>
+	    <property name="targetObject"><ref bean="documentService"/></property>
+	    <property name="targetMethod"><value>create</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean -->
+
+	 
+	<!-- 문서관리 연계큐 정리 - 일 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<!-- bean id="removeDocQueueSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="removeDocQueueCTBean"/>
+			</list>
+		</property>
+	</bean -->
+	<!-- CronTriggerBean -->
+	<!-- bean id="removeDocQueueCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="removeQueueService" /> 
+		<property name="cronExpression" value="0 0 23 * * ?" /> 
+	</bean -->	
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<!-- bean id="removeQueueService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[문서관리 연계큐 정리]]></description>
+	    <property name="targetObject"><ref bean="documentService"/></property>
+	    <property name="targetMethod"><value>removeQueue</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean -->
+	 	
+	 	
+	<!-- 전자결재 로그인/로그아웃이력 삭제 배치 - 일 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="removeAccessHistorySFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="removeAccessHistoryCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="removeAccessHistoryCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="removeAccessHistoryService" /> 
+		<property name="cronExpression" value="0 30 23 * * ?" /> 
+	</bean>	
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="removeAccessHistoryService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[전자결재 로그인/로그아웃이력 삭제]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>removeAccessHistory</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+
+
+	<!-- 전자결재 연계이력 삭제 배치 - 일 배치 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="removeExchangeHistorySFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="removeExchangeHistoryCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="removeExchangeHistoryCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="removeExchangeHistoryService" /> 
+		<property name="cronExpression" value="0 40 23 * * ?" /> 
+	</bean>	
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="removeExchangeHistoryService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[전자결재 연계이력 삭제]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>removeExchangeHistory</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+
+
+	<!-- 문서기간/편철 일괄생성 배치 - 일 배치 -->
+	<!-- 년도/회기 별로 다음년도 편철을 부서별로 일괄생성하는 스케줄러  -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="makeBindBatchSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="makeBindBatchCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="makeBindBatchCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="makeBindBatchService" /> 
+		<property name="cronExpression" value="0 30 0 * * ?" />
+	</bean>	
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="makeBindBatchService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[다음년도 편철 일괄생성 배치]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>makeBindBatch</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+	 	
+	
+	<!-- 결재 임시폴더 삭제 - 일 배치 -->
+	<!-- 결재 임시폴더를 일괄로 삭제하는 스케줄러  -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="deleteAPPTempBatchSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="deleteAPPTempBatchCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="deleteAPPTempBatchCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="deleteAPPTempBatchService" /> 
+		<property name="cronExpression" value="0 0 0 * * ?" />
+	</bean>	
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="deleteAPPTempBatchService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[결재 임시폴더 삭제]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>deleteAPPTempFolder</value></property>
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+
+
+	<!--  각종그룹 동기화(산업은행:공람자그룹, 대우증권/산은캐피탈:수신자그룹) - 수동실행 -->
+	<!-- SchedulerFactoryBean -->
+	<!-- bean id="syncAnyGroupSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="syncAnyCTBean"/>
+			</list>
+		</property>
+	</bean -->
+	<!-- CronTriggerBean -->
+	<!-- bean id="syncAnyCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="syncAnyGroupService" /> 
+		<property name="cronExpression" value="0 0 0 1 1 ?" /> 
+	</bean -->		
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<!-- bean id="syncAnyGroupService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[각종그룹 동기화(산업은행/대우증권/산은캐피탈:수신자그룹)]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>syncAnyGroup</value></property> 
+	    <property name="concurrent"><value>false</value></property>
+	</bean -->
+	
+	<!-- 문서유통 (발송) 스케줄러 -->
+	<!-- SchedulerFactoryBean --> 
+	<bean id="sendRelayServiceSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="sendRelayServiceCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="sendRelayServiceCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sendRelayService" /> 
+		<property name="cronExpression" value="* * 2 * * ?" />
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="sendRelayService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[문서유통 (발송)]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>relaySend</value></property>
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+	
+	<!-- 문서유통 (수신) 스케줄러 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="recvRelayServiceSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="recvRelayServiceCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="recvRelayServiceCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="recvRelayService" /> 
+		<property name="cronExpression" value="* * 3 * * ?" />
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="recvRelayService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[문서유통 (수신)]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>relayRecv</value></property>
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+	
+	<!-- 문서유통 작업폴더 삭제 스케줄러 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="workingDeleteServiceSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="workingDeleteServiceCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="workingDeleteServiceCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="workingDeleteService" /> 
+		<property name="cronExpression" value="0 0 1 * * ?" /> 
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="workingDeleteService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[문서유통 작업폴더 삭제 스케줄러]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>workingDelete</value></property>
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+
+	<!-- 모바일 결재처리 스케줄러 -->
+	<!-- SchedulerFactoryBean -->
+	<bean id="processMobileAppBatchSFBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="processMobileAppBatchCTBean"/>
+			</list>
+		</property>
+	</bean>
+	<!-- CronTriggerBean -->
+	<bean id="processMobileAppBatchCTBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="processMobileAppBatchService" /> 
+		<property name="cronExpression" value="* * 4 * * ?" /> 
+	</bean>
+	<!-- MethodInvokingJobDetailFactoryBean -->
+	<bean id="processMobileAppBatchService" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<description><![CDATA[모바일 결재처리]]></description>
+	    <property name="targetObject"><ref bean="scheduleService"/></property>
+	    <property name="targetMethod"><value>processMobileApp</value></property>
+	    <property name="concurrent"><value>false</value></property>
+	</bean>
+
+</beans>

@@ -1,0 +1,1 @@
+var ALERT_INPUT_PW				= "비밀번호를 입력하십시오.";

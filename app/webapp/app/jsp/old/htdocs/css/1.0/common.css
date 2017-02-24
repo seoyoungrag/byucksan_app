@@ -1,0 +1,25 @@
+BODY			{font-size:9pt; font-family:±¼¸²; margin:15 0 0 0;}
+IMG			{border:0}
+TABLE			{font-size:9pt; font-family:±¼¸²;}
+TD			{font-size:9pt; font-family:±¼¸²;}
+INPUT			{font-size:9pt; font-family:±¼¸²; ime-mode:active}
+SELECT			{font-size:9pt; font-family:±¼¸²;}
+
+TD.title_1		{font-family:±¼¸²; font-weight:bold; font-size:10pt;}
+TH.ctd_1		{font-family:±¼¸²; font-weight:bold; font-size:10pt; color:#000000; background-color:#B1CFD1;}
+TH.ctd_3		{font-family:±¼¸²; font-weight:bold; font-size:10pt;color:#000000; background-color:#E0C1BF;}
+TD.ctd_1 		{font-family:±¼¸²; font-weight:bold; font-size:9pt; color:#000000; text-align:center; background-color:#B1CFD1;}
+TD.ctd_3		{font-family:±¼¸²; font-weight:bold; font-size:9pt;color:#000000; text-align:center; background-color:#E0C1BF;}
+TD.td_content_1	{font-family:±¼¸²; font-size:9pt; color:#000000; background-color:#E0ECE0;}
+TD.td_content_3	{font-family:±¼¸²; font-size:9pt;color:#000000; background-color:#FFEFF0;}
+A				{color:black; font-family:±¼¸²; text-decoration:none;}
+A:hover			{cursor:hand; text-decoration:underline; color:#860042}
+A.bt1:link		{color:#17406A; text-decoration:none; font-family:±¼¸²; font-weight:bold; font-size:9pt;}
+A.bt1:active	{color:#17406A; text-decoration:none; font-family:±¼¸²; font-weight:bold; font-size:9pt;}
+A.bt1:visited	{color:#17406A; text-decoration:none; font-family:±¼¸²; font-weight:bold; font-size:9pt;}
+A.bt1:hover		{color:#860042; text-decoration:none; font-family:±¼¸²; font-weight:bold; font-size:9pt;}
+INPUT	{ime-mode:active}
+INPUT.distxt	{background:#e0e0e0;font-size:9pt;}
+INPUT.entxt		{background:#ffffff;font-size:9pt;}
+table.back		{font-size:9pt;background:#f1f5f1;}
+td.tit			{font-size:9pt;background:#D0E0D0;border: 1px #c0d0c0 solid;height:20;text-align:center;padding:2 0 0 0;}

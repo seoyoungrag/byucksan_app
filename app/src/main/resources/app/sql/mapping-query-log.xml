@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="common.insertDocHis">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_DOC_HIS
+					(
+					DOC_ID, COMP_ID, HIS_ID, REDRAFT_DOC_ID, USER_ID, 
+					USER_NAME, POS, USER_IP, DEPT_ID, DEPT_NAME, 
+					USED_TYPE, USE_DATE, REMARK
+					)
+					VALUES
+					(
+					:vo.docId, :vo.compId, :vo.hisId, :vo.redraftDocId, :vo.userId, 
+					:vo.userName, :vo.pos, :vo.userIp, :vo.deptId, :vo.deptName, 
+					:vo.usedType, TO_DATE(:vo.useDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.remark
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="common.updateDocHis">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_DOC_HIS
+				SET
+					REDRAFT_DOC_ID = :redraftDocId
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+		
+		<query id="common.listDocHis">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, HIS_ID, REDRAFT_DOC_ID, USER_ID, 
+					USER_NAME, POS, USER_IP, DEPT_ID, DEPT_NAME, 
+					USED_TYPE, TO_CHAR(USE_DATE, 'yyyy-mm-dd hh24:mi:ss') USE_DATE, REMARK
+				FROM TGW_DOC_HIS
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				ORDER BY USE_DATE	
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.DocHisVO"/>
+		</query>		
+
+		<query id="common.selectDocHis">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, HIS_ID, REDRAFT_DOC_ID, USER_ID, 
+					USER_NAME, POS, USER_IP, DEPT_ID, DEPT_NAME, 
+					USED_TYPE, TO_CHAR(USE_DATE, 'yyyy-mm-dd hh24:mi:ss') USE_DATE, REMARK
+				FROM TGW_DOC_HIS
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND USER_ID = :vo.userId
+					AND DEPT_ID = :vo.deptId AND USED_TYPE = :vo.usedType
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.DocHisVO"/>
+		</query>		
+	</queries>
+</queryservice>

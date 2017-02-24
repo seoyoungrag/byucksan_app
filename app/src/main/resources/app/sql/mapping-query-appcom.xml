@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+		<queries>
+		<!-- TGW_FILE_INFO -->
+		<query id="appcom.insertFile">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_FILE_INFO
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID,
+					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH,
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, DOC_VERSION, REGISTER_NAME, REGIST_DATE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.fileId,
+					:vo.fileName, :vo.displayName, :vo.fileType, :vo.fileSize, :vo.imageWidth,
+					:vo.imageHeight, :vo.fileOrder, :vo.registerId, :vo.docVersion, :vo.registerName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="appcom.updateFile">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_FILE_INFO
+				SET FILE_ID = :targetFileId, FILE_NAME = :fileName
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = :tempYn
+					AND FILE_ID = :sourceFileId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="appcom.deleteFile">
+			<statement>
+			<![CDATA[
+				DELETE TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = 'N'
+				#if ($vo.fileType)	
+					AND FILE_TYPE = :vo.fileType
+				#end
+			]]>
+			</statement>
+		</query>
+
+		<query id="appcom.deleteFileMap">
+			<statement>
+			<![CDATA[
+				DELETE TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId 
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+				#if ($fileType)	
+					AND FILE_TYPE = :fileType
+				#end
+			]]>
+			</statement>
+		</query>
+
+		<query id="appcom.deleteTempFile">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_FILE_INFO
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="appcom.listFile">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID, 
+					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, 
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+				#if ($fileType && $fileExType)	
+					AND (FILE_TYPE = :fileType OR FILE_TYPE = :fileExType)
+				#elseif ($fileType)	
+					AND FILE_TYPE = :fileType
+				#elseif ($fileExType)	
+					AND FILE_TYPE = :fileExType
+				#end
+					ORDER BY FILE_TYPE ASC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>		
+
+
+		<query id="appcom.listFileByGroupAdmin">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID, 
+					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, 
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :docId AND TEMP_YN = :tempYn
+					ORDER BY FILE_TYPE ASC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>		
+
+
+		<!-- TGW_FILE_INFO_HIS -->
+		<query id="appcom.insertFileHis">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_FILE_INFO_HIS
+					(
+					FILE_HIS_ID, DOC_ID, COMP_ID, FILE_ID, FILE_NAME, 
+					DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT,
+					FILE_ORDER, REGISTER_ID, REGISTER_NAME, DOC_VERSION, REGIST_DATE					
+					)
+				VALUES
+					(
+					:vo.fileHisId, :vo.docId, :vo.compId, :vo.fileId,:vo.fileName,
+					:vo.displayName, :vo.fileType, :vo.fileSize, :vo.imageWidth, :vo.imageHeight,
+					:vo.fileOrder, :vo.registerId, :vo.registerName, :vo.docVersion, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>
+
+		<query id="appcom.listFileHis">
+			<statement>
+			<![CDATA[
+				SELECT
+					FILE_HIS_ID, DOC_ID, COMP_ID, FILE_ID, FILE_NAME, 
+					DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT, 
+					FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO_HIS
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId 
+				#if ($registerId)	
+					AND REGISTER_ID = :registerId
+				#end
+				#if ($fileType && $fileExType)	
+					AND (FILE_TYPE = :fileType OR FILE_TYPE = :fileExType)
+				#elseif ($fileType)	
+					AND FILE_TYPE = :fileType
+				#elseif ($fileExType)	
+					AND FILE_TYPE = :fileExType
+				#end
+				#if ($fileHisId)	
+					AND FILE_HIS_ID = :fileHisId
+				#end
+					ORDER BY FILE_TYPE ASC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileHisVO" />
+		</query>		
+
+		<query id="appcom.listBody">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, FILE_ID, FILE_NAME, 
+					DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT, 
+					FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId 
+					AND FILE_TYPE IN ( {{fileType}} )
+					ORDER BY FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>		
+
+
+		<query id="appcom.listBodyHis">
+			<statement>
+			<![CDATA[
+				SELECT
+					FILE_HIS_ID, DOC_ID, COMP_ID, FILE_ID, FILE_NAME, 
+					DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT, 
+					FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO_HIS
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId 
+				#if ($registerId)	
+					AND REGISTER_ID = :registerId
+				#end
+				#if ($fileHisId)	
+					AND FILE_HIS_ID = :fileHisId
+				#end
+					AND FILE_TYPE IN ( {{fileType}} )
+					ORDER BY FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileHisVO" />
+		</query>		
+
+
+		<query id="appcom.listLastBodyHis">
+			<statement>
+			<![CDATA[
+				SELECT
+					FILE_HIS_ID, DOC_ID, COMP_ID, FILE_ID, FILE_NAME, 
+					DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT, 
+					FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO_HIS
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId AND FILE_TYPE IN ( {{fileType}} )
+				ORDER BY REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileHisVO" />
+		</query>		
+
+
+		<!-- TGW_PUB_READER -->
+		<query id="appcom.insertPubReader">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_PUB_READER
+					(
+					DOC_ID, COMP_ID, PUB_READER_ID, PUB_READER_NAME, PUB_READER_POS,
+					PUB_READER_DEPT_ID, PUB_READER_DEPT_NAME, PUB_READER_ROLE, READ_DATE, PUB_READ_DATE, 
+					REGISTER_ID, REGISTER_NAME, REGIST_DATE, USING_TYPE, DELETE_YN,
+					PUB_READER_ORDER
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.pubReaderId, :vo.pubReaderName, :vo.pubReaderPos,
+					:vo.pubReaderDeptId, :vo.pubReaderDeptName, :vo.pubReaderRole, TO_DATE(:vo.readDate, 'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.pubReadDate, 'yyyy-mm-dd hh24:mi:ss'),
+					:vo.registerId, :vo.registerName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.usingType, :vo.deleteYn,
+					:vo.pubReaderOrder
+					)
+			]]>
+			</statement>
+		</query>
+		
+		<query id="appcom.listPubReader">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PUB_READER_ID, PUB_READER_NAME, PUB_READER_POS,
+					PUB_READER_DEPT_ID, PUB_READER_DEPT_NAME, PUB_READER_ROLE, TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss') READ_DATE, TO_CHAR(PUB_READ_DATE, 'yyyy-mm-dd hh24:mi:ss') PUB_READ_DATE,
+					REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, USING_TYPE, DELETE_YN,
+					PUB_READER_ORDER
+				FROM TGW_PUB_READER
+				WHERE 
+					DOC_ID =:docId AND COMP_ID =:compId
+				ORDER BY PUB_READER_DEPT_NAME ASC , PUB_READER_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.PubReaderVO" />
+		</query>		
+
+		<query id="appcom.selectPubReader">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PUB_READER_ID, PUB_READER_NAME, PUB_READER_POS,
+					PUB_READER_DEPT_ID, PUB_READER_DEPT_NAME, PUB_READER_ROLE, TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss') READ_DATE, TO_CHAR(PUB_READ_DATE, 'yyyy-mm-dd hh24:mi:ss') PUB_READ_DATE, 
+					REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, USING_TYPE, DELETE_YN,
+					PUB_READER_ORDER
+				FROM TGW_PUB_READER
+				WHERE 
+					DOC_ID =:vo.docId AND COMP_ID =:vo.compId AND PUB_READER_ID = :vo.pubReaderId
+				ORDER BY PUB_READER_DEPT_NAME ASC , PUB_READER_ORDER ASC
+					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.PubReaderVO" />
+		</query>		
+
+		<query id="appcom.updatePubReader">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_PUB_READER
+				SET
+				#if ($readDate)
+					READ_DATE = TO_DATE(:readDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				#if ($pubReadDate)
+					PUB_READ_DATE = TO_DATE(:pubReadDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				WHERE 
+					DOC_ID =:docId AND COMP_ID =:compId AND PUB_READER_ID = :pubReaderId
+				#if ($readDate)
+					AND (READ_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss') OR READ_DATE IS NULL)
+				#end
+				#if ($pubReadDate)
+					AND (PUB_READ_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss') OR PUB_READ_DATE IS NULL)
+				#end
+				#if ($usingType)
+					AND USING_TYPE = :usingType
+				#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="appcom.updatePubReaderOrder">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_PUB_READER
+				SET
+					PUB_READER_ORDER = :vo.pubReaderOrder
+				WHERE 
+					DOC_ID =:vo.docId AND COMP_ID =:vo.compId AND PUB_READER_ID = :vo.pubReaderId
+			]]>
+			</statement>
+		</query>	
+
+		<query id="appcom.deletePubReader">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_PUB_READER
+				WHERE
+					DOC_ID =:vo.docId AND COMP_ID =:vo.compId AND PUB_READER_ID = :vo.pubReaderId
+					AND USING_TYPE = :vo.usingType
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="appcom.deleteTempPubReader">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_PUB_READER
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+		
+		<!-- TGW_DOC_NUM -->
+		<query id="appcom.selectDocNum">
+			<statement>
+			<![CDATA[
+				SELECT
+					(NUM + 1) AS NUM 
+				FROM TGW_DOC_NUM
+				WHERE 
+					COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND NUM_YEAR = :vo.numPeriod
+					AND NUM_TYPE = :vo.numType
+				FOR UPDATE WAIT 10
+			]]>
+			</statement>
+		</query>
+
+		<query id="appcom.updateDocNum">
+			<statement>
+			<![CDATA[
+				MERGE INTO TGW_DOC_NUM A
+					USING
+					(
+						SELECT
+							COUNT(NUM) AS NUM 
+						FROM TGW_DOC_NUM
+						WHERE 
+							COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND NUM_YEAR = :vo.numPeriod AND NUM_TYPE = :vo.numType
+					) B
+					ON
+					( 
+						B.NUM > 0
+					)
+					WHEN MATCHED THEN
+						UPDATE SET 
+							A.NUM = A.NUM + 1
+						WHERE 
+							A.COMP_ID = :vo.compId AND A.DEPT_ID = :vo.deptId AND A.NUM_YEAR = :vo.numPeriod AND A.NUM_TYPE = :vo.numType
+					WHEN NOT MATCHED THEN
+						INSERT
+							(
+							A.COMP_ID, A.DEPT_ID, A.NUM_YEAR, A.NUM_TYPE, A.NUM
+							)
+						VALUES
+							(
+							:vo.compId, :vo.deptId, :vo.numPeriod, :vo.numType, :vo.num
+							)
+			]]>
+			</statement>
+		</query>
+
+
+		<!-- TGW_SUB_NUM -->
+		<query id="appcom.selectSubNum">
+			<statement>
+			<![CDATA[
+				SELECT
+					(SUB_NUM + 1) AS SUBNUM 
+				FROM TGW_SUB_NUM
+				WHERE 
+					COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND NUM_YEAR = :vo.numPeriod 
+					AND NUM_TYPE = :vo.numType AND NUM = :vo.num
+				FOR UPDATE WAIT 10
+			]]>
+			</statement>
+		</query>
+
+		<query id="appcom.updateSubNum">
+			<statement>
+			<![CDATA[
+				MERGE INTO TGW_SUB_NUM A
+					USING
+					(
+						SELECT
+							COUNT(SUB_NUM) AS SUBNUM 
+						FROM TGW_SUB_NUM
+						WHERE 
+							COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND NUM_YEAR = :vo.numPeriod AND NUM_TYPE = :vo.numType AND NUM = :vo.num
+					) B
+					ON
+					( 
+						B.SUBNUM > 0
+					)
+					WHEN MATCHED THEN
+						UPDATE SET 
+							A.SUB_NUM = A.SUB_NUM + 1
+						WHERE 
+							A.COMP_ID = :vo.compId AND A.DEPT_ID = :vo.deptId AND A.NUM_YEAR = :vo.numPeriod AND A.NUM_TYPE = :vo.numType AND NUM = :vo.num
+					WHEN NOT MATCHED THEN
+						INSERT
+							(
+							A.COMP_ID, A.DEPT_ID, A.NUM_YEAR, A.NUM_TYPE, A.NUM, 
+							A.SUB_NUM
+							)
+						VALUES
+							(
+							:vo.compId, :vo.deptId, :vo.numPeriod, :vo.numType, :vo.num, 
+							1
+							)
+			]]>
+			</statement>
+		</query>
+
+
+		<!-- TGW_OWN_DEPT -->
+		<query id="appcom.insertOwnDept">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_OWN_DEPT
+					(
+					DOC_ID, COMP_ID, OWN_DEPT_ID, OWN_DEPT_NAME, OWN_YN,
+					REGIST_DATE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.ownDeptId, :vo.ownDeptName, :vo.ownYn,
+					TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="appcom.listOwnDept">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, OWN_DEPT_ID, OWN_DEPT_NAME, OWN_YN, 
+					TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE
+				FROM TGW_OWN_DEPT
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.OwnDeptVO" />
+		</query>		
+
+
+		<!-- TGW_SEND_INFO -->
+		<query id="appcom.insertSendInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_SEND_INFO
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, DOC_TYPE,
+					SEND_ORG_NAME, SENDER_TITLE, HEADER_CAMP, FOOTER_CAMP, POST_NUMBER,
+					ADDRESS, TELEPHONE, FAX, VIA, SEAL_TYPE,
+					HOMEPAGE, EMAIL, RECEIVERS, DISPLAY_NAME_YN, ENFORCE_DATE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.docType,
+					:vo.sendOrgName, :vo.senderTitle, :vo.headerCamp, :vo.footerCamp, :vo.postNumber,
+					:vo.address, :vo.telephone, :vo.fax, :vo.via, :vo.sealType,
+					:vo.homepage, :vo.email, :vo.receivers, :vo.displayNameYn,  TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="appcom.updateSendInfo">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_SEND_INFO
+				SET 
+					PROCESSOR_ID = :vo.processorId, TEMP_YN = :vo.tempYn, DOC_TYPE = :vo.docType,
+					SEND_ORG_NAME = :vo.sendOrgName, SENDER_TITLE = :vo.senderTitle, HEADER_CAMP = :vo.headerCamp, 
+					FOOTER_CAMP = :vo.footerCamp, POST_NUMBER = :vo.postNumber, ADDRESS = :vo.postNumber,
+					TELEPHONE = :vo.telephone, FAX = :vo.fax, VIA = :vo.via, 
+					SEAL_TYPE = :vo.sealType, HOMEPAGE = :vo.homepage, EMAIL = :vo.email, 
+					RECEIVERS = :vo.receivers, DISPLAY_NAME_YN = :vo.displayNameYn
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = :vo.tempYn			
+			]]>
+			</statement>
+		</query>		
+
+		<query id="appcom.updateSendInfoByAdmin">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_SEND_INFO
+				SET 
+					SENDER_TITLE = :senderTitle, HEADER_CAMP = :headerCamp, FOOTER_CAMP = :footerCamp
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'N'	
+			]]>
+			</statement>
+		</query>		
+
+		<query id="appcom.selectSendInfo">
+			<statement>
+			<![CDATA[
+				SELECT 
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, DOC_TYPE,
+					SEND_ORG_NAME, SENDER_TITLE, HEADER_CAMP, FOOTER_CAMP, POST_NUMBER,
+					ADDRESS, TELEPHONE, FAX, VIA, SEAL_TYPE,
+					HOMEPAGE, EMAIL, RECEIVERS, DISPLAY_NAME_YN, TO_CHAR(ENFORCE_DATE, 'yyyy-mm-dd hh24:mi:ss')  ENFORCE_DATE
+				FROM TGW_SEND_INFO
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.SendInfoVO" />
+		</query>	
+			
+		<query id="appcom.deleteTempSendInfo">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_SEND_INFO
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+		
+		<!-- TGW_AUDIT_LIST -->
+		<query id="appcom.insertAuditList">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_AUDIT_LIST
+					(
+					DOC_ID, COMP_ID, TITLE, AUDIT_NUMBER, CHARGE_DEPT_ID,
+					CHARGE_DEPT_NAME, ELECTRON_DOC_YN, RECEIVE_DATE, APPROVER_TYPE, APPROVE_TYPE,
+					APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID, APPROVER_DEPT_NAME,
+					ASK_TYPE, PROC_TYPE, REGISTER_ID, REGISTER_NAME, REGISTER_DEPT_ID,
+					REGISTER_DEPT_NAME, REGIST_DATE, DELETE_YN, DELETE_DATE, REMARK,SECURITY_PASS, SECURITY_YN,
+					SECURITY_START_DATE, SECURITY_END_DATE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.title, :vo.auditNumber, :vo.chargeDeptId,
+					:vo.chargeDeptName, :vo.electronDocYn, TO_DATE(:vo.receiveDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.approverType, :vo.approveType,
+					:vo.approverId, :vo.approverName, :vo.approverPos, :vo.approverDeptId, :vo.approverDeptName,
+					:vo.askType, :vo.procType, :vo.registerId, :vo.registerName, :vo.registerDeptId,
+					:vo.registerDeptName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.deleteYn, TO_DATE(:vo.deleteDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.remark
+					, :vo.securityPass, :vo.securityYn, TO_DATE(:vo.securityStartDate,'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.securityEndDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>	
+			
+		<query id="appcom.updateAuditList">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_AUDIT_LIST
+				SET 
+					TITLE = :vo.title, APPROVER_TYPE = :vo.approverType, APPROVE_TYPE = :vo.approveType,
+					APPROVER_ID = :vo.approverId, APPROVER_NAME = :vo.approverName, APPROVER_POS = :vo.approverPos,
+					APPROVER_DEPT_ID = :vo.approverDeptId, APPROVER_DEPT_NAME = :vo.approverDeptName, ASK_TYPE = :vo.askType, 
+					PROC_TYPE = :vo.procType 
+				WHERE 
+					COMP_ID = :vo.compId AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>	
+
+		<query id="appcom.selectAuditList">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, TITLE, AUDIT_NUMBER, CHARGE_DEPT_ID,
+					CHARGE_DEPT_NAME, ELECTRON_DOC_YN, RECEIVE_DATE, APPROVER_TYPE, APPROVE_TYPE,
+					APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID, APPROVER_DEPT_NAME,
+					ASK_TYPE, PROC_TYPE, REGISTER_ID, REGISTER_NAME, REGISTER_DEPT_ID,
+					REGISTER_DEPT_NAME, REGIST_DATE, DELETE_YN, DELETE_DATE, REMARK
+				FROM TGW_AUDIT_LIST
+				WHERE
+					COMP_ID = :vo.compId AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.AuditListVO" />
+		</query>	
+
+		<query id="appcom.deleteAuditList">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_AUDIT_LIST
+				SET
+					DELETE_YN = 'Y', DELETE_DATE = TO_DATE(:vo.deleteDate, 'yyyy-mm-dd hh24:mi:ss')
+				WHERE	
+					COMP_ID = :vo.compId AND DOC_ID = :vo.docId AND ELECTRON_DOC_YN = 'N'
+					AND DELETE_YN = 'N'
+			]]>
+			</statement>
+		</query>				
+
+		<query id="appcom.deleteAuditListByUnregist">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_AUDIT_LIST
+				SET
+					DELETE_YN = 'Y', DELETE_DATE = TO_DATE(:deleteDate, 'yyyy-mm-dd hh24:mi:ss')
+				WHERE	
+					COMP_ID = :compId AND DOC_ID = :docId
+			]]>
+			</statement>
+		</query>				
+
+		<query id="appcom.undeleteAuditListByReregist">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_AUDIT_LIST
+				SET
+					DELETE_YN = 'N', DELETE_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+				WHERE
+					COMP_ID = :compId AND DOC_ID = :docId
+			]]>
+			</statement>
+		</query>				
+
+		<query id="appcom.updateAppBind">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					BINDING_ID = :vo.bindingId, BINDING_NAME = :vo.bindingName
+				WHERE
+					COMP_ID = :vo.compId AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="appcom.updateEnfBind">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC
+				SET
+					BINDING_ID = :vo.bindingId, BINDING_NAME = :vo.bindingName
+				WHERE
+					COMP_ID = :vo.compId AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+			
+		<query id="appcom.copyBind">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_OWN_DEPT
+					(
+					DOC_ID, COMP_ID, OWN_DEPT_ID, OWN_DEPT_NAME, OWN_YN,
+					REGIST_DATE
+					)
+					SELECT 
+						APP.DOC_ID, :vo.compId, :vo.targetDeptId, :vo.targetDeptName, 'N', 
+						DEPT.REGIST_DATE
+					FROM TGW_APP_DOC APP, TGW_OWN_DEPT DEPT
+					WHERE 
+						APP.COMP_ID = :vo.compId AND APP.BINDING_ID = :vo.bindingId AND APP.DOC_ID = DEPT.DOC_ID
+						AND DEPT.COMP_ID = :vo.compId  AND DEPT.OWN_DEPT_ID = :vo.sourceDeptId AND DEPT.OWN_YN = 'Y'
+					UNION
+					SELECT 
+						ENF.DOC_ID, :vo.compId, :vo.targetDeptId, :vo.targetDeptName, 'N', 
+						DEPT.REGIST_DATE
+					FROM TGW_ENF_DOC ENF, TGW_OWN_DEPT DEPT
+					WHERE 
+						ENF.COMP_ID = :vo.compId AND ENF.BINDING_ID = :vo.bindingId AND ENF.DOC_ID = DEPT.DOC_ID
+						AND DEPT.COMP_ID = :vo.compId  AND DEPT.OWN_DEPT_ID = :vo.sourceDeptId AND DEPT.OWN_YN = 'Y'
+			]]>
+			</statement>
+		</query>
+			
+		<query id="appcom.withdrawBind">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_OWN_DEPT
+				WHERE 
+					COMP_ID = :vo.compId AND OWN_DEPT_ID = :vo.targetDeptId AND OWN_YN = 'N'
+					AND DOC_ID IN 
+						(
+						SELECT DOC_ID 
+						FROM TGW_APP_DOC
+						WHERE 
+							COMP_ID = :vo.compId AND BINDING_ID = :vo.bindingId
+						UNION
+						SELECT DOC_ID 
+						FROM TGW_ENF_DOC
+						WHERE 
+							COMP_ID = :vo.compId AND BINDING_ID = :vo.bindingId
+						)
+			]]>
+			</statement>
+		</query>
+			
+		<query id="appcom.deleteOwnBind">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_OWN_DEPT
+				WHERE 
+					COMP_ID = :vo.compId AND OWN_DEPT_ID = :vo.targetDeptId
+					AND DOC_ID IN
+					(
+					SELECT
+						APP.DOC_ID 
+					FROM TGW_APP_DOC APP, TGW_OWN_DEPT DEPT
+					WHERE 
+						APP.COMP_ID = :vo.compId AND APP.BINDING_ID = :vo.bindingId AND APP.DOC_ID = DEPT.DOC_ID
+						AND APP.COMP_ID = DEPT.COMP_ID AND DEPT.OWN_DEPT_ID = :vo.targetDeptId
+					UNION
+					SELECT
+						ENF.DOC_ID 
+					FROM TGW_ENF_DOC ENF, TGW_OWN_DEPT DEPT
+					WHERE 
+						ENF.COMP_ID = :vo.compId AND ENF.BINDING_ID = :vo.bindingId AND ENF.DOC_ID = DEPT.DOC_ID
+						AND ENF.COMP_ID = DEPT.COMP_ID AND DEPT.OWN_DEPT_ID = :vo.targetDeptId
+					)			
+			]]>
+			</statement>
+		</query>
+			
+		<query id="appcom.moveBind">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_OWN_DEPT
+				SET
+					OWN_DEPT_ID = :vo.targetDeptId, OWN_DEPT_NAME = :vo.targetDeptName
+				WHERE DOC_ID IN
+					(
+					SELECT
+						DOC_ID 
+					FROM TGW_APP_DOC APP
+					WHERE 
+						COMP_ID = :vo.compId AND BINDING_ID = :vo.bindingId
+					UNION
+					SELECT
+						DOC_ID 
+					FROM TGW_ENF_DOC ENF
+					WHERE 
+						COMP_ID = :vo.compId AND BINDING_ID = :vo.bindingId
+					)
+			 	AND OWN_YN = 'Y'
+			]]>
+			</statement>
+		</query>
+		
+		<!-- TGW_DOC_NUM  -->
+		<query id="appcom.selectDocPass">
+			<statement>
+			<![CDATA[
+				SELECT
+					SECURITY_PASS as DOCPASS 
+				FROM TGW_APP_DOC
+				WHERE COMP_ID = :vo.compId 
+				AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="appcom.selectOnlyDocPass">
+			<statement>
+			<![CDATA[
+				SELECT
+					SECURITY_PASS as DOCPASS 
+				FROM TGW_STAMP_LIST
+				WHERE COMP_ID = :vo.compId 
+				AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="appcom.selectTempDocPass">
+			<statement>
+			<![CDATA[
+				SELECT
+					SECURITY_PASS as DOCPASS 
+				FROM TGW_APP_DOC_TEMP
+				WHERE COMP_ID = :vo.compId 
+				AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="appcom.selectDailyDocPass">
+			<statement>
+			<![CDATA[
+				SELECT
+					SECURITY_PASS as DOCPASS 
+				FROM TGW_AUDIT_LIST
+				WHERE COMP_ID = :vo.compId 
+				AND DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>
+			
+	</queries>
+</queryservice>

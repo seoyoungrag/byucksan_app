@@ -1,0 +1,54 @@
+
+<HTML><HEAD><TITLE>SetCharSet </TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.2800.1106" name=GENERATOR>
+<link rel="stylesheet" href="../images/linkstyle.css">
+</HEAD>
+<BODY text=black vLink=purple aLink=red link=blue bgColor=white>
+<table border="0" width="640">
+    <tr>
+        <td width="10%" bgcolor="#EEEEEE" bordercolor="#999999">
+            <p align="center" class="pme">Param</p>
+        </td>
+        <td width="10%" bgcolor="#5A7FC1" bordercolor="#999999">
+            <p align="center" class="pme"><font color="white">Method</font></p>
+        </td>
+        <td width="10%" bgcolor="#EEEEEE" bordercolor="#999999">
+            <p align="center" class="pme">Event</p>
+        </td>
+        <td width="10%">
+            <p align="center" class="pme">&nbsp;</p>
+        </td>
+        <td width="50%">
+            <p align="center" class="pme">&nbsp;</p>
+        </td>
+    </tr>
+</table>
+<TABLE width=640 border=0>
+  <TBODY>
+    <TR>
+        <TD>
+            <H2>SetCharSet <sub>v1.1 or higher</sub></H2>
+            <P class=dscrpt>현재 편집 중인 문서의 HTML meta 태그의 charset를 변경합니다.</P>
+            <H4>Syntax</H4>
+            <UL>
+                <PRE>HRESULT<span class="fname"> SetCharSet</span>(<BR>      BSTR<span class="paraname"> newVal</span><BR>);</PRE>
+            </UL>
+            <H4>Parameters</H4>
+            <P class=dscrpt><span class="paraname">newVal</span></P>
+            <P class=paradsc>[in] 수정할 charset을 입력 합니다.</P>
+            <H4>Return Values</H4>
+            <p class="dscrpt">없음</p>
+            <H4>Remarks</H4>
+            <P class=dscrpt>크로스에디터의 Main class 호출 후 에디터가 로드된 다음 실행해야 정상적으로 실행됩니다.</P>
+            <H4>Sample Codes</H4>
+            <P class=scode>JavaScript</P>
+            <PRE class=scodedsc>var object = new NamoSE(“test”);
+object.editorStart();
+object.<b>SetCharSet</b>(“euc-jp”);</PRE>
+
+            <P class=dscrpt>&nbsp;</P>
+        </TD>
+    </TR>
+</TBODY></TABLE>
+<P>&nbsp;</P></BODY></HTML>

@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<!DOCTYPE HWPML [
+	<!ENTITY nbsp "&#160;">
+]>
+<HWPML Version="2.1">
+	<HEAD SecCnt="1">
+		<DOCSUMMARY>
+			<TITLE>본문을 입력하십시오</TITLE>
+			<DATE>2002년 6월 14일 금요일 오후 5:31:53</DATE>
+		</DOCSUMMARY>
+		<DOCSETTING>
+			<BEGINNUMBER Page="1" Footnote="1" Endnote="1" Picture="1" Table="1" Equation="1"/>
+			<CARETPOS List="0" Para="2" Pos="27"/>
+		</DOCSETTING>
+		<MAPPINGTABLE>
+			<FACENAMELIST>
+				<FONTFACE Lang="Hangul" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="한양신명조">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+				<FONTFACE Lang="Latin" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="한양신명조">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+				<FONTFACE Lang="Hanja" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="신명조 간자">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+				<FONTFACE Lang="Japanese" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="한양신명조V">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+				<FONTFACE Lang="Other" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="한양신명조">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+				<FONTFACE Lang="Symbol" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="한양신명조">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+				<FONTFACE Lang="User" Count="3">
+					<FONT Id="0" Type="ttf" Name="굴림">
+						<TYPEINFO FamilyType="2" SerifStyle="11" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="1" Type="ttf" Name="바탕">
+						<TYPEINFO FamilyType="2" SerifStyle="3" Weight="6" Proportion="0" Contrast="0" StrokeVariation="1" ArmStyle="1" Letterform="1" Midline="1" XHeight="1"/>
+					</FONT>
+					<FONT Id="2" Type="hft" Name="명조">
+						<TYPEINFO FamilyType="1" SerifStyle="0" Weight="0" Proportion="0" Contrast="0" StrokeVariation="0" ArmStyle="0" Letterform="0" Midline="0" XHeight="0"/>
+					</FONT>
+				</FONTFACE>
+			</FACENAMELIST>
+			<BORDERFILLLIST Count="4">
+				<BORDERFILL Id="1" ThreeD="false" Shadow="false" Slash="0" BackSlash="0" CrookedSlash="0">
+					<LEFTBORDER Type="Solid" Width="0.12mm" Color="0"/>
+					<RIGHTBORDER Type="Solid" Width="0.12mm" Color="0"/>
+					<TOPBORDER Type="Solid" Width="0.12mm" Color="0"/>
+					<BOTTOMBORDER Type="Solid" Width="0.12mm" Color="0"/>
+				</BORDERFILL>
+				<BORDERFILL Id="2" ThreeD="false" Shadow="false" Slash="0" BackSlash="0" CrookedSlash="0">
+					<LEFTBORDER Type="None" Width="0.1mm" Color="0"/>
+					<RIGHTBORDER Type="None" Width="0.1mm" Color="0"/>
+					<TOPBORDER Type="None" Width="0.1mm" Color="0"/>
+					<BOTTOMBORDER Type="Solid" Width="0.4mm" Color="0"/>
+					<DIAGONAL Type="Solid" Width="0.12mm" Color="0"/>
+				</BORDERFILL>
+				<BORDERFILL Id="3" ThreeD="false" Shadow="false" Slash="0" BackSlash="0" CrookedSlash="0">
+					<LEFTBORDER Type="None" Width="0.12mm" Color="0"/>
+					<RIGHTBORDER Type="None" Width="0.12mm" Color="0"/>
+					<TOPBORDER Type="None" Width="0.12mm" Color="0"/>
+					<BOTTOMBORDER Type="None" Width="0.12mm" Color="0"/>
+				</BORDERFILL>
+				<BORDERFILL Id="4" ThreeD="false" Shadow="false" Slash="0" BackSlash="0" CrookedSlash="0">
+					<LEFTBORDER Type="None" Width="0.1mm" Color="0"/>
+					<RIGHTBORDER Type="None" Width="0.1mm" Color="0"/>
+					<TOPBORDER Type="None" Width="0.1mm" Color="0"/>
+					<BOTTOMBORDER Type="None" Width="0.1mm" Color="0"/>
+					<DIAGONAL Type="Solid" Width="0.12mm" Color="0"/>
+				</BORDERFILL>
+			</BORDERFILLLIST>
+			<CHARSHAPELIST Count="8">
+				<CHARSHAPE Id="0" Height="1000" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RATIO Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHARSPACING Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="1" Height="900" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RATIO Hangul="98" Latin="98" Hanja="98" Japanese="98" Other="98" Symbol="98" User="98"/>
+					<CHARSPACING Hangul="-2" Latin="-2" Hanja="-2" Japanese="-2" Other="-2" Symbol="-2" User="-2"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="2" Height="1000" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="2" Latin="2" Hanja="2" Japanese="2" Other="2" Symbol="2" User="2"/>
+					<RATIO Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHARSPACING Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="3" Height="500" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="2" Latin="2" Hanja="2" Japanese="2" Other="2" Symbol="2" User="2"/>
+					<RATIO Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHARSPACING Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="4" Height="1000" TextColor="255" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="2" Latin="2" Hanja="2" Japanese="2" Other="2" Symbol="2" User="2"/>
+					<RATIO Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHARSPACING Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<ITALIC/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="5" Height="3200" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="2" Latin="2" Hanja="2" Japanese="2" Other="2" Symbol="2" User="2"/>
+					<RATIO Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHARSPACING Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="6" Height="1000" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="1" Latin="1" Hanja="1" Japanese="1" Other="1" Symbol="1" User="1"/>
+					<RATIO Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHARSPACING Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+				<CHARSHAPE Id="7" Height="900" TextColor="0" ShadeColor="4294967295" UseFontSpace="false" UseKerning="false" SymMark="0">
+					<FONTID Hangul="1" Latin="1" Hanja="1" Japanese="1" Other="1" Symbol="1" User="1"/>
+					<RATIO Hangul="95" Latin="95" Hanja="95" Japanese="95" Other="95" Symbol="95" User="95"/>
+					<CHARSPACING Hangul="-5" Latin="-5" Hanja="-5" Japanese="-5" Other="-5" Symbol="-5" User="-5"/>
+					<RELSIZE Hangul="100" Latin="100" Hanja="100" Japanese="100" Other="100" Symbol="100" User="100"/>
+					<CHAROFFSET Hangul="0" Latin="0" Hanja="0" Japanese="0" Other="0" Symbol="0" User="0"/>
+				</CHARSHAPE>
+			</CHARSHAPELIST>
+			<TABDEFLIST Count="3">
+				<TABDEF Id="0" AutoTabLeft="false" AutoTabRight="false"/>
+				<TABDEF Id="1" AutoTabLeft="true" AutoTabRight="false"/>
+				<TABDEF Id="2" AutoTabLeft="false" AutoTabRight="true">
+					<TABITEM Pos="0" Type="Left"/>
+				</TABDEF>
+			</TABDEFLIST>
+			<NUMBERINGLIST Count="1">
+				<NUMBERING Id="1" Start="1">
+					<PARAHEAD Level="1" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="Digit">^1.</PARAHEAD>
+					<PARAHEAD Level="2" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="HangulSyllable">^2.</PARAHEAD>
+					<PARAHEAD Level="3" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="Digit">(^3)</PARAHEAD>
+					<PARAHEAD Level="4" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="HangulSyllable">(^4)</PARAHEAD>
+					<PARAHEAD Level="5" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="Digit">^5)</PARAHEAD>
+					<PARAHEAD Level="6" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="HangulSyllable">^6)</PARAHEAD>
+					<PARAHEAD Level="7" Alignment="Left" UseInstWidth="false" AutoIndent="true" WidthAdjust="0" TextOffsetType="percent" TextOffset="50" NumFormat="CircledDigit">^7</PARAHEAD>
+				</NUMBERING>
+			</NUMBERINGLIST>
+			<PARASHAPELIST Count="13">
+				<PARASHAPE Id="0" Align="Justify" VerAlign="Baseline" HeadingType="None" Heading="0" Level="0" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="1" Align="Justify" VerAlign="Baseline" HeadingType="None" Heading="0" Level="0" TabDef="2" BreakLatinWord="KeepWord" BreakNonLatinWord="false" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="150"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="2" Align="Center" VerAlign="Baseline" HeadingType="None" Heading="0" Level="0" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="false" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="3" Align="Left" VerAlign="Baseline" HeadingType="None" Heading="0" Level="0" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="false" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="4" Align="Justify" VerAlign="Baseline" HeadingType="None" Heading="0" Level="0" TabDef="1" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="-2624" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="130"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="5" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="0" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="20" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="6" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="1" TabDef="1" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="7" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="2" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="8" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="3" TabDef="1" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="9" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="4" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="10" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="5" TabDef="1" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="11" Align="Justify" VerAlign="Baseline" HeadingType="Outline" Heading="0" Level="6" TabDef="1" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="0" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="0" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+				<PARASHAPE Id="12" Align="Justify" VerAlign="Baseline" HeadingType="None" Heading="0" Level="0" TabDef="0" BreakLatinWord="KeepWord" BreakNonLatinWord="true" Condense="20" WidowOrphan="false" KeepWithNext="false" KeepLines="false" PageBreakBefore="false" FontLineHeight="false" SnapToGrid="true">
+					<PARAMARGIN Indent="0" Left="3000" Right="0" Prev="0" Next="0" LineSpacingType="Percent" LineSpacing="160"/>
+					<PARABORDER BorderFill="0" OffsetLeft="0" OffsetRight="0" OffsetTop="0" OffsetBottom="0" Connect="false" IgnoreMargin="false"/>
+				</PARASHAPE>
+			</PARASHAPELIST>
+			<STYLELIST Count="12">
+				<STYLE Id="0" Name="바탕글" EngName="Normal" ParaShape="0" NextStyle="0" LangId="1042"/>
+				<STYLE Id="1" Name="본문" EngName="Body" ParaShape="12" NextStyle="1" LangId="1042"/>
+				<STYLE Id="2" Name="개요 1" EngName="Outline 1" ParaShape="5" NextStyle="2" LangId="1042"/>
+				<STYLE Id="3" Name="개요 2" EngName="Outline 2" ParaShape="6" NextStyle="3" LangId="1042"/>
+				<STYLE Id="4" Name="개요 3" EngName="Outline 3" ParaShape="7" NextStyle="4" LangId="1042"/>
+				<STYLE Id="5" Name="개요 4" EngName="Outline 4" ParaShape="8" NextStyle="5" LangId="1042"/>
+				<STYLE Id="6" Name="개요 5" EngName="Outline 5" ParaShape="9" NextStyle="6" LangId="1042"/>
+				<STYLE Id="7" Name="개요 6" EngName="Outline 6" ParaShape="10" NextStyle="7" LangId="1042"/>
+				<STYLE Id="8" Name="개요 7" EngName="Outline 7" ParaShape="11" NextStyle="8" LangId="1042"/>
+				<STYLE Id="9" Name="쪽 번호" EngName="Page Number" ParaShape="0" NextStyle="9" LangId="1042"/>
+				<STYLE Id="10" Name="머리말" EngName="Header" ParaShape="1" NextStyle="10" LangId="1042"/>
+				<STYLE Id="11" Name="각주" EngName="Footnote" ParaShape="4" NextStyle="11" LangId="1042"/>
+			</STYLELIST>
+		</MAPPINGTABLE>
+	</HEAD>
+	<BODY>
+		<SECTION Id="0">
+			<P>
+				<TEXT CharShape="2">
+					<SECDEF SpaceColumns="1134" TabStop="8000" OutlineShape="1">
+						<STARTNUMBER PageStartsOn="Both" Page="0" Figure="0" Table="0" Equation="0"/>
+						<HIDE Header="false" Footer="false" MasterPage="false" Border="false" Fill="false" PageNumPos="false" EmptyLine="false"/>
+						<PAGEDEF Landscape="0" Width="59528" Height="84188" GutterType="LeftOnly">
+							<PAGEMARGIN Left="5669" Right="5669" Top="5668" Bottom="4252" Header="4252" Footer="4252" Gutter="0"/>
+						</PAGEDEF>
+						<FOOTNOTESHAPE>
+							<AUTONUMFORMAT Type="Digit" SuffixChar=")" Superscript="false"/>
+							<NOTELINE Length="5cm" Type="Solid" Width="0.1mm" Color="0"/>
+							<NOTESPACING AboveLine="567" BelowLine="567" BetweenNotes="850"/>
+							<NOTENUMBERING Type="Continuous"/>
+							<NOTEPLACEMENT Place="EachColumn" BeneathText="false"/>
+						</FOOTNOTESHAPE>
+						<ENDNOTESHAPE>
+							<AUTONUMFORMAT Type="Digit" SuffixChar=")" Superscript="false"/>
+							<NOTELINE Length="5cm" Type="Solid" Width="0.1mm" Color="0"/>
+							<NOTESPACING AboveLine="567" BelowLine="567" BetweenNotes="850"/>
+							<NOTENUMBERING Type="Continuous"/>
+							<NOTEPLACEMENT Place="EndOfDocument" BeneathText="false"/>
+						</ENDNOTESHAPE>
+						<PAGEBORDERFILL Type="Both" BorferFill="0" TextBorder="true" HeaderInside="false" FooterInside="false" FillArea="Paper">
+							<PAGEOFFSET Left="1417" Right="1417" Top="1417" Bottom="1417"/>
+						</PAGEBORDERFILL>
+						<PAGEBORDERFILL Type="Even" BorferFill="0" TextBorder="true" HeaderInside="false" FooterInside="false" FillArea="Paper">
+							<PAGEOFFSET Left="1417" Right="1417" Top="1417" Bottom="1417"/>
+						</PAGEBORDERFILL>
+						<PAGEBORDERFILL Type="Odd" BorferFill="0" TextBorder="true" HeaderInside="false" FooterInside="false" FillArea="Paper">
+							<PAGEOFFSET Left="1417" Right="1417" Top="1417" Bottom="1417"/>
+						</PAGEBORDERFILL>
+					</SECDEF>
+					<COLDEF Type="Newspaper" Count="1" Layout="Left" SameSize="true"/>
+					<CHAR/>
+				</TEXT>
+			</P>
+			<P>
+				<TEXT CharShape="2">
+					<TABLE PageBreak="None" RepeatHeader="true" RowCount="5" ColCount="4" CellSpacing="0" BorderFill="1">
+						<SHAPEOBJECT InstId="2129133631" ZOrder="0" NumberingType="Table" Lock="false">
+							<SIZE Width="47592" Height="6428" WidthRelTo="Absolute" HeightRelTo="Absolute" Protect="false"/>
+							<POSITION TreatAsChar="true" AffectLSpacing="false" VertAlign="Top" HorzAlign="Left" VertOffset="0" HorzOffset="0" FlowWithText="true"/>
+							<OUTSIDEMARGIN Left="140" Right="140" Top="140" Bottom="140"/>
+						</SHAPEOBJECT>
+						<INSIDEMARGIN Left="140" Right="140" Top="140" Bottom="140"/>
+						<ROW>
+							<CELL ColAddr="0" RowAddr="0" ColSpan="1" RowSpan="1" Width="3064" Height="1412" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2"/>
+									</P>
+								</PARALIST>
+							</CELL>
+							<CELL ColAddr="1" RowAddr="0" ColSpan="1" RowSpan="1" Width="1784" Height="1412" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2">
+											<CHAR>(제</CHAR>
+										</TEXT>
+									</P>
+								</PARALIST>
+							</CELL>
+							<CELL Name="안건번호" ColAddr="2" RowAddr="0" ColSpan="1" RowSpan="1" Width="1492" Height="0" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P ParaShape="2">
+										<TEXT CharShape="2"/>
+									</P>
+								</PARALIST>
+							</CELL>
+							<CELL ColAddr="3" RowAddr="0" ColSpan="1" RowSpan="1" Width="41252" Height="0" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2">
+											<CHAR>안)</CHAR>
+										</TEXT>
+									</P>
+								</PARALIST>
+							</CELL>
+						</ROW>
+						<ROW>
+							<CELL ColAddr="0" RowAddr="1" ColSpan="1" RowSpan="1" Width="3064" Height="1412" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2">
+											<CHAR>수신</CHAR>
+										</TEXT>
+									</P>
+								</PARALIST>
+							</CELL>
+							<CELL Name="수신" ColAddr="1" RowAddr="1" ColSpan="3" RowSpan="1" Width="44528" Height="1412" Header="false" HasMargin="false" Protect="false" Editable="true" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2"/>
+									</P>
+								</PARALIST>
+							</CELL>
+						</ROW>
+						<ROW>
+							<CELL ColAddr="0" RowAddr="2" ColSpan="1" RowSpan="1" Width="3064" Height="1412" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2">
+											<CHAR>참조</CHAR>
+										</TEXT>
+									</P>
+								</PARALIST>
+							</CELL>
+							<CELL Name="참조" ColAddr="1" RowAddr="2" ColSpan="3" RowSpan="1" Width="44528" Height="1412" Header="false" HasMargin="false" Protect="false" Editable="true" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2"/>
+									</P>
+								</PARALIST>
+							</CELL>
+						</ROW>
+						<ROW>
+							<CELL ColAddr="0" RowAddr="3" ColSpan="1" RowSpan="1" Width="3064" Height="1412" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2">
+											<CHAR>제목</CHAR>
+										</TEXT>
+									</P>
+								</PARALIST>
+							</CELL>
+							<CELL Name="제목" ColAddr="1" RowAddr="3" ColSpan="3" RowSpan="1" Width="44528" Height="1412" Header="false" HasMargin="false" Protect="false" Editable="true" Dirty="false" BorderFill="4">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2"/>
+									</P>
+								</PARALIST>
+							</CELL>
+						</ROW>
+						<ROW>
+							<CELL ColAddr="0" RowAddr="4" ColSpan="4" RowSpan="1" Width="47592" Height="0" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="2">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="3"/>
+									</P>
+								</PARALIST>
+							</CELL>
+						</ROW>
+					</TABLE>
+					<CHAR/>
+				</TEXT>
+			</P>
+			<P>
+				<TEXT CharShape="2">
+					<FIELDBEGIN Type="Clickhere" Name="본문" InstId="2129261112" Editable="true" Dirty="false" Property="9" Command="본문을 입력하십시오.;본문 필드;"/>
+				</TEXT>
+				<TEXT CharShape="4">
+					<CHAR>본문을 입력하십시오.</CHAR>
+				</TEXT>
+				<TEXT CharShape="2">
+					<FIELDEND Type="Clickhere" Editable="true" Property="9"/>
+					<CHAR/>
+				</TEXT>
+			</P>
+			<P>
+				<TEXT CharShape="2">
+					<TABLE PageBreak="Cell" RepeatHeader="true" RowCount="1" ColCount="1" CellSpacing="0" BorderFill="3">
+						<SHAPEOBJECT InstId="2129133633" ZOrder="1" NumberingType="Table" Lock="false">
+							<SIZE Width="47626" Height="5790" WidthRelTo="Absolute" HeightRelTo="Absolute" Protect="true"/>
+							<POSITION TreatAsChar="true" AffectLSpacing="false" VertAlign="Top" HorzAlign="Left" VertOffset="0" HorzOffset="0" FlowWithText="true"/>
+							<OUTSIDEMARGIN Left="140" Right="140" Top="140" Bottom="140"/>
+						</SHAPEOBJECT>
+						<INSIDEMARGIN Left="141" Right="141" Top="141" Bottom="141"/>
+						<ROW>
+							<CELL ColAddr="0" RowAddr="0" ColSpan="1" RowSpan="1" Width="47626" Height="5790" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="3">
+								<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+									<P>
+										<TEXT CharShape="2">
+											<TABLE PageBreak="None" RepeatHeader="true" RowCount="2" ColCount="3" CellSpacing="0" BorderFill="1">
+												<SHAPEOBJECT InstId="2129133632" ZOrder="2" NumberingType="Table" TextWrap="TopAndBottom" Lock="false">
+													<SIZE Width="47205" Height="5228" WidthRelTo="Absolute" HeightRelTo="Absolute" Protect="true"/>
+													<POSITION TreatAsChar="false" VertRelTo="Para" HorzRelTo="Para" VertAlign="Top" HorzAlign="Center" VertOffset="0" HorzOffset="0" FlowWithText="true" AllowOverlap="false"/>
+													<OUTSIDEMARGIN Left="140" Right="140" Top="140" Bottom="140"/>
+												</SHAPEOBJECT>
+												<INSIDEMARGIN Left="140" Right="140" Top="140" Bottom="140"/>
+												<ROW>
+													<CELL ColAddr="0" RowAddr="0" ColSpan="1" RowSpan="1" Width="2290" Height="3608" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+														<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+															<P>
+																<TEXT CharShape="2"/>
+															</P>
+														</PARALIST>
+													</CELL>
+													<CELL Name="발신명의" ColAddr="1" RowAddr="0" ColSpan="1" RowSpan="1" Width="42638" Height="3608" Header="false" HasMargin="false" Protect="false" Editable="true" Dirty="false" BorderFill="4">
+														<PARALIST TextDirection="0" LineWrap="Squeeze" VertAlign="Center">
+															<P ParaShape="2">
+																<TEXT CharShape="5"/>
+															</P>
+														</PARALIST>
+													</CELL>
+													<CELL ColAddr="2" RowAddr="0" ColSpan="1" RowSpan="1" Width="2277" Height="3608" Header="false" HasMargin="false" Protect="true" Editable="false" Dirty="false" BorderFill="4">
+														<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+															<P>
+																<TEXT CharShape="2"/>
+															</P>
+														</PARALIST>
+													</CELL>
+												</ROW>
+												<ROW>
+													<CELL Name="수신처참조" ColAddr="0" RowAddr="1" ColSpan="3" RowSpan="1" Width="47205" Height="1620" Header="false" HasMargin="false" Protect="false" Editable="true" Dirty="false" BorderFill="4">
+														<PARALIST TextDirection="0" LineWrap="Break" VertAlign="Center">
+															<P ParaShape="3">
+																<TEXT CharShape="2"/>
+															</P>
+														</PARALIST>
+													</CELL>
+												</ROW>
+											</TABLE>
+											<CHAR/>
+										</TEXT>
+									</P>
+								</PARALIST>
+							</CELL>
+						</ROW>
+					</TABLE>
+					<CHAR/>
+				</TEXT>
+			</P>
+			<P>
+				<TEXT CharShape="2"/>
+			</P>
+		</SECTION>
+	</BODY>
+</HWPML>

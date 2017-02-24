@@ -1,0 +1,60 @@
+ 
+<html>    
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">     
+<title><spring:message code="approval.enforcepopup.title" /></title>
+<link rel="stylesheet" type="text/css" href="/ep/app/ref/css/main.css" />
+<script type="text/javascript" src="/ep/app/ref/js/jquery.js"></script>
+<script type="text/javascript" src="/ep/app/ref/js/jquery-ui-1.8.4.custom.min.js"></script>
+<script type="text/javascript" src="/ep/app/ref/js/blockUI.js"></script>
+       
+<script type="text/javascript" >
+var cnt=0      
+
+$(document).ready(function(){
+	var load = $("<div id='loading' width='35' height='35'><img src='/ep/app/ref/image/loadinfo.gif'/></div>").appendTo(document.body).hide();
+
+}
+function addDiv(){  
+//dd div 후에 div 안에있는 input 태그 value 참조하기
+cnt++;
+	var newDiv = $("#item"+cnt).clone(true);
+	$(newDiv).attr("id", "item"+(cnt+1));    
+	newDiv.insertAfter("#item"+cnt);	
+
+	alert("item" + cnt + " code : " + $("#code", "#item"+cnt).val());
+    
+}             
+function showDiv(){  
+	
+	$('<div>').load('/ep/app/ref/html/loading.html').dialog({     
+		modal:true, 
+	    autoOpen: true, 
+	    autoResize: true,      
+	    closeOnEscape: true,      
+	    show: 'highlight', 
+	    hide: 'highlight', 
+	    stack: true, 
+	    overlay: {opacity: 0.5, background: 'black'}, 
+		width:320, height:180, title:'Loading...'
+	});
+}
+function block () {
+	alert(';;');
+	$.blockUI({ message: $('#loading') ,timeout:2000 });        
+ 
+    
+}
+</script>
+</head>       
+<body>
+<input type="button" onclick="addDiv()" value="add div 후에 div 안에있는 input 태그 value 참조하기">
+ <div id="item1" width=50 height=50>
+ <input type=text id="code" value="123"/>
+ </div>
+<input type="button" onclick="showDiv()" value="div 대화상자">
+<input type="button" onclick="block()" value="BlockUI">
+  
+ 
+</body>
+</html>

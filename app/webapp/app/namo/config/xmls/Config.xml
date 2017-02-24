@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+	<Product>
+		<Name>Namo CrossEditor</Name>
+		<Logo></Logo>
+		<Help></Help>
+		<Info></Info>
+	</Product>
+	<General>
+		<WebServerOS>WINDOW</WebServerOS>
+		<WebServerInfo>Tomcat</WebServerInfo>
+		<WebLanguage>JSP</WebLanguage>
+		<ImageSavePath></ImageSavePath>
+		<Width>100%</Width>
+		<Height>450</Height>
+		<UploadFileNameType>Base64</UploadFileNameType>
+		<UploadFileViewer></UploadFileViewer>
+		<UploadFileSizeLimit></UploadFileSizeLimit>
+		<UploadFileSubDir>true</UploadFileSubDir>
+	</General>
+	<Editor>
+		<SetFocus>true</SetFocus>
+		<LineHeight></LineHeight>
+		<UnloadWarning>false</UnloadWarning>
+		<SetDebug>false</SetDebug>
+		<HTMLTabByTableLock>false</HTMLTabByTableLock>
+		<HTMLTabContents>body</HTMLTabContents>
+		<AccessibilityOption>0</AccessibilityOption>
+	</Editor>
+	<Document>
+		<CharSet>auto</CharSet>
+		<DocBaseURL></DocBaseURL>
+		<DocTitle></DocTitle>
+		<AllowContentScript>true</AllowContentScript>
+		<AllowContentIframe>true</AllowContentIframe>
+	</Document>
+	<UI>
+		<Skin>default</Skin>
+		<UserSkinColor></UserSkinColor>
+		<Css></Css>
+		<UserToolbar>false</UserToolbar>
+		<CreateToolbar></CreateToolbar>
+		<CreateTab>0|1|2</CreateTab>
+	</UI>
+	<User>
+		<AddMenu></AddMenu>
+	</User>
+</Configuration>

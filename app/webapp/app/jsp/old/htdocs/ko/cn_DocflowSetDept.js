@@ -1,0 +1,1 @@
+var ALERT_NONE_SELECT_DEPART = "부서를 선택하지 않았습니다.";

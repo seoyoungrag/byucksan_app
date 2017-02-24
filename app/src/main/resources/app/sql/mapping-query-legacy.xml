@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="legacy.test.insertTrip">
+			<statement>
+			<![CDATA[
+				INSERT INTO SYS_BIZ_TRIP
+					(
+					TRIP_CD, REG_DATE, FLAG, DEPT_ID, USER_ID, 
+					TITLE, OBJECTIVE, FROM_DATE, TO_DATE, AMOUNT
+					)
+					VALUES
+					(
+					:vo.tripCd, TO_DATE(:vo.regDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.flag, :vo.deptId, :vo.userId, 
+					:vo.title, :vo.objective, TO_DATE(:vo.fromDate, 'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.toDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.amount
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="legacy.test.updateTrip">
+			<statement>
+			<![CDATA[
+				UPDATE SYS_BIZ_TRIP
+				SET
+					FLAG = :vo.flag
+				WHERE
+					TRIP_CD = :vo.tripCd
+			]]>
+			</statement>
+		</query>		
+		
+		<query id="legacy.test.tripList">
+			<statement>
+			<![CDATA[
+				SELECT
+					TRIP_CD, TO_CHAR(REG_DATE, 'yyyy-mm-dd hh24:mi:ss') REG_DATE, FLAG, DEPT_ID, USER_ID, 
+					TITLE, OBJECTIVE, TO_CHAR(FROM_DATE, 'yyyy-mm-dd') FROM_DATE, TO_CHAR(TO_DATE, 'yyyy-mm-dd') TO_DATE, AMOUNT
+				FROM SYS_BIZ_TRIP
+				ORDER BY REG_DATE desc	
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.legacyTest.vo.LegacyTestVO"/>
+		</query>		
+
+		<query id="legacy.test.selectTrip">
+			<statement>
+			<![CDATA[
+				SELECT
+					TRIP_CD, TO_CHAR(REG_DATE, 'yyyy-mm-dd hh24:mi:ss') REG_DATE, FLAG, DEPT_ID, USER_ID, 
+					TITLE, OBJECTIVE, TO_CHAR(FROM_DATE, 'yyyy-mm-dd') FROM_DATE, TO_CHAR(TO_DATE, 'yyyy-mm-dd') TO_DATE, AMOUNT
+				FROM SYS_BIZ_TRIP
+				WHERE
+					TRIP_CD = :vo.tripCd 
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.legacyTest.vo.LegacyTestVO"/>
+		</query>		
+		<query id="legacy.test.deleteTrip">
+			<statement>
+			<![CDATA[
+				DELETE
+				FROM SYS_BIZ_TRIP
+				WHERE
+					TRIP_CD = :vo.tripCd 
+			]]>
+			</statement>
+		</query>		
+	</queries>
+</queryservice>

@@ -1,0 +1,71 @@
+<HTML><HEAD><TITLE>GetTextValue</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.2800.1106" name=GENERATOR>
+<link rel="stylesheet" href="../images/linkstyle.css">
+</HEAD>
+<BODY text=black vLink=purple aLink=red link=blue bgColor=white>
+<table border="0" width="640">
+    <tr>
+        <td width="10%" bgcolor="#EEEEEE" bordercolor="#999999">
+            <p align="center" class="pme">Param</p>
+        </td>
+        <td width="10%" bgcolor="#5A7FC1" bordercolor="#999999">
+            <p align="center" class="pme"><font color="white">Method</font></p>
+        </td>
+        <td width="10%" bgcolor="#EEEEEE" bordercolor="#999999">
+            <p align="center" class="pme">Event</p>
+        </td>
+        <td width="10%">
+            <p align="center" class="pme">&nbsp;</p>
+        </td>
+        <td width="50%">
+            <p align="center" class="pme">&nbsp;</p>
+        </td>
+    </tr>
+</table>
+<TABLE width=640 border=0>
+  <TBODY>
+    <TR>
+        <TD>
+            <H2>GetTextValue <sub>v1.1 or higher</sub></H2>
+            <P class=dscrpt>현재 편집 중인 문서의 내용을 텍스트 형식으로 얻어 옵니다.</P>
+            <H4>Syntax</H4>
+            <UL>
+                <PRE>HRESULT<span class="fname"> GetTextValue</span>();</PRE>
+            </UL>
+            <H4>Parameters</H4>
+            <p class="dscrpt">없음</p>
+            <H4>Return Values</H4>
+            <TABLE class=paradsc2 cellSpacing=0 borderColorDark=white width="375" 
+      borderColorLight=#999999 border=1>
+                <TR>
+                    <TD width="180" bgColor=#eeeeee>
+                        <P align=center>현재 편집 중인 문서의 내용</P>
+                    </TD>
+                    <TD width="185">
+                        <P>정상적으로 실행한 경우</P>
+                    </TD>
+                </TR>
+                <TR>
+                    <TD width="180" bgColor=#eeeeee>
+                        <P align=center>null</P>
+                    </TD>
+                    <TD width="185">
+                        <P>정상적으로 실행되지 않은 경우</P>
+                    </TD>
+                </TR>
+            </TABLE>
+            <H4>Remarks</H4>
+            <P class=dscrpt>크로스에디터의 Main class 호출 후 에디터가 로드된 다음 실행해야 정상적으로 실행됩니다. </P>
+            <H4>Sample Codes</H4>
+            <P class=scode>JavaScript</P>
+            <PRE class=scodedsc>var object = new NamoSE(“test”);
+object.editorStart();
+var returnValue = object.<b>GetTextValue</b>();
+alert(returnValue);</PRE>
+
+            <P class=dscrpt>&nbsp;</P>
+        </TD>
+    </TR>
+</TBODY></TABLE>
+<P>&nbsp;</P></BODY></HTML>

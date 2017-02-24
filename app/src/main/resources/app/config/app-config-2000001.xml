@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties extends="app">
+
+	<category name="etc" desc="기타 옵션">
+  		<property name="admin" value="" desc="관리자IP"/>
+  		<property name="regi_numbering" value="1" desc="등록대장 채번"/>
+  		<property name="numbering" value="1" desc="기타 채번"/>
+  		<property name="unitdate" value="2009-01-01 00:00:00" desc="문서 시작기준일"/>
+  		<property name="bindBatchType" value="default" desc="편철 일괄 등록 타입 설정 TYPE : default(회사별 기본 편철기준), custom(전년도 편철기준)"/>
+  		<property name="periodType" value="P" desc="기간유형(Y:연도 , P:회기)"/>
+	</category>      
+
+</properties>

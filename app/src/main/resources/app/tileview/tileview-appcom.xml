@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 전자결재 공통 처리 -->
+	<definition name="AppComController.insertPubReader" template="/app/jsp/appcom/ProcResult.jsp"/>
+	<definition name="AppComController.processPubReader" template="/app/jsp/appcom/ProcResult.jsp"/>
+	<definition name="AppComController.compareAppPwd" template="/app/jsp/appcom/ProcResult.jsp"/>
+	<!-- 문서관리정보수정 -->
+	<definition name="DocMngInfoController.updateDocMngInfo" template="/app/jsp/appcom/ProcResult.jsp"/>
+	
+	<!-- 관리자 첨부 수정 -->	
+	<definition name="AppComServlet.modifyAttach" template="/app/jsp/appcom/attach/ModifyAttach.jsp"/>
+	
+	<definition name="AppComController.listPostReader" template="/app/jsp/appcom/ListPostReader.jsp"/>
+	
+	<!-- 일상감사일지 관련 처리 -->
+	<definition name="AppComController.deleteAuditList" template="/app/jsp/appcom/ProcResult.jsp"/>
+	
+	<definition name="AppComController.ListPubReader" template="/app/jsp/appcom/ListPubReader.jsp"/>
+	
+	<!-- 최종결재일자 확인처리 -->
+	<definition name="AppComController.validateSignDate" template="/app/jsp/appcom/ValidateSignDate.jsp"/>
+	
+	<!-- 문서이력 정보 -->
+	<definition name="AppComController.docHisInfo" template="/app/jsp/appcom/docHisInfo.jsp"/>
+	
+	<!-- 서명인 날인 승인(비전자) -->
+	<definition name="AppComController.confirmStampSealList" template="/app/jsp/approval/ProcResult.jsp" />
+	<!-- 서명인 날인 삭제(비전자) -->
+	<definition name="AppComController.deleteStampSealList" template="/app/jsp/approval/ProcResult.jsp" />
+	
+</tiles-definitions>

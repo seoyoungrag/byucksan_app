@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!--
+			모바일 결재처리 큐
+			PROCESS_ID				(처리ID)
+			DOC_ID					(문서ID)
+			COMP_ID					(회사ID)
+			PROCESSOR_ID			(처리자ID)
+			PROCESSOR_DEPT_ID		(처리자부서ID)
+			PROCESS_TYPE			(처리타입)
+			PROCESS_DATE			(처리일자)
+			PROCESS_OPINION			(처리의견)
+		-->
+		<query id="mobile.selectMobileQueue">
+			<statement>
+			<![CDATA[
+				SELECT PROCESS_ID, DOC_ID, COMP_ID, PROCESSOR_ID, PROCESSOR_DEPT_ID, 
+				       PROCESS_TYPE, TO_CHAR(PROCESS_DATE,'YYYY-MM-DD HH24:MI:SS') AS PROCESS_DATE , PROCESS_OPINION, SIGN_YN 
+				FROM TGW_APP_MOBILE_QUEUE
+				ORDER BY PROCESS_DATE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mobile.vo.MobileQueueVO" />
+		</query>
+		
+		<query id="mobile.selectMobileQueueFileType">
+			<statement>
+			<![CDATA[
+				SELECT substr(b.display_name, length(b.display_name) - 3) AS FILE_TYPE,
+				       a.PROCESS_ID, a.DOC_ID, a.COMP_ID, a.PROCESSOR_ID, a.PROCESSOR_DEPT_ID, 
+					   a.PROCESS_TYPE, TO_CHAR(a.PROCESS_DATE,'YYYY-MM-DD HH24:MI:SS') AS PROCESS_DATE, a.PROCESS_OPINION, a.SIGN_YN
+				FROM TGW_APP_MOBILE_QUEUE a,
+				     TGW_FILE_INFO b
+				WHERE a.doc_id = b.doc_id
+				  and b.file_type = 'AFT001'     
+				ORDER BY PROCESS_DATE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mobile.vo.MobileQueueVO" />
+		</query>
+		
+		<query id="mobile.selectMobileQueueById">
+			<statement>
+			<![CDATA[
+				SELECT PROCESS_ID, DOC_ID, COMP_ID, PROCESSOR_ID, PROCESSOR_DEPT_ID, 
+				       PROCESS_TYPE, TO_CHAR(PROCESS_DATE,'YYYY-MM-DD HH24:MI:SS') AS PROCESS_DATE , PROCESS_OPINION, SIGN_YN 
+				FROM TGW_APP_MOBILE_QUEUE
+				WHERE
+					DOC_ID = :vo.docId 
+					AND PROCESSOR_ID = :vo.processorId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mobile.vo.MobileQueueVO" />
+		</query>
+
+		<!-- 
+			모바일 결재처리 후 Queue삭제
+			:vo.processId			(큐ID)
+		-->
+		<query id="mobile.deleteMobileQueue">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_MOBILE_QUEUE
+				 WHERE PROCESS_ID = :vo.processId
+			]]>
+			</statement>
+		</query>
+		
+ 		<query id="mobile.updateRetryCountMobileQueue">
+			<!-- 본문파일정보변경  -->
+            <statement>
+            <![CDATA[
+				UPDATE TGW_APP_MOBILE_QUEUE SET
+					   RETRY_COUNT = RETRY_COUNT + 1
+				WHERE  PROCESS_ID = :vo.processId
+             ]]>
+            </statement>
+        </query>
+		
+		<query id="mobile.selectAppLine">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, LINE_NUM,
+					LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, APPROVER_POS,
+					APPROVER_DEPT_ID, APPROVER_DEPT_NAME, APPROVER_ROLE, REPRESENTATIVE_ID, REPRESENTATIVE_NAME, 
+					REPRESENTATIVE_POS, REPRESENTATIVE_DEPT_ID, REPRESENTATIVE_DEPT_NAME, TRIM(ASK_TYPE) ASK_TYPE, TRIM(PROC_TYPE) PROC_TYPE, 
+					TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE, TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss') READ_DATE, ABSENT_REASON, REGISTER_ID, REGISTER_NAME, 
+					TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, EDIT_BODY_YN,	EDIT_ATTACH_YN, EDIT_LINE_YN, MOBILE_YN, 
+					PROC_OPINION, SIGN_FILE_NAME, LINE_HIS_ID, FILE_HIS_ID, BODY_HIS_ID
+				FROM TGW_APP_LINE
+				WHERE
+					DOC_ID = :vo.docId 
+				ORDER BY LINE_ORDER, LINE_SUB_ORDER
+					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppLineVO" />
+		</query>
+		
+ 		<query id="mobile.updateBodyFileInfo">
+			<!-- 본문파일정보변경  -->
+            <statement>
+            <![CDATA[
+				UPDATE TGW_FILE_INFO SET
+					   FILE_ID = :vo.fileId
+				WHERE  DOC_ID = :vo.docId
+				AND    FILE_TYPE = 'AFT001'
+             ]]>
+            </statement>
+        </query>
+		
+		<!-- 모바일 결재처리를 위한 QUEUE 입력 -->
+		<query id="mobile.insertMobileQueue">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_MOBILE_QUEUE
+				(
+					  PROCESS_ID, DOC_ID, COMP_ID, PROCESSOR_ID, PROCESSOR_DEPT_ID, 
+					  PROCESS_TYPE, PROCESS_DATE, PROCESS_OPINION, SIGN_YN
+				)
+				VALUES
+				(
+					:vo.processId, 
+					:vo.docId,
+					:vo.compId,
+					:vo.processorId,
+					:vo.processorDeptId,
+					:vo.processType,
+					TO_DATE(:vo.processDate, 'yyyy-mm-dd hh24:mi:ss'),
+					:vo.processOpinion,
+					:vo.signYn
+				)
+			]]>
+			</statement>
+		</query>	
+		
+	</queries>
+</queryservice>

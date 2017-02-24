@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 옵션처리결과 공통 -->
+	<definition name="EnvController.procResultOption" template="/app/jsp/env/ProcResultOption.jsp"/>
+	<definition name="EnvController.admin.selectOptionComImg" template="/app/jsp/env/SelectOptionComImg.jsp"/>
+	<definition name="EnvController.commonImage" template="/app/jsp/env/EnvImage.jsp"/>
+	<definition name="EnvController.admin.imgPreView" template="/app/jsp/env/SelectOptionComImg.jsp"/>
+	<definition name="EnvController.selectLogoSymbol" template="/app/jsp/env/SelectLogoSymbol.jsp"/>
+
+	<!-- 전체관리자 환경설정 -->
+	<definition name="EnvController.admin.menuOptionGroupAdmin" template="/app/jsp/env/MenuOptionGroupAdmin.jsp"/>
+	<definition name="EnvController.admin.menuOptionAdmin" template="/app/jsp/env/MenuOptionAdmin.jsp"/> 
+	<definition name="EnvController.admin.selectOptionProcess" template="/app/jsp/env/SelectOptionProcess.jsp"/>
+	<definition name="EnvController.admin.selectOptionBox" template="/app/jsp/env/SelectOptionBox.jsp"/>
+	<definition name="EnvController.admin.selectOptionRegister" template="/app/jsp/env/SelectOptionRegister.jsp"/>
+	<definition name="EnvController.admin.selectOptionInspection" template="/app/jsp/env/SelectOptionInspection.jsp"/>
+	<definition name="EnvController.admin.selectOptionReadShow" template="/app/jsp/env/SelectOptionReadShow.jsp"/>
+	<definition name="EnvController.admin.selectOptionCLS" template="/app/jsp/env/SelectOptionCLS.jsp"/>
+	<definition name="EnvController.admin.selectOptionEtc" template="/app/jsp/env/SelectOptionEtc.jsp"/>
+	<definition name="EnvController.admin.selectOptionDisabled" template="/app/jsp/env/SelectOptionDisabled.jsp"/>
+	<definition name="EnvController.admin.selectOptionNoticeCert" template="/app/jsp/env/SelectOptionNoticeCert.jsp"/>
+	<definition name="EnvController.admin.selectOptionDocNumber" template="/app/jsp/env/SelectOptionDocNumber.jsp"/>
+	<definition name="EnvController.admin.selectOptionGenEtc" template="/app/jsp/env/SelectOptionGenEtc.jsp"/>
+	<definition name="EnvController.admin.insertFormEnv" template="/app/jsp/env/InsertFormEnv.jsp"/>
+	<definition name="EnvController.admin.testLDAP" template="/app/jsp/env/SelectLDAPTest.jsp"/>
+	
+	<!-- 처리과 문서담당자 환경설정 -->
+	<!-- 발신명의 관리 -->
+	<definition name="EnvController.charge.selectEnvSenderTitle" template="/app/jsp/env/SelectEnvSenderTitle.jsp"/>
+	<!-- 결재경로그룹 관리 -->
+	<definition name="EnvController.listEnvLineGroup" template="/app/jsp/env/SelectEnvLineGroup.jsp"/>
+	<definition name="EnvController.envAppLine" template="/app/jsp/env/EnvAppLine.jsp"/>
+	<definition name="EnvController.envAppPreReader" template="/app/jsp/env/EnvAppPreReader.jsp"/>
+	<!-- 수신처그룹 관리 -->
+	<definition name="EnvController.listEnvRecvGroup" template="/app/jsp/env/ListEnvRecvGroup.jsp"/>
+	<definition name="EnvController.insertEnvRecvPop" template="/app/jsp/env/InsertEnvRecvPop.jsp"/>
+	<!-- 우편번호 검색 -->
+	<definition name="EnvController.selectZipcodePop" template="/app/jsp/env/SelectZipcodePop.jsp"/>
+	<!-- 부재정보 -->
+	<definition name="EnvController.envEmptyInfo" template="/app/jsp/env/EnvEmptyInfo.jsp"/>
+	<definition name="EnvController.envDeptMember" template="/app/jsp/env/EnvDeptMemberPop.jsp"/>
+	<!-- 코드관리 -->
+	<definition name="EnvController.admin.listEnvCodeMng" template="/app/jsp/env/EnvAppCodeMng.jsp"/>
+	<definition name="EnvController.admin.updateAppCode" template="/app/jsp/env/EnvAppCodePop.jsp"/>
+	<!-- 부서정보 -->
+	<definition name="EnvController.charge.selectEnvDeptInfo" template="/app/jsp/env/EnvDeptInfo.jsp"/>
+	<!-- 개인정보 -->
+	<definition name="EnvController.selectEnvPersonalInfo" template="/app/jsp/env/EnvPersonalInfo.jsp"/>
+	<definition name="EnvController.updateImagePop" template="/app/jsp/env/UpdateEnvImage.jsp"/>	
+	<!-- 공람자그룹 관리 -->
+	<definition name="EnvController.listEnvPubViewGroup" template="/app/jsp/env/ListEnvPubViewGroup.jsp"/>
+	<definition name="EnvController.envPubView" template="/app/jsp/env/EnvPubViewPop.jsp"/>
+	<!-- 회기 관리 -->
+	<definition name="EnvController.admin.periodInfo" template="/app/jsp/env/EnvPeriodInfo.jsp"/>
+
+	<!-- 서식관리 -->
+	<definition name="EnvFormController.admincharge.ListEnvForm" template="/app/jsp/env/ListEnvForm.jsp"/>
+
+	<!-- 서식함 관리 -->
+	<definition name="EnvFormController.admincharge.insertCategory" template="/app/jsp/env/EnvFormResult.jsp"/>
+	<definition name="EnvFormController.admincharge.listCategory" template="/app/jsp/env/ListEnvCategory.jsp"/>
+	<definition name="EnvFormController.admincharge.formResult" template="/app/jsp/env/EnvFormResult.jsp"/>
+	<definition name="EnvFormController.admincharge.ListEnvForm" template="/app/jsp/env/ListEnvForm.jsp"/>	
+	<definition name="EnvFormController.admincharge.openEnvForm" template="/app/jsp/env/SelectEnvFormPop.jsp"/>
+	<definition name="EnvFormController.admincharge.updateEnvForm" template="/app/jsp/env/UpdateEnvForm.jsp"/>
+	<definition name="EnvFormController.admincharge.selectEnvForm" template="/app/jsp/env/SelectEnvForm.jsp"/>
+	<definition name="EnvFormController.form.listEnvFormPop" template="/app/jsp/env/ListEnvFormPop.jsp"/>
+	<definition name="EnvFormController.admin.listEnvFormMain" template="/app/jsp/env/ListEnvFormMain.jsp"/>
+	<definition name="EnvFormController.charge.listEnvFormMain" template="/app/jsp/env/ListEnvFormMain.jsp"/>
+	<definition name="EnvFormController.admincharge.updateEnvCategory" template="/app/jsp/env/UpdateEnvCategory.jsp"/>
+	<definition name="EnvFormController.admincharge.insertEnvForm" template="/app/jsp/env/InsertEnvForm.jsp"/>
+	<definition name="EnvFormController.admincharge.insertEnvCategory" template="/app/jsp/env/InsertEnvCategory.jsp"/>
+	
+	<!-- 감사담당부서 관리 -->
+	<definition name="EnvController.user.selectAuditorForDept" template="/app/jsp/env/SelectAuditorForDept.jsp"/>
+	
+	<!-- 임원선택목록팝업 -->
+	<definition name="EnvController.user.listOfficerPop" template="/app/jsp/env/ListOfficerPop.jsp"/>
+	
+	<!-- 연계시시스템조회 -->
+	<definition name="EnvBizSystemController.admincharge.selectEnvBizSystem" template="/app/jsp/env/UpdateEnvBizSystem.jsp"/>
+	<!-- 연계시시스템목록조회 -->
+	<definition name="EnvBizSystemController.admincharge.listEnvBizSystem" template="/app/jsp/env/ListEnvBizSystem.jsp"/>
+	<definition name="EnvBizSystemController.admincharge.listEnvBizSystemPop" template="/app/jsp/env/ListEnvBizSystemPop.jsp"/>
+	<definition name="EnvBizSystemController.admincharge.result" template="/app/jsp/env/EnvBizSystemResult.jsp"/>
+	<definition name="EnvBizSystemController.admincharge.insertEnvBizSystem" template="/app/jsp/env/InsertEnvBizSystem.jsp"/>
+	
+	<!-- 조직이미지관리 -->
+	<definition name="EnvController.listOrgImage" template="/app/jsp/env/ListOrgImage.jsp"/><!-- 조직이미지관리 목록 -->
+	<definition name="EnvController.selectOrgImage" template="/app/jsp/env/SelectOrgImage.jsp"/><!-- 조직이미지관리 조회 -->
+	<definition name="EnvController.insertOrgImage" template="/app/jsp/env/InsertOrgImage.jsp"/><!-- 조직이미지관리 등록 -->
+	
+	<!-- 문서번호 생성체계  -->
+	<definition name="EnvController.envDocNumber" template="/app/jsp/appcom/AppResult.jsp"/>	
+	
+	<!-- 문서공유부서 관리 -->
+	<definition name="EnvController.ListShareDept" template="/app/jsp/env/ListShareDept.jsp"/>
+</tiles-definitions>

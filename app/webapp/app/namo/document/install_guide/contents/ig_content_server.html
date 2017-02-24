@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>나모 크로스에디터 설치 도움말</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="author" content="Namo Interactive Inc." />
+	<meta name="author" content="Namo CrossEditor" />
+	<link href="../common.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div id="wrap">
+		<h1 id="logo">CrossEditor</h1>
+		<h2><a name="server_guide">서버 가이드</a></h2>
+			<h3><a name="server_guide_jeus">Jeus</a></h3>
+				<div class="contents_caution">
+					<p>Jeus WAS 사용 시 다음 설정을 확인해 주시길 바랍니다.</p>
+				</div>
+				<h4>1. Jeus 환경설정 MimeType 확인</h4>
+					<div class="contents_box2">
+						<p>"$JEUS_HOME/config/'hostname'/'hostname'_servlet_engine1/webcommon.xml"에 아래 2개의 MimeType이 설정되어 있지 않으면 추가합니다.</p>
+						<div class="contents_code">
+							<p>&lt;mime-mapping&gt;</p>
+							<p class="tab1">&lt;extension&gt;css&lt;/extension&gt;</p>
+							<p class="tab1">&lt;mime-type&gt;text/css&lt;/mime-type&gt;</p>
+							<p>&lt;/mime-mapping&gt;</p>
+							<p>&lt;mime-mapping&gt;</p>
+							<p class="tab1">&lt;extension&gt;xml&lt;/extension&gt;</p>
+							<p class="tab1">&lt;mime-type&gt;text/xml&lt;/mime-type&gt;</p>
+							<p>&lt;/mime-mapping&gt;</p>
+						</div>
+					</div>
+				<h4>2. 웹서버의 환경설정 MimeType 확인</h4>
+					<h5>2-1. WS Engine을 사용하는 경우</h5>
+						<div class="contents_box2">	
+							<p>"$JEUS_HOME/config/'hostname'/'hostname'_ws_engine1/WSMain.xml"에 아래 2개의 MimeType이 설정되어 있지 않으면 추가합니다.</p>
+							<div class="contents_code">
+								<p>&lt;ext&gt;</p>
+								<p class="tab1">&lt;name&gt;css&lt;/name&gt;</p>
+								<p class="tab1">&lt;mimetype&gt;text/css&lt;/mimetype&gt;</p>
+								<p class="tab1">&lt;svr-type&gt;HTML&lt;/svr-type&gt;</p>
+								<p>&lt;/ext&gt;</p>
+								<p>&lt;ext&gt;</p>
+								<p class="tab1">&lt;name&gt;xml&lt;/name&gt;</p>
+								<p class="tab1">&lt;mimetype&gt;application/xml&lt;/mimetype&gt;</p>
+								<p class="tab1">&lt;svr-type&gt;HTML&lt;/svr-type&gt;</p>
+								<p>&lt;/ext&gt;</p>
+							</div>
+						</div>
+					<h5>2-2. WebtoB를 사용하는 경우</h5>
+						<div class="contents_box2">
+							<p>&nbsp;"webtob/config/http.m"에 아래 2개의 MimeType이 설정되어 있지 않으면 추가합니다.</p>
+							<div class="contents_code">
+								<p>*EXT</p>
+								<p>css&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MimeType = "text/css", SVRTYPE = HTML</p>
+								<p>xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MimeType = "application/xml", SVRTYPE = HTML</p>
+							</div>
+						</div>
+				<h4>3. cos.jar (업로드 모듈) 등록 확인</h4>
+					<div class="contents_box2">
+						<p>SERVLET을 사용하는 경우에는 "크로스에디터 설치 폴더/websource/servlet/lib/" 폴더에 cos.jar가 포함되어 있습니다.</p>
+						<p>"$WebApplication_Root/WEB-INF/lib/" 에 cos.jar 파일이 없으면 <a href="http://servlets.com/cos/">http://servlets.com/cos/</a>에서 다운로드 받아 추가합니다.</p>
+						<p>만일 위의 경로에 cos.jar를 추가하여도 파일업로드가 동작 하지 않거나 시스템 에러가 발생하면 "$JEUS_HOME/lib/system/"에 cos.jar 파일을 추가합니다.</p>
+					</div>
+				<h4>4. Jeus 재시작</h4>
+					<div class="contents_box2">
+						<p>위의 사항 중 한 가지라도 적용을 하였다면 Jeus를 재시작 해주시길 바랍니다.</p>
+					</div>
+			<h3><a name="server_guide_weblogic">WebLogic</a></h3>
+				<h4>1. MimeType 확인</h4>
+					<div class="contents_box2">
+						<p>"$WebApplication_Root/WEB-INF/web.xml"에 아래 2개의 MimeType이 설정되어 있지 않으면 추가합니다.</p>
+						<div class="contents_code">
+							<p>&lt;mime-mapping&gt;</p>
+							<p class="tab1">&lt;extension&gt;css&lt;/extension&gt;</p>
+							<p class="tab1">&lt;mime-type&gt;text/css&lt;/mime-type&gt;</p>
+							<p>&lt;/mime-mapping&gt;</p>
+							<p>&lt;mime-mapping&gt;</p>
+							<p class="tab1">&lt;extension&gt;xml&lt;/extension&gt;</p>
+							<p class="tab1">&lt;mime-type&gt;text/xml&lt;/mime-type&gt;</p>
+							<p>&lt;/mime-mapping&gt;</p>
+						</div>
+					</div>
+				<h4>2. cos.jar (업로드 모듈) 등록 확인</h4>
+					<div class="contents_box2">
+						<p>SERVLET을 사용하는 경우에는 "크로스에디터 설치 폴더/websource/servlet/lib/" 폴더에 cos.jar가 포함되어 있습니다.</p>
+						<p>"$WebApplication_Root/WEB-INF/lib/" 에 cos.jar 파일이 없으면 <a href="http://servlets.com/cos/">http://servlets.com/cos/</a>에서 다운로드 받아 추가합니다.</p>
+					</div>
+				<h4>3. WebLogic 재시작</h4>
+					<div class="contents_box2">
+						<p>위의 사항 중 한 가지라도 적용을 하였다면 WebLogic을 재시작 해주시길 바랍니다.</p>
+					</div>
+			<h3><a name="server_guide_websphere">WebSphere</a></h3>
+				<h4>1. MimeType 확인</h4>
+					<div class="contents_box2">
+						<p>WebSphere 관리자 페이지에서 아래 2개의 MimeType이 설정되어 있지 않으면 추가합니다.</p>
+						<div class="contents_code">
+							<p>extension : css</p>
+							<p>mime-type : text/css</p>
+							<p><br /></p>
+							<p>extension : xml</p>
+							<p>mime-type : text/xml</p>
+						</div>
+					</div>
+				<h4>2. cos.jar (업로드 모듈) 등록 확인</h4>
+					<div class="contents_box2">
+						<p>SERVLET을 사용하는 경우에는 "크로스에디터 설치 폴더/websource/servlet/lib/" 폴더에 cos.jar가 포함되어 있습니다.</p>
+						<p>"$WebApplication_Root/WEB-INF/lib/" 에 cos.jar 파일이 없으면 <a href="http://servlets.com/cos/">http://servlets.com/cos/</a>에서 다운로드 받아 추가합니다.</p>
+					</div>
+				<h4>3. WebSphere 재시작</h4>
+					<div class="contents_box2">
+						<p>위의 사항 중 한 가지라도 적용을 하였다면 WebSphere를 재시작 해주시길 바랍니다.</p>
+					</div>
+			<h3><a name="server_guide_iplanet">iPlanet</a></h3>
+				<h4>1. MimeType 확인</h4>
+					<div class="contents_box2">
+						<p>"$WebServer 설치 폴더/https-xxx/config/mime.conf"에 아래 2개의 MimeType이 설정되어 있지 않으면 추가합니다.</p>
+						<div class="contents_code">
+							<p>type=text/css&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exts=css</p>
+							<p>type=text/xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exts=xml</p>
+						</div>
+					</div>
+				<h4>2. cos.jar (업로드 모듈) 등록 확인</h4>
+					<div class="contents_box2">
+						<p>SERVLET을 사용하는 경우에는 "크로스에디터 설치 폴더/websource/servlet/lib/" 폴더에 cos.jar가 포함되어 있습니다.</p>
+						<p>"$WebApplication_Root/WEB-INF/lib/" 에 cos.jar 파일이 없으면 <a href="http://servlets.com/cos/">http://servlets.com/cos/</a>에서 다운로드 받아 추가합니다.</p>
+					</div>
+				<h4>3. iPlanet 재시작</h4>
+					<div class="contents_box2">
+						<p>위의 사항 중 한 가지라도 적용을 하였다면 iPlanet을 재시작 해주시길 바랍니다.</p>
+					</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?><queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">	
+	<queries>
+		<query id="login.insertLoginHistory">			<statement>			<![CDATA[				INSERT INTO TGW_ACC_HIS (						COMP_ID, HIS_ID, USER_ID, USER_NAME, POS, 						USER_IP, DEPT_ID, DEPT_NAME, USE_DATE, USED_TYPE                    )                     VALUES (                        :vo.compId, :vo.hisId, :vo.userId, :vo.userName, :vo.pos,                         :vo.userIp, :vo.deptId, :vo.deptName, TO_DATE(:vo.useDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.usedType                     ) 			]]>			</statement>		</query>		<query id="login.deleteLoginHistory">			<statement>			<![CDATA[
+				DELETE FROM TGW_ACC_HIS				WHERE USE_DATE <= TO_DATE(:useDate, 'yyyy-mm-dd hh24:mi:ss')			]]>			</statement>		</query>			</queries>
+</queryservice>

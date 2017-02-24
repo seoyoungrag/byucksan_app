@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CONFIGURATION>
+ 
+    <SYSTEM_NAME>
+        <DESCRIPTION>ACUBE Portal</DESCRIPTION>
+        <VALUE>EP</VALUE>
+    </SYSTEM_NAME>
+
+    <SSO_SERVERS>
+        <SSO_SERVER>
+            <NAME>SERVER1</NAME>
+            <IP>10.1.20.123</IP>
+            <PORT>80</PORT>
+            <DESCRIPTION></DESCRIPTION>
+        </SSO_SERVER>
+<!--       
+        <SSO_SERVER>
+            <NAME>SERVER2</NAME>
+            <IP>70.7.33.186</IP>
+            <PORT>7778</PORT>
+            <DESCRIPTION></DESCRIPTION>
+        </SSO_SERVER>
+  
+        <SSO_SERVER>
+            <NAME>SERVER3</NAME>
+            <IP>70.7.33.189</IP>
+            <PORT>7779</PORT>
+            <DESCRIPTION></DESCRIPTION>
+        </SSO_SERVER>
+ -->
+    </SSO_SERVERS>
+ 
+    <DEBUG>
+        <DESCRIPTION>DEBUG</DESCRIPTION>
+        <VALUE>Y</VALUE>
+    </DEBUG>
+    
+</CONFIGURATION>
+

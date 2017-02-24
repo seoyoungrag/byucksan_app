@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+
+	<!-- 빈페이지 리턴 -->
+	<definition name="ListBlankReturn" template="about:blank"/>
+	
+	
+	<!-- 결재역할별통계(부서/개인별) 관련 -->
+	<definition name="StatisticsAdminController.ApprovalRoleStatisticsDept" template="/app/jsp/statistics/ApprovalRoleStatisticsDept.jsp"/>	
+	<definition name="StatisticsAdminController.ApprovalRoleStatisticsPerson" template="/app/jsp/statistics/ApprovalRoleStatisticsPerson.jsp"/>
+	
+	<!-- 문서구분별통계(부서/개인별) 관련-->
+	<definition name="StatisticsAdminController.DocKindStatisticsDept" template="/app/jsp/statistics/DocKindStatisticsDept.jsp"/>
+	<definition name="StatisticsAdminController.DocKindStatisticsPerson" template="/app/jsp/statistics/DocKindStatisticsPerson.jsp"/>
+	
+	<!-- 전자결재건수 관련-->
+	<definition name="StatisticsAdminController.ApprovalCntStatistics" template="/app/jsp/statistics/ApprovalCntStatistics.jsp"/>
+	
+	<!-- 발송건수 관련-->
+	<definition name="StatisticsAdminController.SendCntStatistics" template="/app/jsp/statistics/SendCntStatistics.jsp"/>
+	
+	<!-- 접수건수 관련-->
+	<definition name="StatisticsAdminController.ReceiveCntStatistics" template="/app/jsp/statistics/ReceiveCntStatistics.jsp"/>
+	
+	<!-- 대장문서건수 관련-->
+	<definition name="StatisticsAdminController.RegistCntStatistics" template="/app/jsp/statistics/RegistCntStatistics.jsp"/>
+	
+	<!-- 부서별 발송대기문서 현황을 조회-->
+	<definition name="StatisticsAdminController.SendStatusStatistics" template="/app/jsp/statistics/SendStatusStatistics.jsp"/>
+	<definition name="StatisticsAdminController.PrintSendStatusStatistics" template="/app/jsp/statistics/PrintSendStatusStatistics.jsp"/>
+	<definition name="StatisticsAdminController.ListSendStatus" template="/app/jsp/statistics/ListSendStatus.jsp"/>
+	<definition name="StatisticsAdminController.PrintListSendStatus" template="/app/jsp/statistics/PrintListSendStatus.jsp"/>
+	
+	<!-- 부서별 접수대기문서 현황을 조회-->
+	<definition name="StatisticsAdminController.ReceiptStatusStatistics" template="/app/jsp/statistics/ReceiptStatusStatistics.jsp"/>
+	<definition name="StatisticsAdminController.PrintReceiptStatusStatistics" template="/app/jsp/statistics/PrintReceiptStatusStatistics.jsp"/>
+	<definition name="StatisticsAdminController.ListReceiptStatus" template="/app/jsp/statistics/ListReceiptStatus.jsp"/>
+	<definition name="StatisticsAdminController.PrintListReceiptStatus" template="/app/jsp/statistics/PrintListReceiptStatus.jsp"/>
+	
+	<!-- 개인별 문서미처리 현황을 조회-->
+	<definition name="StatisticsAdminController.ProcessStatusStatistics" template="/app/jsp/statistics/ProcessStatusStatistics.jsp"/>
+	<definition name="StatisticsAdminController.PrintProcessStatusStatistics" template="/app/jsp/statistics/PrintProcessStatusStatistics.jsp"/>
+	<definition name="StatisticsAdminController.ListProcessStatus" template="/app/jsp/statistics/ListProcessStatus.jsp"/>
+	<definition name="StatisticsAdminController.PrintListProcessStatus" template="/app/jsp/statistics/PrintListProcessStatus.jsp"/>
+	
+</tiles-definitions>

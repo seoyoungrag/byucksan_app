@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 로그아웃 호출페이지 -->
+	<definition name="LoginController.logout" template="/app/jsp/login/Logout.jsp"/>
+	
+	<!-- 세션종료 호출페이지 -->
+	<definition name="LoginController.sessionClear" template="/app/jsp/login/SessionClear.jsp"/>
+
+	<!-- 전자결재암호인증(외부모듈용) -->
+	<definition name="LoginController.certificationAppPwd" template="/app/jsp/login/CertificationAppPwd.jsp"/>
+
+	<!-- 우리은행 임시 로그인 페이지 -->
+	<definition name="LoginController.wooriBank" template="/app/jsp/login/loginForWooriBank.jsp"/>
+
+	<!-- 세션만료시에 팝업/프레임/일반페이지 체크하는 호출페이지 by 서영락, 2016-01-11 --> 
+	<definition name="LoginController.sessionWindowCheck" template="/app/jsp/login/sessionWindowCheck.jsp"/>
+
+</tiles-definitions>

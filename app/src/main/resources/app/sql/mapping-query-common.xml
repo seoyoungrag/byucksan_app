@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!-- TGW_APP_CODE -->
+		<query id="common.listAppCode">
+			<statement>
+			<![CDATA[
+				SELECT
+					CODE_ID, CODE_VALUE, PARENT_ID, DESCRIPTION 
+				FROM TGW_APP_CODE
+				WHERE
+					PARENT_ID = :parentId
+				ORDER BY CODE_ID ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.AppCodeVO" />
+		</query>		
+
+
+		<!-- TGW_APP_OPTION -->
+		<query id="common.listAppEnvOption">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, OPTION_ID, USE_YN, OPTION_VALUE, OPTION_TYPE, DESCRIPTION 
+				FROM TGW_APP_OPTION
+			#if ($compId)
+				WHERE COMP_ID = :compId
+			#end	
+				ORDER BY COMP_ID ASC, OPTION_TYPE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>		
+
+
+		<!-- TGW_QUEUE_TO_DOCMGR -->
+		<query id="common.insertQueueToDocmgr">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_QUEUE_TO_DOCMGR
+					(
+					DOC_ID, COMP_ID, STATE_ORDER, TITLE, CHANGE_REASON,
+					PROC_STATE, PROC_DATE, REGIST_DATE, USING_TYPE, PROC_MESSAGE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, (SELECT COUNT(STATE_ORDER) + 1 FROM TGW_QUEUE_TO_DOCMGR WHERE DOC_ID = :vo.docId AND COMP_ID = :vo.compId),
+				#if ($vo.title.equals("") && $vo.usingType.equals("DPI001"))
+					(SELECT TITLE FROM TGW_APP_DOC WHERE DOC_ID = :vo.docId AND COMP_ID = :vo.compId),
+				#end	
+				#if ($vo.title.equals("") && $vo.usingType.equals("DPI002"))
+					(SELECT TITLE FROM TGW_ENF_DOC WHERE DOC_ID = :vo.docId AND COMP_ID = :vo.compId),
+				#end	
+				#if (!$vo.title.equals(""))
+					:vo.title,
+				#end	
+					:vo.changeReason, :vo.procState, TO_DATE(:vo.procDate, 'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.usingType, :vo.procMessage
+					)
+			]]>
+			</statement>
+		</query>		
+
+
+		<!-- QUEUE -->
+		<query id="common.insertQueue">
+			<statement>
+			<![CDATA[
+				INSERT INTO QUEUE_APP
+					(
+					SEQNO, TABLE_NAME, SRCHKEY, COMPID, ACTION
+					)
+				VALUES
+					(
+					S_QUEUE.NEXTVAL, :vo.tableName, :vo.srchKey, :vo.compId, :vo.action
+					)
+			]]>
+			</statement>
+		</query>		
+	</queries>
+</queryservice>

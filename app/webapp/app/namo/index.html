@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<title>Namo CrossEditor</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="./js/namo_scripteditor.js"></script>
+	<script type="text/javascript" language="javascript">
+		function ce_ap(obj){
+			if (obj.value == "ShowTab(false)"){
+				CrossEditor.ShowTab(false);
+				obj.value = "ShowTab(true)";
+			}else{
+				CrossEditor.ShowTab(true);
+				obj.value = "ShowTab(false)";
+			}
+		}
+
+		function ce_N(obj){
+			if (obj.value == "ShowToolbar(Hide All)"){
+				CrossEditor.ShowToolbar(0, 0);
+				CrossEditor.ShowToolbar(1, 0);
+				obj.value = "ShowToolbar(Show FirstLine)";
+			}else if (obj.value == "ShowToolbar(Show FirstLine)"){
+				CrossEditor.ShowToolbar(0, 1);
+				CrossEditor.ShowToolbar(1, 0);
+				obj.value = "ShowToolbar(Show All)";
+			}else{
+				CrossEditor.ShowToolbar(0, 1);
+				CrossEditor.ShowToolbar(1, 1);
+				obj.value = "ShowToolbar(Hide All)";
+			}
+		}
+
+		function ce_as(obj){
+			if (obj.value == "SetUISize(800,600)"){
+				CrossEditor.SetUISize("800", "600");
+				obj.value = "SetUISize(100%,600)";
+			}else if (obj.value == "SetUISize(100%,600)"){
+				CrossEditor.SetUISize("100%", "600");
+				obj.value = "SetUISize(720,450)";
+			}else if (obj.value == "SetUISize(720,450)"){
+				CrossEditor.SetUISize("720", "450");
+				obj.value = "SetUISize(800,600)";
+			}
+		}
+	</script>
+	<style type="text/css">body,td,textarea,input{font-family:굴림,gulim,Arial,MS UI Gothic,SimSun,MingLiU,AppleGothic,sans-serif;font-size:12px;color:#666666;line-height:16px;}</style> 
+</head>
+
+<body>
+	<table>
+		<tr>
+			<td><h3><span id="ce_wy"></span>&nbsp;Sample Page - <span id="ce_acI"></span></h3></td>
+		</tr>
+		<tr>
+			<td style="width:730px;">
+				<textarea id="namoeditor1" name="namoeditor1" Style="width:730px;height:450px;font-size:10pt"><p>Welcome to <span style="font-weight:bold;">CrossEditor 2.0</span> sample page</p></textarea>
+				<script type="text/javascript" language="javascript">
+					var CrossEditor = new NamoSE('namoeditor1');
+					CrossEditor.params.Width = "100%";
+					CrossEditor.params.FullScreen = false;
+					CrossEditor.EditorStart();
+					function OnInitCompleted(e){
+						e.editorTarget.SetBodyValue(document.getElementById("namoeditor1").value);
+						}
+				</script>
+			</td>
+		</tr>
+	</table>
+	<table style="margin-top:20px;">
+		<tr>
+			<td style="text-align:left"><input type="button" id="ce_alP" name="ce_alP" value="GetValue()" onclick="alert(CrossEditor.GetValue());"></td>
+			<td style="text-align:left"><input type="button" id="ce_alC" name="ce_alC" value="GetValue('XHTML')" onclick="alert(CrossEditor.GetValue('XHTML'));"></td>
+			<td style="text-align:left"><input type="button" id="ce_amq" name="ce_amq" value="GetBodyValue()" onclick="alert(CrossEditor.GetBodyValue());"></td>
+			<td style="text-align:left"><input type="button" id="ce_amD" name="ce_amD" value="GetHeadValue()" onclick="alert(CrossEditor.GetHeadValue());"></td>
+		</tr>
+		<tr>
+			<td style="text-align:left"><input type="button" id="GetTextValue" name="GetTextValue" value="GetTextValue()" onclick="alert(CrossEditor.GetTextValue());"></td>
+			<td style="text-align:left"><input type="button" id="ce_asT" name="ce_asT" value="InsertHyperlink(str, src)" onclick="CrossEditor.InsertHyperlink('Namo Interactive Inc.','http://www.namo.co.kr');"></td>
+			<td style="text-align:left"><input type="button" id="ce_asY" name="ce_asY" value="InsertImage(src)" onclick="CrossEditor.InsertImage('http://www.namo.co.kr/images/common/logo.gif','Image Title');"></td>
+			<td style="text-align:left"><input type="button" id="ce_atp" name="ce_atp" value="InsertValue()" onclick="CrossEditor.InsertValue(1, '<span style=color:red>InsertValue() API Test</span>');"></td>
+		</tr>
+		<tr>
+			<td style="text-align:left"><input type="button" id="ce_asi" name="ce_asi" value="SetBodyValue()" onclick="CrossEditor.SetBodyValue('safasfasf')"></td>
+			<td style="text-align:left"><input type="button" id="ce_aro" name="ce_aro" value="ShowTab(false)" onclick="ce_ap(this);"></td>
+			<td style="text-align:left"><input type="button" id="ShowToolbar" name="ShowToolbar" value="ShowToolbar(Hide All)" onclick="ce_N(this);"></td>
+			<td style="text-align:left"><input type="button" id="SetUISize" name="SetUISize" value="SetUISize(800,600)" onclick="ce_as(this);"></td>
+		</tr>
+	</table>
+</body>
+</html>
