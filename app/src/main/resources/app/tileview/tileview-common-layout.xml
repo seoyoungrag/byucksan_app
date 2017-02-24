@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 조직 트리가져오기 -->
+	<definition name="OrgLineController.getOrgTreeUser" template="/app/jsp/common/OrgUsersPop.jsp"/><!-- 사용자 -->
+	<definition name="OrgLineController.getOrgDeptTreeUser" template="/app/jsp/common/OrgDeptUsersPop.jsp"/><!-- 부서+사용자 -->
+	<definition name="OrgLineController.getOrgTreeDept" template="/app/jsp/common/OrgDeptPop.jsp"/><!-- 부서 -->
+	<definition name="OrgLineController.getOrgTreeDeptMulti" template="/app/jsp/common/OrgDeptMultiPop.jsp"/><!-- 부서(다중선택) -->
+	<definition name="OrgLineController.getDeptAll" template="/app/jsp/common/OrgDeptAllPop.jsp"/><!-- 전체부서 -->	
+	<definition name="OrgLineController.getOrgTreeDeptNonButton" template="/app/jsp/common/OrgDeptNonButton.jsp"/><!-- 부서 (버튼 없음) -->
+	<definition name="OrgController.getDeptAuth" template="/app/jsp/common/OrgDeptAuthPop.jsp"/><!-- 열람부서 -->	
+	<definition name="OrgLineController.sameNameUsers" template="/app/jsp/common/SameNameUsers.jsp"/><!-- 동명이인 검색팝업 -->
+	<definition name="OrgLineController.selectClassificationList" template="/app/jsp/common/OrgClassificationPop.jsp"/><!-- 분류체계 -->
+	<definition name="OrgLineController.searchDept" template="/app/jsp/common/SearchDept.jsp"/>
+	<definition name="OrgLineController.searchSymbol" template="/app/jsp/common/SearchSymbol.jsp"/>
+	<definition name="OrgLineController.searchAgency" template="/app/jsp/common/SearchAgency.jsp"/>
+	<definition name="OrgLineController.getInstitution" template="/app/jsp/common/OrgInstitutionPop.jsp"/><!-- 기관선택 -->
+	<!-- 사용자조회 -->
+	<definition name="OrgController.userInfo" template="/app/jsp/common/userInfoPop.jsp"/><!-- 분류체계 -->
+</tiles-definitions>
+

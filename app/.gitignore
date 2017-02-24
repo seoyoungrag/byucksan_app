@@ -1,0 +1,9 @@
+/build
+/db
+/etc
+/share
+/temp
+/anyframe.config
+/build_package.xml
+/build.properties
+/build.xml

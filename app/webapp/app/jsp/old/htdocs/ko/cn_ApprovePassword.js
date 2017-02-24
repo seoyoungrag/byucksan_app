@@ -1,0 +1,1 @@
+var ALERT_WRONG_PASSWORD				= "잘못된 비밀번호입니다. 다시 입력해주십시오.";

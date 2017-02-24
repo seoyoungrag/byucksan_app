@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="resource.selectResourceList">
+			<statement>
+			<![CDATA[
+				SELECT RESOURCE_ID, LANG_TYPE, RESOURCE_NAME
+				FROM TGW_APP_RESOURCE
+				WHERE COMP_ID = :vo.compId
+				  AND RESOURCE_ID = :vo.resourceId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.resource.vo.ResourceVO" />
+		</query>
+		
+		<query id="resource.selectResourceByLangType">
+			<statement>
+			<![CDATA[
+				SELECT RESOURCE_NAME
+				FROM TGW_APP_RESOURCE
+				WHERE COMP_ID = :vo.compId
+				  AND RESOURCE_ID = :vo.resourceId
+				  AND LANG_TYPE = :vo.langType
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.resource.vo.ResourceVO" />
+		</query>
+
+		<query id="resource.insertResource">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RESOURCE (COMP_ID, RESOURCE_ID, LANG_TYPE, RESOURCE_NAME, RESOURCE_TYPE)
+				VALUES (:vo.compId, :vo.resourceId, :vo.langType, :vo.resourceName, :vo.resourceType)		
+			]]>
+			</statement>
+		</query>
+
+		<query id="resource.updateResource">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_RESOURCE 
+				SET RESOURCE_NAME = :vo.resourceName
+				WHERE COMP_ID = :vo.compId 
+				  AND RESOURCE_ID = :vo.resourceId		
+				  AND LANG_TYPE = :vo.langType
+			]]>
+			</statement>
+		</query>
+		
+		<query id="resource.deleteResource">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_RESOURCE
+				WHERE COMP_ID =:vo.compId
+				  AND RESOURCE_ID = :vo.resourceId
+			]]>
+			</statement>
+		</query>					
+
+		<!-- TGW_APP_OPTION 테이블를 사용하는 화면에서만 사용한다. -->
+		<query id="resource.updateTableOptionValue">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_OPTION
+				SET OPTION_VALUE = {{ vo.updateValue }} 
+				WHERE COMP_ID = :vo.compId 
+				  AND OPTION_ID = {{ vo.conditionValue }}
+			]]>
+			</statement>
+		</query>		
+		
+		<!-- TGW_APP_OPTION 테이블를 사용하지 않는 화면에서만 사용한다. -->
+		<query id="resource.updateTableByResourceId">
+			<statement>
+			<![CDATA[
+				UPDATE {{ vo.tableName }}
+				SET {{ vo.updateField }} = {{ vo.updateValue }} 
+				WHERE COMP_ID = :vo.compId 
+				  AND {{ vo.conditionField }} = {{ vo.conditionValue }}
+			]]>
+			</statement>
+		</query>		
+				
+	</queries>
+</queryservice>

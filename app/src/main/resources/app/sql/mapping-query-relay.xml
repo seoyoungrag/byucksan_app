@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!--
+			문서유통 (발송 큐 리스트)
+			RELAY_ID				(유통ID)
+			DOC_ID					(문서번호)
+			COMP_ID					(회사ID)
+			RELAY_TYPE				(발송타입)
+			REGISTER_ID				(등록자ID)
+			REGISTER_NAME			(등록자명)
+			REGIST_DATE				(등록일자)
+		-->
+		<query id="relay.getSendListInfo">
+			<statement>
+			<![CDATA[
+				SELECT RELAY_ID, DOC_ID, COMP_ID, RELAY_TYPE,
+					   REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE,'YYYY-MM-DD HH24:MI:SS') AS REGIST_DATE , :vo.useCompId as USE_COMP_ID
+				  FROM TGW_APP_RELAY_QUEUE
+				 ORDER BY REGIST_DATE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.relay.vo.RelayVO" />
+		</query>
+		
+		<!-- 
+			발송문서 기본정보
+			DOC_ID					(문서ID)
+			RECEIVE_ID				(수신처ID)
+			RELAY_TYPE				(발신구분)
+			TITLE					(문서제목)
+			SEND_ORG_CODE			(발송기관코드)
+			SEND_ORG_NAME			(발송기관명)
+			SEND_DEPT_ID			(발송부서코드)
+			SEND_DEPT_NAME			(발송부서명)
+			SEND_NAME				(기안자명)
+			SEND_DATE				(발송일자, 시행일자)
+			PUBLICATION				(공개구분)
+			REC						(수신처명)
+			VIA						(경유)
+			SENDER_TITLE			(발신명의)
+			ZIPCODE					(우편번호)
+			ADDRESS					(주소)
+			HOME_URL				(홈페이지)
+			TELEPHONE				(전화번호)
+			FAX						(팩스)
+			EMAIL					(이메일)
+			HEAD_CAMPAIGN			(머리표제)
+			FOOT_CAMPAIGN			(바닥표제)
+			REG_NUMBER				(등록번호)
+			REG_NUMBER_CODE			(등록코드)
+			OPINION					(재발송요청의견)
+		 -->
+		<query id="relay.getSendPackListInfo">
+			<statement>
+			<![CDATA[
+				SELECT RELAY.DOC_ID,
+				       RELAY.RECEIVE_ID,
+				       RELAY.RELAY_TYPE as DOC_TYPE,
+						
+					   SENDER.SEND_DEPT_ID as SEND_DEPT_ID,
+				       SENDER.SEND_DEPT as SEND_DEPT_NAME,
+				       SENDER.SEND_NAME AS SEND_NAME, 
+				       
+					   SEND.COMP_ID as SEND_ORG_CODE,
+					   SEND.SEND_ORG_NAME as SEND_ORG_NAME,
+					   SEND.SEND_ORG_NAME as ORGAN,
+
+				       SEND.ENFORCE_DATE AS ENFORCE_DATE,
+				       SEND.RECEIVERS as REC,
+				       SEND.VIA,
+				       SEND.SENDER_TITLE as SENDER_TITLE,
+				       SEND.POST_NUMBER as ZIPCODE,
+				       SEND.ADDRESS,
+				       SEND.HOMEPAGE as HOME_URL,
+				       SEND.TELEPHONE,
+				       SEND.FAX,
+				       SEND.EMAIL,
+				       SEND.HEADER_CAMP as HEAD_CAMPAIGN,
+				       SEND.FOOTER_CAMP as FOOT_CAMPAIGN,
+				       
+				       DOC.TITLE,
+				       DOC.OPEN_LEVEL as PUBLICATION,
+				       NVL(DOC.DEPT_CATEGORY, DOC.DRAFTER_DEPT_NAME) || '-' || DOC.SERIAL_NUMBER as REG_NUMBER,
+				       DOC.DRAFTER_DEPT_ID || DOC.SERIAL_NUMBER as REG_NUMBER_CODE,
+				       
+				       OPINION.OPINION,
+				       
+				       TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS') AS SEND_DATE,
+				       CNT.SEND_COUNT
+				  FROM TGW_APP_RELAY_RECV RELAY,
+				       TGW_APP_RELAY_SENDER SENDER,
+                       TGW_SEND_INFO SEND,
+                       TGW_APP_RECV RECV,
+                       TGW_APP_DOC DOC,
+                       TGW_APP_RELAY_OPINION OPINION,
+                       (SELECT DOC_ID, COUNT(DOC_ID) AS SEND_COUNT FROM TGW_APP_RECV GROUP BY DOC_ID) CNT
+				 WHERE RELAY.RELAY_ID = SENDER.RELAY_ID
+				   AND RELAY.RELAY_ID = OPINION.RELAY_ID(+)
+				   AND RELAY.DOC_ID = SEND.DOC_ID
+				   AND RELAY.DOC_ID = RECV.DOC_ID
+				   AND RELAY.DOC_ID = DOC.DOC_ID
+				   AND RELAY.DOC_ID = CNT.DOC_ID
+				   AND ((RELAY.RECEIVE_ID = RECV.RECV_DEPT_ID AND RECV.REF_DEPT_ID IS NULL) OR (RELAY.RECEIVE_ID = RECV.REF_DEPT_ID))
+				   AND RELAY.RELAY_ID = :vo.relayId
+				   AND RECV.ENF_TYPE = 'DET011'
+				 ORDER BY RECV.RECEIVER_ORDER
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.relay.vo.PackInfoVO" />
+		</query>
+		
+		<!-- 
+			발송 Ack 기본정보
+			RECEIVE_ID				(수신처ID)
+			RELAY_TYPE				(발신구분)
+			SEND_ORG_CODE			(발송기관코드)
+			SEND_ORG_NAME			(발송기관명)
+			SEND_DEPT_ID			(발송부서코드)
+			SEND_DEPT_NAME			(발송부서명)
+			SEND_NAME				(발송자명)
+			SEND_DATE				(발송일자)
+			DOC_ID					(문서ID)
+			TITLE					(문서제목)
+			OPINION					(재발송 요청사항)
+		 -->
+		<query id="relay.getSendAckPackListInfo">
+			<statement>
+			<![CDATA[
+				SELECT RELAY.RECEIVE_ID,
+				       RELAY.RELAY_TYPE as DOC_TYPE,
+				       
+				       RELAY.COMP_ID as SEND_ORG_CODE,
+				       '' as SEND_ORG_NAME,
+				       SEND.SEND_DEPT_ID AS SEND_DEPT_ID,
+				       SEND.SEND_DEPT AS SEND_DEPT_NAME,
+				       SEND.SEND_NAME,
+				       TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS') AS SEND_DATE,
+
+				       DOC.TITLE, 
+					   DOC.ORIGIN_DOC_ID AS DOC_ID,
+				       
+				       OPINION.OPINION
+				  FROM TGW_APP_RELAY_RECV RELAY,
+				       TGW_APP_RELAY_SENDER SEND,
+				       TGW_APP_RELAY_RECV_DOC DOC,
+				       TGW_APP_RELAY_OPINION OPINION
+				 WHERE RELAY.RELAY_ID = SEND.RELAY_ID(+)
+				   AND RELAY.RELAY_ID = OPINION.RELAY_ID(+)
+				   AND RELAY.DOC_ID = DOC.DOC_ID(+)
+				   AND RELAY.RELAY_ID = :vo.relayId
+				 ORDER BY RELAY.RELAY_ID
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.relay.vo.PackInfoVO" />
+		</query>
+		
+		<!--
+			발송문서 결제라인(Foot Approval)
+			<property name="ART010" value="ART010"/> //기안
+			<property name="ART020" value="ART020"/> //검토
+			<property name="ART050" value="ART050"/> //결재
+			<property name="ART052" value="ART052"/> //대결
+			<property name="ART051" value="ART051"/> //전결
+			<property name="ART053" value="ART053"/> //1인전결
+			
+			<property name="ART030" value="ART030"/> //협조
+			
+			PART					(경로구분) [ 'ASSIST(협조) = ART030', 'APPROVAL(결재) = ART010, ART020, ART050, ART052, ART051, ART053' ]
+			LINE_ORDER				(결재자순위)
+			SIGNPOSITION			(직위)
+			TYPE					(결재유형)
+			NAME					(문자서명)
+			SIGNIMAGE				(전자이미지서명)
+			PDATE					(결재일자)
+			PTIME					(결재시간)
+		-->
+		<query id="relay.getAppLineInfo">
+			<statement>
+			<![CDATA[
+				SELECT * FROM (
+								SELECT 'APPROVAL' as PART, ROWNUM as LINE_ORDER, A.*
+								  FROM (SELECT LINE.APPROVER_POS as SIGNPOSITION,
+								               LINE.ASK_TYPE as TYPE,
+								               LINE.APPROVER_NAME as NAME,
+								               LINE.SIGN_FILE_NAME as SIGNIMAGE,
+								               TO_CHAR(LINE.PROCESS_DATE, 'YYYY.MM.DD') as PDATE,
+								               TO_CHAR(LINE.PROCESS_DATE, 'HH24:MI:SS') as PTIME
+								          FROM TGW_APP_LINE LINE
+								         WHERE LINE.ASK_TYPE IN ('ART010', 'ART020', 'ART050', 'ART051', 'ART052', 'ART053')
+								           AND LINE.DOC_ID = :vo.docId
+								         ORDER BY LINE.DOC_ID, LINE.LINE_ORDER) A
+								 ORDER BY ROWNUM
+						  )
+						  UNION ALL
+				SELECT * FROM (
+								SELECT 'ASSIST' as PART, ROWNUM as LINE_ORDER, A.*
+								  FROM (SELECT LINE.APPROVER_POS as SIGNPOSITION,
+								               LINE.ASK_TYPE as TYPE,
+								               LINE.APPROVER_NAME as NAME,
+								               LINE.SIGN_FILE_NAME as SIGNIMAGE,
+								               TO_CHAR(LINE.PROCESS_DATE, 'YYYY.MM.DD') as PDATE,
+								               TO_CHAR(LINE.PROCESS_DATE, 'HH24:MI:SS') as PTIME
+								          FROM TGW_APP_LINE LINE
+								         WHERE LINE.ASK_TYPE = 'ART030'
+								           AND LINE.DOC_ID = :vo.docId
+								         ORDER BY LINE.DOC_ID, LINE.LINE_ORDER) A
+								 ORDER BY ROWNUM
+						  )
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.relay.vo.LineInfoVO" />
+		</query>
+		
+		<!--
+			발송문서 관련파일
+			DOC_ID					(문서ID)
+			COMP_ID					(회사ID)
+			PROCESSOR_ID			(처리자ID)
+			TEMP_YN					(임시여부)
+			FILE_ID					(파일ID)
+			FILE_NAME				(파일고유명)
+			DISPLAY_NAME			(파일표시명)
+			FILE_TYPE				(파일구분)
+			FILE_SIZE				(파일크기)
+			IMAGE_WIDTH				(이미지가로)
+			IMAGE_HEIGHT			(이미지세로)
+			FILE_ORDER				(파일순서)
+			REGISTER_ID				(등록자ID)
+			REGISTER_NAME			(등록자명)
+			REGIST_DATE				(등록일자)
+						
+			<category name="AFT"> //파일구분
+				<property name="AFT001" value="AFT001"/> //본문(HWP)
+				<property name="AFT002" value="AFT002"/> //본문(HTML)
+				<property name="AFT003" value="AFT003"/> //본문(TXT, HTML)
+				<property name="AFT004" value="AFT004"/> //첨부
+				<property name="AFT005" value="AFT005"/> //관인
+				<property name="AFT006" value="AFT006"/> //서명인
+				<property name="AFT007" value="AFT007"/> //서명
+				<property name="AFT008" value="AFT008"/> //로고
+				<property name="AFT009" value="AFT009"/> //심볼
+				<property name="AFT010" value="AFT010"/> //첨부(업무시스템연계)
+				<property name="AFT011" value="AFT011"/> //문서유통을 위한 본문 추출 content.xml 파일
+				<property name="AFT012" value="AFT012"/> //문서유통을 위한 본문 추출 pubdoc.xml 파일
+				<property name="AFT013" value="AFT013"/> //문서유통 표제부/본문부에 본문부 파일
+			</category>
+		 -->
+		<query id="relay.getAttachListInfo">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID,
+					   FILE_NAME, DISPLAY_NAME, FILE_TYPE,
+					   FILE_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT, FILE_ORDER,
+					   REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE,'YYYY-MM-DD HH24:MI:SS') AS REGIST_DATE
+				  FROM TGW_FILE_INFO
+				 WHERE FILE_TYPE in ('AFT004', 'AFT005', 'AFT006', 'AFT007', 'AFT008', 'AFT009', 'AFT011', 'AFT012', 'AFT013')
+				 #if ($vo.fileType && !$vo.fileType.equals(""))
+				   AND FILE_TYPE = :vo.fileType
+				 #end
+				   AND DOC_ID = :vo.docId
+				 ORDER BY FILE_TYPE DESC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>
+		
+		<!-- 
+			공문서유통 Ack 입력
+			DOC_ID					(문서ID)
+			ERROR_ID				(오류ID)
+			ERROR_TYPE				(오류타입)
+			DOC_ID					(문서ID)
+			TITLE					(문서제목)
+			SEND_DEPT_ID			(발송부서ID)
+			SEND_DEPT_NAME			(발송부서명)
+			SEND_NAME				(발송자명)
+			FILE_ID					(파일ID)
+			FILE_NAME				(파일이름)
+			DESCRIPTION				(오류세부정보)
+		-->
+		<query id="relay.insertRelayAckHis">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_ACK_HIS
+				( HIS_ID, DOC_ID, COMP_ID, RECEIVE_ID, ACK_TYPE, ACK_DATE, ACK_DEPT, ACK_NAME, ACK_XML, REGIST_DATE)
+				VALUES
+				( :vo.hisId, :vo.docId, :vo.compId, :vo.receiveId, :vo.ackType, TO_DATE(:vo.ackDate,'yyyy-MM-dd hh24:mi:ss'), :vo.ackDept, :vo.ackName, :vo.ackXml, TO_DATE(:vo.registDate,'yyyy-MM-dd hh24:mi:ss') )
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>
+		
+		<!-- 
+			공문서유통 발신처리후 Queue삭제
+			:vo.relayId				(큐ID)
+		-->
+		<query id="relay.deleteRelayQueue">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_RELAY_QUEUE
+				 WHERE RELAY_ID = :vo.relayId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>
+
+		<!-- 
+			공문서유통 처리 오류사항 정보 입력
+			DOC_ID					(문서ID)
+			ERROR_ID				(오류ID)
+			ERROR_TYPE				(오류타입)
+			DOC_ID					(문서ID)
+			TITLE					(문서제목)
+			SEND_DEPT_ID			(발송부서ID)
+			SEND_DEPT_NAME			(발송부서명)
+			SEND_NAME				(발송자명)
+			FILE_ID					(파일ID)
+			FILE_NAME				(파일이름)
+			DESCRIPTION				(오류세부정보)
+		-->
+		<query id="relay.insertErrorInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_DOC_ERROR
+				( ERROR_ID, ERROR_TYPE, DOC_ID, TITLE, SEND_DEPT_ID, SEND_DEPT_NAME, SEND_NAME, FILE_ID, FILE_NAME, DESCRIPTION, REGIST_DATE )
+				VALUES
+				( :vo.errorId, :vo.errorType, :vo.docId, :vo.title, :vo.sendDeptId, :vo.sendDeptName, :vo.sendName, :vo.fileId, :vo.fileName, :vo.description, TO_DATE(:vo.registDate,'yyyy-MM-dd hh24:mi:ss') )
+				
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 
+			공문서유통 수신 내용 입력
+			DOC_ID					(문서ID)
+			COMP_ID					(회사ID)
+			ORIGIN_DOC_ID			(수신문서 원본ID)
+			FILE_ID					(파일ID)
+			FILE_NAME				(수신문서 파일명)
+			TITLE					(문서제목)
+			SEND_DATE				(발송일자)
+			SEND_ID					(발송부서)
+			SEND_DEPT				(발송부서명)
+			SEND_NAME				(발송자)
+			RECEIVE_ID				(수신부서ID)
+			RECEIVE_DEPT			(수신부서명)
+			RECEIVE_NAME			(수신자)
+			STATE					(Ack상태)
+		-->
+		<query id="relay.insertRelayRecvDoc">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_RECV_DOC
+				( DOC_ID, COMP_ID, ORIGIN_DOC_ID, FILE_ID, FILE_NAME, TITLE, SEND_DATE, SEND_ID, SEND_DEPT, SEND_NAME,
+				  RECEIVE_ID, RECEIVE_DEPT, RECEIVE_NAME, STATE)
+				VALUES
+				( :vo.docId, :vo.compId, :vo.originDocId, :vo.fileId, :vo.fileName, :vo.title, :vo.sendDate, :vo.sendId, :vo.sendDept, :vo.sendName, 
+				  :vo.receiveId, :vo.receiveDept, :vo.receiveName, :vo.state )
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 
+			공문서유통 수신 내용 수정
+			:vo.date				(회사ID)
+			:vo.state				(문서ID)
+			:vo.originDocId			(수신문서 원본ID)
+			:vo.receiveId			(수신처ID)
+			:vo.compId				(회사ID)
+		-->
+		<query id="relay.updateRelayRecvDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_RELAY_RECV_DOC
+                   SET LAST_UPDATED_DATE = TO_DATE(:vo.sendDate,'yyyy-MM-dd hh24:mi:ss'),
+                       STATE = :vo.state
+                 WHERE ORIGIN_DOC_ID = :vo.originDocId
+                   AND RECEIVE_ID = :vo.receiveId
+                   AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 
+			공문서유통 접수문서 정보 입력
+			DOC_ID					(문서ID)
+			COMP_ID					(기관ID)
+			ORIGIN_DOC_ID			(원본문서ID)
+			ORIGIN_COMP_ID			(원본기관ID)
+			DOC_TYPE				(문서유형)
+			ENF_TYPE				(시행유형)
+			TITLE					(제목)
+			DOC_STATE				(문서상태)
+			DOC_NUMBER				(문서생산번호)
+			OPEN_LEVEL				(정보공개)
+			RECEIVE_DATE			(수신날짜)
+			REGISTER_ID				(등록자ID)
+			REGISTER_NAME			(등록자명)
+			REGISTER_DATE			(등록일자)
+			ELECTRON_DOC_YN			(전자문서여부)
+			ATTACH_COUNT			(첨부파일갯수)
+			DELETE_YN				(삭제여부)
+			URGENCY_YN				(긴급여부)
+			HANDOVER_YN				(인계여부)
+			MOBILE_YN				(모바일결재여부)
+			TRANSFER_YN				(문서이관여부)
+			UNREGIST_YN				(등록취소여부)
+			SENDER_NAME				(발송자명)
+			SENDER_DEPT_ID			(발송부서ID)
+			SENDER_DEPT_NAME		(발송부서명)
+			SENDER_DEPT_COMP_ID		(발송기관ID)
+			SENDER_DEPT_COMP_NAME	(발송기관명)
+			SEND_DATE				(발송일짜)
+		-->
+		<query id= "relay.insertEnfDoc">
+			<statement>
+			<![CDATA[
+			INSERT INTO TGW_ENF_DOC (
+				DOC_ID,
+				COMP_ID,
+				ORIGIN_DOC_ID,
+				ORIGIN_COMP_ID,
+				DOC_TYPE,
+				ENF_TYPE,
+				TITLE,
+				DOC_STATE,
+				DOC_NUMBER,
+				OPEN_LEVEL,
+				RECEIVE_DATE,
+				DISTRIBUTE_YN,
+				REGISTER_ID,
+				REGISTER_NAME,
+				REGIST_DATE,
+				LAST_UPDATE_DATE,
+				ELECTRON_DOC_YN,
+				ATTACH_COUNT,
+				DELETE_YN,
+				URGENCY_YN,
+				HANDOVER_YN,
+				MOBILE_YN,
+				TRANSFER_YN,
+				UNREGIST_YN,
+				SENDER_NAME,
+				SENDER_DEPT_ID,
+				SENDER_DEPT_NAME,
+				SENDER_COMP_ID,
+				SENDER_COMP_NAME,
+				SEND_DATE
+			) VALUES (
+				:vo.docId,
+				:vo.compId,
+				:vo.originDocId,
+				:vo.originCompId,
+				:vo.docType,
+				:vo.enfType,
+				:vo.title,
+				'ENF100',
+				:vo.docNumber,
+				:vo.openLevel,
+				TO_DATE(:vo.receiveDate,'yyyy-MM-dd hh24:mi:ss'),
+				:vo.distributeYn,
+				:vo.registerId,
+				:vo.registerName,
+				TO_DATE(:vo.registDate,'yyyy-MM-dd hh24:mi:ss'),
+				TO_DATE(:vo.registDate,'yyyy-MM-dd hh24:mi:ss'),
+				'Y',
+				:vo.attachCount,
+				'N',
+				'N',
+				'N',
+				'N',
+				'N',
+				'N',
+				:vo.senderName,
+				:vo.senderDeptId,
+				:vo.senderDeptName,
+				:vo.senderCompId,
+				:vo.senderCompName,
+				TO_DATE(:vo.sendDate,'yyyy-MM-dd hh24:mi:ss')
+			)
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 공문서유통 수신자정보 테이블에 정보 입력 -->
+		<query id="relay.insertPubSendInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_SENDER
+				(
+					  RELAY_ID, SEND_ID, SEND_NAME, SEND_DEPT_ID, SEND_DEPT, SEND_DATE
+				)
+				VALUES
+				(
+					:vo.relayId, 
+					:vo.sendId,
+					:vo.sendName,
+					:vo.sendDeptId,
+					:vo.sendDept,
+					TO_DATE(:vo.sendDate,'yyyy-MM-dd hh24:mi:ss')
+				)
+			]]>
+			</statement>
+		</query>		
+
+
+		<!-- 공문서 유통정보를 위한 QUEUE 입력 -->
+		<query id="relay.insertPubQueueInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_QUEUE
+				(
+					  RELAY_ID, DOC_ID, COMP_ID, RELAY_TYPE, REGISTER_ID, REGISTER_NAME, REGIST_DATE
+				)
+				VALUES
+				(
+					:vo.relayId, 
+					:vo.docId,
+					:vo.compId,
+					:vo.relayType,
+					:vo.registerId,
+					:vo.registerName,
+					sysdate
+				)
+			]]>
+			</statement>
+		</query>	
+		
+		<!-- 공문서 유통정보를 위한 수신부서정보  입력 (발신문서) -->
+		<query id="relay.insertPubRecvInfoSend">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_RECV ( RELAY_ID, RECEIVE_ID, RECEIVE_NAME, DOC_ID, COMP_ID, RELAY_TYPE )
+				SELECT :vo.relayId as RELAY_ID , nvl(REF_DEPT_ID,RECV_DEPT_ID), nvl(REF_DEPT_NAME,RECV_DEPT_NAME), DOC_ID, COMP_ID, :vo.relayType as RELAY_TYPE
+				FROM   TGW_APP_RECV
+				WHERE  DOC_ID = :vo.docId
+				AND    COMP_ID = :vo.compId
+				AND    ENF_TYPE = 'DET011'
+				#if ($vo.receiveDept && !$vo.receiveDept.equals(""))
+				AND    ((RECV_DEPT_ID = :vo.receiveDept AND REF_DEPT_ID IS NULL) OR (REF_DEPT_ID = :vo.receiveDept))
+				#end
+				#if ($vo.recvOrderList && !$vo.recvOrderList.equals(""))
+				AND    RECEIVER_ORDER in ( {{ vo.recvOrderList }} )
+				#end
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 공문서 유통정보를 위한 수신부서정보  입력 (수신문서) -->
+		<query id="relay.insertPubRecvInfoReceive">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_RECV
+				( RELAY_ID, RECEIVE_ID, RECEIVE_NAME, DOC_ID, COMP_ID, RELAY_TYPE )
+				VALUES
+				(:vo.relayId, :vo.receiveId, :vo.receiveName, :vo.docId, :vo.compId, :vo.relayType)
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 공문서 재발송 요청 내용 입력 -->
+		<query id="relay.insertOpinionInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_OPINION ( RELAY_ID, OPINION )
+				VALUES
+				(:vo.relayId, :vo.comment)
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 공문서 수신문서 enfDocId 갱신  -->
+		<query id="relay.insertRelayDocInfo">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RELAY_RECV_DOC ( DOC_ID, COMP_ID, ORIGIN_DOC_ID, FILE_ID, FILE_NAME
+				                                   , TITLE, SEND_DATE, SEND_ID, SEND_DEPT, SEND_NAME
+				                                   , RECEIVE_ID, RECEIVE_DEPT, RECEIVE_NAME, STATE, LAST_UPDATED_DATE, REGIST_DATE )
+				SELECT :vo.docId as DOC_ID, COMP_ID, ORIGIN_DOC_ID, FILE_ID, FILE_NAME
+				                                   , TITLE, SEND_DATE, SEND_ID, SEND_DEPT, SEND_NAME
+				                                   , RECEIVE_ID, RECEIVE_DEPT, RECEIVE_NAME, STATE, LAST_UPDATED_DATE, REGIST_DATE
+				  FROM TGW_APP_RELAY_RECV_DOC
+				 WHERE DOC_ID = :vo.originDocId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 공문서 수신문서 enfDocId 갱신  -->
+		<query id="relay.deleteRelayDocInfo">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_RELAY_RECV_DOC
+				 WHERE DOC_ID = :vo.originDocId
+			]]>
+			</statement>
+		</query>
+		
+		
+	</queries>
+</queryservice>

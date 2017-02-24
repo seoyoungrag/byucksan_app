@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+
+	<!-- 연계 목록-->
+	<definition name="LegacyTestController.listLegacyTest" template="/app/jsp/legacyTest/LegacyTestList.jsp"/>
+	
+	<!-- 연계 쓰기-->
+	<definition name="LegacyTestController.listWrite" template="/app/jsp/legacyTest/LegacyTestWrite.jsp"/>
+	
+	<!-- 연계 등록완료-->
+	<definition name="LegacyTestController.processOK" template="/app/jsp/approval/ProcResult.jsp"/>
+	
+	<!-- 연계 수정화면-->
+	<definition name="LegacyTestController.viewModify" template="/app/jsp/legacyTest/LegacyTestModify.jsp"/>
+	
+ 
+	
+ 
+
+</tiles-definitions>

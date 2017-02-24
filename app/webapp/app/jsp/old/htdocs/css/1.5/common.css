@@ -1,0 +1,29 @@
+BODY			{font-size:9pt; font-family:±¼¸²; margin:15 0 0 0;}
+IMG				{border:0}
+TABLE			{font-size:9pt; font-family:±¼¸²;}
+TD				{font-size:9pt; font-family:±¼¸²;}
+INPUT			{font-size:9pt; font-family:±¼¸²; ime-mode:active}
+TEXTAREA		{font-size:9pt; font-family:±¼¸²; ime-mode:active}
+SELECT			{font-size:9pt; font-family:±¼¸²;}
+
+TD.title_1		{font-size:9pt; font-family:±¼¸²; font-weight:bold;}
+TH.ctd_1		{font-size:9pt; font-family:±¼¸²; color:#000000; background-color:#a7cce6;}
+TH.ctd_3		{font-size:9pt; font-family:±¼¸²; color:#000000; background-color:#bbd5e8;}
+TD.ctd_1 		{font-size:9pt; font-family:±¼¸²; color:#000000; background-color:#a7cce6; font-weight:bold; text-align:center;}
+TD.ctd_3		{font-size:9pt; font-family:±¼¸²; color:#000000; background-color:#bbd5e8; font-weight:bold; text-align:center;}
+TD.td_content_1	{font-size:9pt; font-family:±¼¸²; color:#000000; background-color:#e2e2e2;}
+TD.td_content_3	{font-size:9pt; font-family:±¼¸²; color:#000000; background-color:#f7f7f7;}
+
+A				{font-size:9pt; font-family:±¼¸²; color:#000000; text-decoration:none;}
+A:hover			{font-size:9pt; font-family:±¼¸²; color:#860042; text-decoration:underline; cursor:hand;}
+A.bt1:link		{font-size:9pt; font-family:±¼¸²; color:#555555; text-decoration:none; font-weight:normal; }
+A.bt1:active	{font-size:9pt; font-family:±¼¸²; color:#555555; text-decoration:none; font-weight:normal; }
+A.bt1:visited	{font-size:9pt; font-family:±¼¸²; color:#555555; text-decoration:none; font-weight:normal; }
+A.bt1:hover		{font-size:9pt; font-family:±¼¸²; color:#67a0c4; text-decoration:none; font-weight:normal; }
+
+A.tree:hover	{font-size:9pt; font-family:±¼¸²; color:red; text-decoration:none;}
+
+INPUT.distxt	{font-size:9pt; background:#e0e0e0;}
+INPUT.entxt		{font-size:9pt; background:#ffffff;}
+TABLE.back		{font-size:9pt; background:#f1f5f1;}
+TD.tit			{font-size:9pt; background:#d0e0d0; border: 1px #c0d0c0 solid; height:20; text-align:center;padding:2 0 0 0;}

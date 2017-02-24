@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	<queries>
+		<query id="mig.selectRegDoc">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID,
+				  TITLE
+				FROM
+				  (SELECT TDOC.DOC_ID      AS DOC_ID,
+				    TDOC.BODY_TYPE         AS BODY_TYPE,
+				    TDOC.FLOW_STATUS       AS FLOW_STATUS,
+				    TDOC.ORG_SYMBOL        AS ORG_SYMBOL,
+				    TDOC.CLASS_NUMBER      AS CLASS_NUMBER,
+				    TDOC.SERIAL_NUMBER     AS SERIAL_NUMBER,
+				    TDOC.IS_ATTACHED       AS IS_ATTACHED,
+				    TDOC.IS_BATCH          AS IS_BATCH,
+				    TDOC.IS_OPEN           AS IS_OPEN,
+				    TDOC.SECURITY_PASS     AS SECURITY_PASS,
+				    TDOC.TITLE             AS TITLE,
+				    TDOC.DOC_CATEGORY      AS DOC_CATEGORY,
+				    TDOC.ENFORCE_BOUND     AS ENFORCE_BOUND,
+				    TDOC.SEND_DATE         AS ENFORCE_DATE,
+				    TDOC.IS_POST           AS IS_POST,
+				    TAPPRLINE.DRAFTER_NAME AS DRAFT_NAME,
+				    TAPPRLINE.DRAFTER_ID   AS DRAFT_UID,
+				    TAPPRLINE.CHIEF_ID     AS CHIEF_UID,
+				    TAPPRLINE.CHIEF_NAME   AS CHIEF_NAME,
+				    TAPPRLINE.COMP_DATE    AS COMPLETED_DATE
+				  FROM TGW_REGI_DOC TDOC,
+				    TGW_REGI_APPRLINE TAPPRLINE
+				  WHERE TDOC.REGISTRY_TYPE='Y'
+				  AND TDOC.KEEP_STATUS    = 0
+				  AND TDOC.DOC_ID         = TAPPRLINE.DOC_ID
+				  AND TAPPRLINE.LINE_NAME = '0'
+				  AND  not exists (SELECT b.doc_id FROM tgw_file_info b WHERE b.doc_id = TDOC.DOC_ID)
+				  ORDER BY TAPPRLINE.COMP_DATE ASC
+				  )
+				WHERE 1=1
+				#if ($vo.searchmonth)
+				AND TO_CHAR(COMPLETED_DATE,'YYYYMM') = :vo.searchmonth
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.RegDocVO" />
+		</query>	
+		<query id="mig.selectRecvDoc">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID,
+				  TITLE
+				FROM
+				  (SELECT IS_ATTACHED,
+				    DOC_ID,
+				    BODY_TYPE,
+				    IS_OPEN,
+				    IS_POST,
+				    FLOW_STATUS,
+				    SECURITY_PASS,
+				    TITLE,
+				    RECEIVE_NUMBER,
+				    RECEIVE_DATE,
+				    CHARGER_ID,
+				    CLASS_NUMBER,
+				    ORG_SYMBOL,
+				    SENDER_DEPT_NAME,
+				    SENDER_DEPT_CODE,
+				    DOC_CATEGORY,
+				    CHARGER_NAME,
+				    SENDER_COMPANY,
+				    SERIAL_NUMBER,
+				    ENFORCE_CONSERVE
+				  FROM
+				    (SELECT tDOC.DOC_ID         AS DOC_ID,
+				      tDOC.BODY_TYPE            AS BODY_TYPE,
+				      tDOC.RECEIVE_NUMBER       AS RECEIVE_NUMBER,
+				      tDOC.IS_ATTACHED          AS IS_ATTACHED,
+				      tDOC.IS_OPEN              AS IS_OPEN,
+				      tDOC.IS_POST              AS IS_POST,
+				      tDOC.FLOW_STATUS          AS FLOW_STATUS,
+				      tDOC.ENFORCE_CONSERVE     AS ENFORCE_CONSERVE,
+				      tDOC.TITLE                AS TITLE,
+				      tDOC.SECURITY_PASS        AS SECURITY_PASS,
+				      tDOC.DOC_CATEGORY         AS DOC_CATEGORY,
+				      tDOC.RECV_DATE            AS RECEIVE_DATE,
+				      tDOC.CLASS_NUMBER         AS CLASS_NUMBER,
+				      tDOC.ORG_SYMBOL           AS ORG_SYMBOL,
+				      tDOC.DRAFT_PROC_DEPT_NAME AS SENDER_DEPT_NAME,
+				      tDOC.DRAFT_PROC_DEPT_CODE AS SENDER_DEPT_CODE,
+				      tDOC.DRAFT_ORG_NAME       AS SENDER_COMPANY,
+				      tDOC.CHARGER_ID           AS CHARGER_ID,
+				      tDOC.CHARGER_NAME         AS CHARGER_NAME,
+				      tDOC.SERIAL_NUMBER        AS SERIAL_NUMBER
+				    FROM TGW_RECV_DOC tDOC
+				    WHERE tDOC.FLOW_STATUS IN ( 10, 12, 13, 15, 16, 17 ,18, 19, 20 )
+				    AND tDOC.KEEP_STATUS = 0
+				  	AND not exists (select b.doc_id from tgw_file_info b where b.doc_id = tDOC.DOC_ID)
+				    ) vTOTALRECEPTION
+				  WHERE 1=1
+				  #if ($vo.searchmonth)
+				  AND TO_CHAR(RECEIVE_DATE,'YYYYMM') = :vo.searchmonth
+				  #end
+				  )
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.RegDocVO" />
+		</query>	
+		
+		<query id="cab.selectCabDoc">
+			<statement>
+			<![CDATA[
+				select BULL_ID DOC_ID 
+				FROM TGW_APP_BOARD WHERE BINDING_ID IN ( 
+				SELECT BIND_ID 
+				FROM tgw_app_bind_old 
+				START WITH bind_id = 'DRJ000137762003312923750'    
+				CONNECT BY PRIOR bind_id = parent_bind_id) 
+				ORDER BY BULL_ID    
+					-- from TGW_APP_BOARD
+          			-- WHERE COMP_ID IN ('A10000')
+					-- order by bull_id
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.RegDocVO" />
+		</query>
+		
+		<query id="cab.selectMigFiles">
+			<statement>
+				<![CDATA[
+				SELECT *
+				FROM
+				  (SELECT FLE_DOC_ID DOC_ID,
+				    FLE_ID FILE_ID,
+				    FLE_SIZE FILE_SIZE ,
+				    FLE_TTL DISPLAY_NAME,
+				    FLE_NAME FILE_NAME,
+				    trunc(FLE_DOC_MAIN_VER)||'.'||trunc(FLE_DOC_SUB_VER) DOC_VERSION
+				  FROM FLE01T A,
+				    TGW_APP_BOARD C
+				  WHERE C.BULL_ID = A.FLE_DOC_ID
+				  AND A.FLE_DOC_ID = :docId
+				  AND NOT EXISTS
+				    (SELECT *
+				    FROM tgw_file_info B
+				    WHERE A.FLE_DOC_ID = B.doc_id
+				    AND A.FLE_TTL      = B.DISPLAY_NAME
+				    AND trunc(A.FLE_DOC_MAIN_VER)||'.'||trunc(A.FLE_DOC_SUB_VER) = B.DOC_VERSION
+				    AND B.doc_id = :docId
+				    )
+				  ORDER BY FLE_DOC_ID, DOC_VERSION
+				  )
+				]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.MigFileVO" />
+		</query>
+		<query id="mig.selectMigFiles">
+			<statement>
+			<![CDATA[
+			SELECT 
+				DOC_ID,
+  				FILE_NAME,
+  				ATTACH_TYPE,
+  				FILE_SIZE,
+  				DISPLAY_NAME
+  			FROM tgw_regi_attach a
+  			WHERE a.DOC_ID= :vo.docId
+  			AND ATTACH_TYPE IN ('0','1','2')
+  			AND NOT EXISTS
+    			(SELECT 
+    				doc_id,
+      				file_name
+    			FROM tgw_file_info b
+    			WHERE a.doc_id  = b.doc_id
+    			AND b.DOC_ID= :vo.docId
+    			AND a.file_name = b.file_name
+    			)
+    		UNION
+			SELECT 
+				DOC_ID,
+  				FILE_NAME,
+  				ATTACH_TYPE,
+  				FILE_SIZE,
+  				DISPLAY_NAME
+  			FROM tgw_recv_attach a
+  			WHERE a.DOC_ID= :vo.docId
+  			AND ATTACH_TYPE IN ('0','1','2')
+  			AND NOT EXISTS
+    			(SELECT 
+    				doc_id,
+      				file_name
+    			FROM tgw_file_info b
+    			WHERE a.doc_id  = b.doc_id
+    			AND b.DOC_ID= :vo.docId
+    			AND a.file_name = b.file_name
+    			)
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.MigFileVO" />
+		</query>	
+		
+		<query id="mig.selectMigratedFiles">
+			<statement>
+			<![CDATA[
+				SELECT 
+    				doc_id,
+      				file_name,
+              		file_id,
+              		file_size,
+              		DISPLAY_NAME
+    			FROM tgw_file_info 	
+    			where doc_id = :docId 
+    			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.MigFileVO" />
+		</query>
+		<query id="list.migDocRegist">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID,
+				  BODY_TYPE,
+				  FLOW_STATUS,
+				  ORG_SYMBOL,
+				  CLASS_NUMBER,
+				  SERIAL_NUMBER,
+				  IS_ATTACHED,
+				  IS_BATCH,
+				  IS_OPEN,
+				  SECURITY_PASS,
+				  TITLE,
+				  DOC_CATEGORY,
+				  ENFORCE_BOUND,
+				  ENFORCE_DATE,
+				  IS_POST,
+				  DRAFT_NAME,
+				  DRAFT_UID,
+				  CHIEF_UID,
+				  CHIEF_NAME,
+				  COMPLETED_DATE
+				FROM
+				  (SELECT TDOC.DOC_ID      AS DOC_ID,
+				    TDOC.BODY_TYPE         AS BODY_TYPE,
+				    TDOC.FLOW_STATUS       AS FLOW_STATUS,
+				    TDOC.ORG_SYMBOL        AS ORG_SYMBOL,
+				    TDOC.CLASS_NUMBER      AS CLASS_NUMBER,
+				    TDOC.SERIAL_NUMBER     AS SERIAL_NUMBER,
+				    TDOC.IS_ATTACHED       AS IS_ATTACHED,
+				    TDOC.IS_BATCH          AS IS_BATCH,
+				    TDOC.IS_OPEN           AS IS_OPEN,
+				    TDOC.SECURITY_PASS     AS SECURITY_PASS,
+				    TDOC.TITLE             AS TITLE,
+				    TDOC.DOC_CATEGORY      AS DOC_CATEGORY,
+				    TDOC.ENFORCE_BOUND     AS ENFORCE_BOUND,
+				    TDOC.SEND_DATE         AS ENFORCE_DATE,
+				    TDOC.IS_POST           AS IS_POST,
+				    TAPPRLINE.DRAFTER_NAME AS DRAFT_NAME,
+				    TAPPRLINE.DRAFTER_ID   AS DRAFT_UID,
+				    TAPPRLINE.CHIEF_ID     AS CHIEF_UID,
+				    TAPPRLINE.CHIEF_NAME   AS CHIEF_NAME,
+				    TAPPRLINE.COMP_DATE    AS COMPLETED_DATE
+				  FROM TGW_REGI_DOC TDOC,
+				    TGW_REGI_APPRLINE TAPPRLINE
+				  WHERE TDOC.REGISTRY_TYPE='Y'
+				  AND TDOC.KEEP_STATUS    = 0
+				  AND TDOC.DOC_ID         = TAPPRLINE.DOC_ID
+				  AND TAPPRLINE.LINE_NAME = '0'
+				#if ($vo.deptId && !$vo.deptId.equals(""))
+				  -- AND DRAFT_PROC_DEPT_CODE = :vo.deptId
+				#end
+				  )
+				WHERE 1=1
+				-- 문서제목검색
+				#if ($vo.title && !$vo.title.equals(""))
+					AND UPPER(TITLE) LIKE UPPER('%' || :vo.title || '%')
+				#end
+				-- 기안자
+				#if ($vo.drafterName && !$vo.drafterName.equals(""))
+					AND DRAFT_NAME LIKE '%' || :vo.drafterName || '%'
+				#end
+				#if ($vo.startDate && !$vo.startDate.equals(""))
+					#if (!$vo.endDate.equals(""))
+				  	-- 결재일자(시작, 종료 일자가 둘다 있을때)
+					AND COMPLETED_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+					#else
+				  	-- 결재일자(시작일자만 있을때)
+					AND COMPLETED_DATE >= TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss')
+					#end
+				#else
+					-- 결재일자(종료일자만 있을때)
+					#if ($vo.startDate && !$vo.startDate.equals(""))
+					AND COMPLETED_DATE <= TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+					#end
+				#end
+				ORDER BY SERIAL_NUMBER DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.RegDocVO" />
+		</query>
+	
+				
+		<query id="list.migDocRegistCount">
+			<statement>
+			<![CDATA[
+						SELECT COUNT(-1)
+						FROM TGW_REGI_DOC TDOC,  TGW_REGI_APPRLINE TAPPRLINE
+						WHERE  TDOC.REGISTRY_TYPE='Y' 
+							AND TDOC.KEEP_STATUS = 0
+						 	AND TDOC.DOC_ID = TAPPRLINE.DOC_ID    
+						 	AND TAPPRLINE.LINE_NAME = '0'
+			]]>
+			</statement>
+		</query>
+	
+				
+		<query id="list.migDocDist">
+			<statement>
+			<![CDATA[
+				SELECT IS_ATTACHED,
+				  DOC_ID,
+				  BODY_TYPE,
+				  IS_OPEN,
+				  IS_POST,
+				  FLOW_STATUS,
+				  SECURITY_PASS,
+				  TITLE,
+				  RECEIVE_NUMBER,
+				  RECEIVE_DATE,
+				  CHARGER_ID,
+				  CLASS_NUMBER,
+				  ORG_SYMBOL,
+				  SENDER_DEPT_NAME,
+				  SENDER_DEPT_CODE,
+				  DOC_CATEGORY,
+				  CHARGER_NAME,
+				  SENDER_COMPANY,
+				  SERIAL_NUMBER,
+				  ENFORCE_CONSERVE
+				FROM
+				  (SELECT tDOC.DOC_ID         AS DOC_ID,
+				    tDOC.BODY_TYPE            AS BODY_TYPE,
+				    tDOC.RECEIVE_NUMBER       AS RECEIVE_NUMBER,
+				    tDOC.IS_ATTACHED          AS IS_ATTACHED,
+				    tDOC.IS_OPEN              AS IS_OPEN,
+				    tDOC.IS_POST              AS IS_POST,
+				    tDOC.FLOW_STATUS          AS FLOW_STATUS,
+				    tDOC.ENFORCE_CONSERVE     AS ENFORCE_CONSERVE,
+				    tDOC.TITLE                AS TITLE,
+				    tDOC.SECURITY_PASS        AS SECURITY_PASS,
+				    tDOC.DOC_CATEGORY         AS DOC_CATEGORY,
+				    tDOC.RECV_DATE            AS RECEIVE_DATE,
+				    tDOC.CLASS_NUMBER         AS CLASS_NUMBER,
+				    tDOC.ORG_SYMBOL           AS ORG_SYMBOL,
+				    tDOC.DRAFT_PROC_DEPT_NAME AS SENDER_DEPT_NAME,
+				    tDOC.DRAFT_PROC_DEPT_CODE AS SENDER_DEPT_CODE,
+				    tDOC.DRAFT_ORG_NAME       AS SENDER_COMPANY,
+				    tDOC.CHARGER_ID           AS CHARGER_ID,
+				    tDOC.CHARGER_NAME         AS CHARGER_NAME,
+				    tDOC.SERIAL_NUMBER        AS SERIAL_NUMBER
+				  FROM TGW_RECV_DOC tDOC
+				  WHERE tDOC.FLOW_STATUS IN ( 10, 12, 13, 15, 16, 17 ,18, 19, 20 )
+				  AND tDOC.KEEP_STATUS    = 0
+				#if ($vo.deptId && !$vo.deptId.equals(""))
+				  AND ENFORCE_PROC_DEPT_CODE = :vo.deptId
+				#end
+				  ) vTOTALRECEPTION
+				WHERE 1=1
+				-- 문서제목
+				#if ($vo.title && !$vo.title.equals(""))
+					AND UPPER(TITLE) LIKE UPPER('%' || :vo.title || '%')
+				#end
+				-- 담당자
+				#if ($vo.drafterName && !$vo.drafterName.equals(""))
+				AND CHARGER_NAME LIKE '%' || :vo.drafterName || '%'
+				#end
+				#if ($vo.startDate && !$vo.startDate.equals(""))
+					#if ($vo.endDate && !$vo.endDate.equals(""))
+					-- 접수일자(시작, 종료 일자가 둘다 있을때)
+					AND RECEIVE_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+					#else
+				  	-- 접수일자(시작일자만 있을때)
+					AND RECEIVE_DATE >= TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss')
+					#end
+				#else
+					-- 접수일자(종료일자만 있을때)
+					#if ($vo.enfRecDate && !$vo.enfRecDate.equals(""))
+					AND RECEIVE_DATE <= TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+					#end
+				#end
+				ORDER BY RECEIVE_DATE DESC, RECEIVE_NUMBER DESC	
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DistDocVO" />
+		</query>
+	
+				
+		<query id="list.migDocDistCount">
+			<statement>
+			<![CDATA[
+			SELECT COUNT(*)
+			  FROM TGW_RECV_DOC tDOC
+    			WHERE 
+    			tDOC.FLOW_STATUS             IN ( 10, 12, 13, 15, 16, 17 ,18, 19, 20 )
+   			 AND tDOC.KEEP_STATUS              = 0
+    			) vTOTALRECEPTION
+  			) vRECEPTION
+			ORDER BY RECEIVE_NUMBER DESC 
+			
+			]]>
+			</statement>
+		</query>
+	
+		<query id="mig.selectDocInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  IS_FORM,
+			  IS_BATCH,
+			  IS_OPEN,
+			  KEEP_STATUS,
+			  KEEP_DATE,
+			  BODY_TYPE,
+			  ORG_SYMBOL,
+			  CLASS_NUMBER,
+			  CLASS_NUMBER_ID,
+			  SERIAL_SEED,
+			  SERIAL_NUMBER,
+			  REGISTRY_TYPE,
+			  SECURITY_PASS,
+			  SECURITY_LEVEL,
+			  ACCESS_LEVEL,
+			  URGENCY,
+			  PUBLIC_LEVEL,
+			  RESTRICTED_PAGE,
+			  IS_DIRECT,
+			  IS_ATTACHED,
+			  DRAFT_CONSERVE_CODE,
+			  DRAFT_CONSERVE,
+			  ENFORCE_CONSERVE_CODE,
+			  ENFORCE_CONSERVE,
+			  ENFORCE_METHOD,
+			  FLOW_STATUS,
+			  IS_CONVERTED,
+			  IS_POST,
+			  ENFORCE_FORM_ID,
+			  SENDER_DOC_ID,
+			  DIST_DOC_ID,
+			  DISTRIBUTE_SEED,
+			  DISTRIBUTE_NUMBER,
+			  RECEIVE_SEED,
+			  RECEIVE_NUMBER,
+			  SCHEMA_VERSION,
+			  DRAFT_ORG_CODE
+			  DRAFT_ORG_NAME,
+			  ENFORCE_ORG_CODE,
+			  ENFORCE_ORG_NAME,
+			  SENDER,
+			  RECEIVER,
+			  SEND_DATE,
+			  RECV_DATE,
+			  ACCEPTOR_ID,
+			  ACCEPTOR_NAME,
+			  CHARGER_ID,
+			  CHARGER_NAME,
+			  IS_PUBDOC,
+			  IS_ADMIN_MIS,
+			  DRAFT_PROC_DEPT_CODE,
+			  DRAFT_PROC_DEPT_NAME,
+			  ENFORCE_PROC_DEPT_CODE,
+			  ENFORCE_PROC_DEPT_NAME,
+			  DRAFT_ARCHIVE_ID,
+			  DRAFT_ARCHIVE_NAME,
+			  ENFORCE_ARCHIVE_ID,
+			  ENFORCE_ARCHIVE_NAME,
+			  FORM_USAGE,
+			  IS_MODIFIABLE,
+			  MODIFY_DATE,
+			  APPR_BIZ_ID,
+			  APPR_BIZ_NAME,
+			  ACCESS_LEVEL_CODE,
+			  ANNOUNCEMENT_STATUS
+			FROM TGW_REGI_DOC
+			WHERE DOC_ID= :docId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DocInfoVO" />
+		</query>
+	
+		<query id="mig.selectDraftInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  CASE_NUMBER,
+			  TITLE,
+			  DOC_CATEGORY,
+			  ENFORCE_BOUND,
+			  SENDER_AS,
+			  TREATMENT,
+			  SENDER_AS_CODE
+			FROM TGW_REGI_DRAFT
+			WHERE DOC_ID= :docId
+			ORDER BY CASE_NUMBER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DraftInfoVO" />
+		</query>
+	
+		<query id="mig.selectAttachInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  ATTACH_TYPE,
+			  CASE_NUMBER,
+			  DISPLAY_NAME,
+			  FILE_NAME,
+			  FILE_SIZE,
+			  PAGE_COUNT,
+			  IMAGE_WIDTH,
+			  IMAGE_HEIGHT,
+			  LOCATION,
+			  CLASSIFY,
+			  SUBDIV,
+			  ENFORCE_BOUND,
+			  CHARGER_LINE_NAME,
+			  CHARGER_SERIAL_ORDER
+			FROM TGW_REGI_ATTACH
+			WHERE DOC_ID= :docId
+			ORDER BY ATTACH_TYPE,
+			  CASE_NUMBER,
+			  DISPLAY_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.AttachInfoVO" />
+		</query>
+	
+		<query id="mig.selectApprovalLineInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  LINE_NAME,
+			  DOC_STATUS,
+			  LINE_TYPE,
+			  CURRENT_SERIAL,
+			  CURRENT_PARALLEL,
+			  CURRENT_ID,
+			  CURRENT_NAME,
+			  CURRENT_ROLE,
+			  DRAFTER_ID,
+			  DRAFTER_NAME,
+			  DRAFTER_POSITION,
+			  DRAFTER_POSITION_ABBR,
+			  DRAFTER_LEVEL,
+			  DRAFTER_LEVEL_ABBR,
+			  DRAFTER_DUTY,
+			  DRAFTER_TITLE,
+			  DRAFT_DEPT_NAME,
+			  DRAFT_DEPT_CODE,
+			  DRAFT_DATE,
+			  CHIEF_ID,
+			  CHIEF_NAME,
+			  CHIEF_ROLE,
+			  COMP_DATE
+			FROM TGW_REGI_APPRLINE
+			WHERE DOC_ID= :docId
+			ORDER BY LINE_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.ApprInfoVO" />
+		</query>
+	
+		<query id="mig.selectApproverInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  LINE_NAME,
+			  SERIAL_ORDER,
+			  PARALLEL_ORDER,
+			  USER_ID,
+			  USER_NAME,
+			  USER_POSITION,
+			  USER_POSITION_ABBR,
+			  USER_LEVEL,
+			  USER_LEVEL_ABBR,
+			  USER_DUTY,
+			  USER_TITLE,
+			  COMPANY,
+			  DEPT_NAME,
+			  DEPT_CODE,
+			  IS_SIGNED,
+			  SIGN_DATE,
+			  SIGN_FILE_NAME,
+			  APPROVER_ROLE,
+			  IS_OPEN,
+			  APPROVER_ACTION,
+			  APPROVER_TYPE
+			  ADDITIONAL_ROLE,
+			  KEEP_STATUS,
+			  KEEP_DATE,
+			  EMPTY_REASON,
+			  IS_DOC_MODIFIED,
+			  IS_LINE_MODIFIED,
+			  IS_ATTACH_MODIFIED,
+			  OPINION,
+			  REP_ID,
+			  REP_NAME,
+			  REP_POSITION,
+			  REP_POSITION_ABBR,
+			  REP_LEVEL,
+			  REP_LEVEL_ABBR,
+			  REP_DUTY,
+			  REP_TITLE,
+			  REP_COMPANY,
+			  REP_DEPT_NAME,
+			  REP_DEPT_CODE
+			FROM TGW_REGI_APPROVER
+			WHERE DOC_ID  = :docId
+			ORDER BY SERIAL_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.ApproverInfoVO" />
+		</query>
+	
+		<query id="mig.selectDeliverersInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  DELIVERER_TYPE,
+			  USER_ID,
+			  USER_NAME,
+			  USER_POSITION,
+			  USER_POSITION_ABBR,
+			  USER_LEVEL,
+			  USER_LEVEL_ABBR,
+			  USER_DUTY,
+			  USER_TITLE,
+			  COMPANY,
+			  DEPT_NAME,
+			  DEPT_CODE,
+			  IS_OPEN,
+			  SIGN_DATE,
+			  SIGN_FILE_NAME,
+			  OPINION,
+			  REP_ID,
+			  REP_NAME,
+			  REP_POSITION,
+			  REP_POSITION_ABBR,
+			  REP_LEVEL,
+			  REP_LEVEL_ABBR,
+			  REP_DUTY,
+			  REP_TITLE,
+			  REP_COMPANY,
+			  REP_DEPT_NAME,
+			  REP_DEPT_CODE
+			FROM TGW_REGI_DELIVERER
+			WHERE DOC_ID= :docId
+			ORDER BY DELIVERER_TYPE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DeliveresInfoVO" />
+		</query>
+	
+		<query id="mig.selectRecipientsInfo">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  RECIP_GROUP_TYPE,
+			  CASE_NUMBER,
+			  DISPLAY_AS,
+			  ENFORCE_BOUND,
+			  DEPT_NAME,
+			  DEPT_CODE,
+			  DEPT_SYMBOL,
+			  DEPT_CHIEF,
+			  REF_DEPT_NAME,
+			  REF_DEPT_CODE,
+			  REF_DEPT_SYMBOL,
+			  REF_DEPT_CHIEF,
+			  ACTUAL_DEPT_CODE,
+			  ACCEPTOR,
+			  ACCEPT_DATE,
+			  RECEIPT_STATUS,
+			  IS_PUBDOC_RECIP,
+			  IS_CERT_EXIST,
+			  SENDING_TYPE,
+			  DESCRIPTION
+			FROM TGW_REGI_RECIPIENT
+			WHERE DOC_ID= :docId
+			ORDER BY RECIP_GROUP_TYPE,
+			  CASE_NUMBER,
+			  DEPT_NAME,
+			  REF_DEPT_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.RecipientsInfoVO" />
+		</query>
+		
+		
+		<query id="mig.selectDocInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  IS_FORM,
+			  IS_BATCH,
+			  IS_OPEN,
+			  KEEP_STATUS,
+			  KEEP_DATE,
+			  BODY_TYPE,
+			  ORG_SYMBOL,
+			  CLASS_NUMBER,
+			  CLASS_NUMBER_ID,
+			  SERIAL_SEED,
+			  SERIAL_NUMBER,
+			  REGISTRY_TYPE,
+			  SECURITY_PASS,
+			  SECURITY_LEVEL,
+			  ACCESS_LEVEL,
+			  URGENCY,
+			  PUBLIC_LEVEL,
+			  RESTRICTED_PAGE,
+			  IS_DIRECT,
+			  IS_ATTACHED,
+			  DRAFT_CONSERVE_CODE,
+			  DRAFT_CONSERVE,
+			  ENFORCE_CONSERVE_CODE,
+			  ENFORCE_CONSERVE,
+			  ENFORCE_METHOD,
+			  FLOW_STATUS,
+			  IS_CONVERTED,
+			  IS_POST,
+			  ENFORCE_FORM_ID,
+			  SENDER_DOC_ID,
+			  DIST_DOC_ID,
+			  DISTRIBUTE_SEED,
+			  DISTRIBUTE_NUMBER,
+			  RECEIVE_SEED,
+			  RECEIVE_NUMBER,
+			  SCHEMA_VERSION,
+			  DRAFT_ORG_CODE
+			  DRAFT_ORG_NAME,
+			  ENFORCE_ORG_CODE,
+			  ENFORCE_ORG_NAME,
+			  SENDER,
+			  RECEIVER,
+			  SEND_DATE,
+			  RECV_DATE,
+			  ACCEPTOR_ID,
+			  ACCEPTOR_NAME,
+			  CHARGER_ID,
+			  CHARGER_NAME,
+			  IS_PUBDOC,
+			  IS_ADMIN_MIS,
+			  DRAFT_PROC_DEPT_CODE,
+			  DRAFT_PROC_DEPT_NAME,
+			  ENFORCE_PROC_DEPT_CODE,
+			  ENFORCE_PROC_DEPT_NAME,
+			  DRAFT_ARCHIVE_ID,
+			  DRAFT_ARCHIVE_NAME,
+			  ENFORCE_ARCHIVE_ID,
+			  ENFORCE_ARCHIVE_NAME,
+			  FORM_USAGE,
+			  IS_MODIFIABLE,
+			  MODIFY_DATE,
+			  APPR_BIZ_ID,
+			  APPR_BIZ_NAME,
+			  ACCESS_LEVEL_CODE,
+			  ANNOUNCEMENT_STATUS
+			FROM TGW_RECV_DOC
+			WHERE DOC_ID= :docId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DocInfoVO" />
+		</query>
+	
+		<query id="mig.selectDraftInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  CASE_NUMBER,
+			  TITLE,
+			  DOC_CATEGORY,
+			  ENFORCE_BOUND,
+			  SENDER_AS,
+			  TREATMENT,
+			  SENDER_AS_CODE
+			FROM TGW_RECV_DRAFT
+			WHERE DOC_ID= :docId
+			ORDER BY CASE_NUMBER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DraftInfoVO" />
+		</query>
+	
+		<query id="mig.selectAttachInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  ATTACH_TYPE,
+			  CASE_NUMBER,
+			  DISPLAY_NAME,
+			  FILE_NAME,
+			  FILE_SIZE,
+			  PAGE_COUNT,
+			  IMAGE_WIDTH,
+			  IMAGE_HEIGHT,
+			  LOCATION,
+			  CLASSIFY,
+			  SUBDIV,
+			  ENFORCE_BOUND,
+			  CHARGER_LINE_NAME,
+			  CHARGER_SERIAL_ORDER
+			FROM TGW_RECV_ATTACH
+			WHERE DOC_ID= :docId
+			ORDER BY ATTACH_TYPE,
+			  CASE_NUMBER,
+			  DISPLAY_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.AttachInfoVO" />
+		</query>
+	
+		<query id="mig.selectApprovalLineInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  LINE_NAME,
+			  DOC_STATUS,
+			  LINE_TYPE,
+			  CURRENT_SERIAL,
+			  CURRENT_PARALLEL,
+			  CURRENT_ID,
+			  CURRENT_NAME,
+			  CURRENT_ROLE,
+			  DRAFTER_ID,
+			  DRAFTER_NAME,
+			  DRAFTER_POSITION,
+			  DRAFTER_POSITION_ABBR,
+			  DRAFTER_LEVEL,
+			  DRAFTER_LEVEL_ABBR,
+			  DRAFTER_DUTY,
+			  DRAFTER_TITLE,
+			  DRAFT_DEPT_NAME,
+			  DRAFT_DEPT_CODE,
+			  DRAFT_DATE,
+			  CHIEF_ID,
+			  CHIEF_NAME,
+			  CHIEF_ROLE,
+			  COMP_DATE
+			FROM TGW_RECV_APPRLINE
+			WHERE DOC_ID= :docId
+			ORDER BY LINE_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.ApprInfoVO" />
+		</query>
+	
+		<query id="mig.selectApproverInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  LINE_NAME,
+			  SERIAL_ORDER,
+			  PARALLEL_ORDER,
+			  USER_ID,
+			  USER_NAME,
+			  USER_POSITION,
+			  USER_POSITION_ABBR,
+			  USER_LEVEL,
+			  USER_LEVEL_ABBR,
+			  USER_DUTY,
+			  USER_TITLE,
+			  COMPANY,
+			  DEPT_NAME,
+			  DEPT_CODE,
+			  IS_SIGNED,
+			  SIGN_DATE,
+			  SIGN_FILE_NAME,
+			  APPROVER_ROLE,
+			  IS_OPEN,
+			  APPROVER_ACTION,
+			  APPROVER_TYPE
+			  ADDITIONAL_ROLE,
+			  KEEP_STATUS,
+			  KEEP_DATE,
+			  EMPTY_REASON,
+			  IS_DOC_MODIFIED,
+			  IS_LINE_MODIFIED,
+			  IS_ATTACH_MODIFIED,
+			  OPINION,
+			  REP_ID,
+			  REP_NAME,
+			  REP_POSITION,
+			  REP_POSITION_ABBR,
+			  REP_LEVEL,
+			  REP_LEVEL_ABBR,
+			  REP_DUTY,
+			  REP_TITLE,
+			  REP_COMPANY,
+			  REP_DEPT_NAME,
+			  REP_DEPT_CODE
+			FROM TGW_RECV_APPROVER
+			WHERE DOC_ID  = :docId
+			ORDER BY SERIAL_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.ApproverInfoVO" />
+		</query>
+	
+		<query id="mig.selectDeliverersInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  DELIVERER_TYPE,
+			  USER_ID,
+			  USER_NAME,
+			  USER_POSITION,
+			  USER_POSITION_ABBR,
+			  USER_LEVEL,
+			  USER_LEVEL_ABBR,
+			  USER_DUTY,
+			  USER_TITLE,
+			  COMPANY,
+			  DEPT_NAME,
+			  DEPT_CODE,
+			  IS_OPEN,
+			  SIGN_DATE,
+			  SIGN_FILE_NAME,
+			  OPINION,
+			  REP_ID,
+			  REP_NAME,
+			  REP_POSITION,
+			  REP_POSITION_ABBR,
+			  REP_LEVEL,
+			  REP_LEVEL_ABBR,
+			  REP_DUTY,
+			  REP_TITLE,
+			  REP_COMPANY,
+			  REP_DEPT_NAME,
+			  REP_DEPT_CODE
+			FROM TGW_RECV_DELIVERER
+			WHERE DOC_ID= :docId
+			ORDER BY DELIVERER_TYPE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.DeliveresInfoVO" />
+		</query>
+	
+		<query id="mig.selectRecipientsInfoRecv">
+			<statement>
+			<![CDATA[
+			SELECT DOC_ID,
+			  RECIP_GROUP_TYPE,
+			  CASE_NUMBER,
+			  DISPLAY_AS,
+			  ENFORCE_BOUND,
+			  DEPT_NAME,
+			  DEPT_CODE,
+			  DEPT_SYMBOL,
+			  DEPT_CHIEF,
+			  REF_DEPT_NAME,
+			  REF_DEPT_CODE,
+			  REF_DEPT_SYMBOL,
+			  REF_DEPT_CHIEF,
+			  ACTUAL_DEPT_CODE,
+			  ACCEPTOR,
+			  ACCEPT_DATE,
+			  RECEIPT_STATUS,
+			  IS_PUBDOC_RECIP,
+			  IS_CERT_EXIST,
+			  SENDING_TYPE,
+			  DESCRIPTION
+			FROM TGW_RECV_RECIPIENT
+			WHERE DOC_ID= :docId
+			ORDER BY RECIP_GROUP_TYPE,
+			  CASE_NUMBER,
+			  DEPT_NAME,
+			  REF_DEPT_NAME ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.RecipientsInfoVO" />
+		</query>
+		
+		
+		<query id="cab.updateBoardContent">
+			<statement>
+			<![CDATA[
+			UPDATE TGW_APP_BOARD
+			SET CONTENTS = :content
+			WHERE BULL_ID = :docId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="cab.selectMigFileOne">
+			<statement>
+				<![CDATA[
+				select FLE_DOC_ID DOC_ID,
+						    FLE_ID FILE_ID,
+						    FLE_SIZE FILE_SIZE ,
+						    FLE_TTL DISPLAY_NAME,
+						    FLE_NAME FILE_NAME,
+						    trunc(FLE_DOC_MAIN_VER)||'.'||trunc(FLE_DOC_SUB_VER) DOC_VERSION
+		        from fle01t A
+				where FLE_DOC_ID = :docId
+				AND FLE_TTL = :displayName
+				AND trunc(FLE_DOC_MAIN_VER)||'.'||trunc(FLE_DOC_SUB_VER) = :docVersion
+				--where FLE_DOC_ID = 'd3a852190000010a5e6e8e600000341f'
+				--AND FLE_TTL = 'KS A ISO 9001_2007 품질경영시스템 요구사항.pdf'
+				--AND trunc(FLE_DOC_MAIN_VER)||'.'||trunc(FLE_DOC_SUB_VER) = '1.1'
+				and
+				not exists(
+					SELECT * FROM TGW_FILE_INFO 
+					WHERE DOC_ID = a.fle_doc_id
+					AND DISPLAY_NAME = a.fle_ttl
+					AND DOC_VERSION = trunc(FLE_DOC_MAIN_VER)||'.'||trunc(FLE_DOC_SUB_VER)
+				)
+				]]>
+			</statement>
+			<result class="com.sds.acube.app.mig.vo.MigFileVO" />
+		</query>
+	</queries>
+</queryservice>

@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+
+	<!-- 게시판 목록보기 -->
+	<queries>
+		<!-- TGW_APP_BOARD -->
+		
+		<query id="board.listBoardShare">
+			<statement>
+			<![CDATA[
+			SELECT * FROM (
+			SELECT
+			    REG_NO, COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE, 
+			    HITNO, ATTFILES, OFFICIALFLAG, CONTENTS, DOC_VERSION,
+			    REG_ID, REG_NAME, DOC_OWNER_ID, DOC_OWNER_NAME, REG_DEPT_ID, REG_DEPT_NAME, REG_DATE,
+				EXPIRATION_DATE, RETENTION_PERIOD, IS_MANAGER, BIND_AUTHORITY, IS_OWNER, BIND_SEND_TYPE, REPLY_NO
+			FROM
+			(
+				SELECT
+				    BOARD.REG_NO, BOARD.COMP_ID, BOARD.BOARD_ID, BOARD.BOARD_NAME, BOARD.BULL_ID, BOARD.BULL_TITLE, 
+				    BOARD.HITNO, BOARD.ATTFILES, BOARD.OFFICIALFLAG, BOARD.CONTENTS, BOARD.DOC_VERSION,
+				    BOARD.REG_ID, BOARD.REG_NAME, BOARD.DOC_OWNER_ID, BOARD.DOC_OWNER_NAME, BOARD.REG_DEPT_ID, BOARD.REG_DEPT_NAME, REG_DATE,
+				    TO_CHAR(ADD_MONTHS(TO_DATE(BOARD.REG_DATE,'YYYY-MM-DD'),
+							DECODE(RETENTION_PERIOD,'DRY001',(12*1),'DRY002',(12*3),'DRY003',(12*5),'DRY004'
+									,(12*10),'DRY005',(12*20),'DRY006',(12*30),'DRY007',(12*50),1000)
+						), 'YYYY-MM-DD') AS EXPIRATION_DATE,
+					BOARD.RETENTION_PERIOD,
+					(CASE WHEN (SELECT COUNT(*) FROM TGW_APP_BIND_MANAGER
+						WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND BIND_ID = BOARD.BINDING_ID 
+							AND MANAGER_ID = :vo.userId ) > 0 THEN 'Y'
+						ELSE 'N' END) AS IS_MANAGER,
+					(SELECT BIND_AUTHORITY FROM TGW_APP_BIND_AUTHORITY
+						WHERE COMP_ID = :vo.compId AND AUTH_DEPT_ID = :vo.deptId
+							AND BIND_ID = BOARD.BINDING_ID) AS BIND_AUTHORITY,
+					DECODE(:vo.userId,BOARD.DOC_OWNER_ID,'Y',BOARD.REG_ID,'N','N') AS IS_OWNER,
+					BIND.SEND_TYPE AS BIND_SEND_TYPE,
+				    NVL(REPLY.CNT,'0') AS REPLY_NO,
+      				ROW_NUMBER() OVER (PARTITION BY  BOARD.BULL_ID ORDER BY BOARD.DOC_VERSION DESC) AS RNUM
+				FROM TGW_APP_BOARD BOARD, 
+					(SELECT BOARD.BULL_ID, COUNT(*) as CNT FROM TGW_APP_BOARD BOARD, TGW_APP_BOARD_REPLY REPLY
+						WHERE BOARD.BULL_ID = REPLY.BULL_ID GROUP BY BOARD.BULL_ID) REPLY,
+					--(SELECT BIND_ID FROM TGW_APP_BIND_OLD WHERE DEPT_ID = :vo.deptId AND COMP_ID = :vo.compId AND SEND_TYPE = 'DST004'
+					--UNION ALL SELECT BIND_ID FROM TGW_APP_BIND_AUTHORITY WHERE AUTH_DEPT_ID = :vo.deptId)BIND
+					(SELECT A.BIND_ID, A.ORG_BIND_ID, A.SEND_TYPE FROM TGW_APP_BIND_OLD A
+					--, TGW_APP_BIND_AUTHORITY B 
+					--	WHERE A.COMP_ID = B.COMP_ID AND A.DEPT_ID = B.DEPT_ID AND A.BIND_ID = B.BIND_ID
+					--		AND B.AUTH_DEPT_ID = :vo.deptId AND B.DEPT_ID = :vo.deptId
+						)BIND
+				WHERE 	BOARD.BULL_ID = REPLY.BULL_ID(+)
+				AND IS_ACTIVE = 'Y'
+					#if (!$vo.bindingId.equals("ROOT")&&!$vo.bindingId.equals("DEPT")&&!$vo.bindingId.equals("SHARE"))
+						#if ($vo.bindSendType.equals("DST004"))
+							AND BOARD.BINDING_ID = BIND.ORG_BIND_ID
+							AND BIND.ORG_BIND_ID = :vo.orgBindId
+						#else
+							AND BOARD.BINDING_ID = BIND.BIND_ID
+							#if ($vo.bindingId.equals("") && ( $vo.searchYn.equals("Y") || !$vo.searchWord.equals("") ) )
+								-- AND BIND.BIND_ID = :vo.bindingId
+							#else
+								AND BIND.BIND_ID = :vo.bindingId
+							#end
+						#end
+					#else
+						#if ($vo.bindingId.equals("ROOT"))
+							AND BOARD.BINDING_ID = DECODE(BIND.SEND_TYPE, 'DST004', BIND.ORG_BIND_ID, BIND.BIND_ID)
+							AND BIND.SEND_TYPE IN('DST001', 'DST002', 'DST004')
+						#elseif ($vo.bindingId.equals("DEPT"))
+							AND BOARD.BINDING_ID = DECODE(BIND.SEND_TYPE, 'DST004', BIND.ORG_BIND_ID, BIND.BIND_ID)
+							AND BIND.SEND_TYPE IN('DST001', 'DST002')
+						#elseif ($vo.bindingId.equals("SHARE"))
+							AND BOARD.BINDING_ID = BIND.ORG_BIND_ID
+							AND BIND.SEND_TYPE IN('DST004')
+						#end
+					#end
+					#if ($vo.radioType.equals("ownerDocument"))
+						AND BOARD.DOC_OWNER_ID = :vo.docOwnerId
+					#end
+					#if ($vo.searchYn.equals("Y"))
+						AND BOARD.REG_DATE BETWEEN TO_DATE(:vo.startDate, 'yyyy-MM-dd') AND TO_DATE(:vo.endDate, 'yyyy-MM-dd')
+					#end
+					#if ($vo.docDisplayType.equals("retentionDoc"))
+						AND TO_CHAR(ADD_MONTHS(TO_DATE(BOARD.REG_DATE,'YYYY-MM-DD'),
+							DECODE(RETENTION_PERIOD,'DRY001',(12*1),'DRY002',(12*3),'DRY003',(12*5),'DRY004'
+									,(12*10),'DRY005',(12*20),'DRY006',(12*30),'DRY007',(12*50),1000)
+						), 'YYYY-MM-DD') BETWEEN TO_DATE(:vo.startDate, 'yyyy-MM-dd') AND TO_DATE(:vo.endDate, 'yyyy-MM-dd')
+					#end
+					#if ($vo.docDisplayType.equals("expirationDoc"))
+						AND SYSDATE>TO_CHAR(ADD_MONTHS(TO_DATE(BOARD.REG_DATE,'YYYY-MM-DD'),
+							DECODE(RETENTION_PERIOD,'DRY001',(12*1),'DRY002',(12*3),'DRY003',(12*5),'DRY004'
+									,(12*10),'DRY005',(12*20),'DRY006',(12*30),'DRY007',(12*50),1000)
+						), 'YYYY-MM-DD')
+					#end
+					#if (!$vo.searchWord.equals(""))
+						#if ($vo.searchType.equals("searchTitle"))
+							AND UPPER(BOARD.BULL_TITLE) LIKE UPPER('%' || :vo.searchWord || '%')
+						#elseif ($vo.searchType.equals("searchDocKeyword"))
+							AND UPPER(BOARD.DOC_KEYWORD) LIKE UPPER('%' || :vo.searchWord || '%')
+						#else
+							AND ( UPPER(BOARD.BULL_TITLE) LIKE UPPER('%' || :vo.searchWord || '%')
+							OR UPPER(BOARD.DOC_KEYWORD) LIKE UPPER('%' || :vo.searchWord || '%') )
+						#end
+					#end
+			)
+			WHERE RNUM = 1
+			ORDER BY
+				#if (!$vo.sortBy.equals("") && !$vo.sortBy.equals(""))
+				{{vo.sortBy}} {{vo.sortType}},
+				#end
+				#if ($vo.docDisplayType.equals("retentionDoc")||$vo.docDisplayType.equals("expirationDoc"))
+					EXPIRATION_DATE DESC
+				#else	 
+					REG_DATE DESC
+				#end
+				, REG_NO DESC
+				) WHERE ROWNUM <= 10000
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>	
+		<query id="board.listBoard">
+			<statement>
+			<![CDATA[
+			SELECT
+			    REG_NO, COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE, 
+			    HITNO, ATTFILES, OFFICIALFLAG, CONTENTS, DOC_VERSION,
+			    REG_ID, REG_NAME, DOC_OWNER_ID, DOC_OWNER_NAME, REG_DEPT_ID, REG_DEPT_NAME, REG_DATE,
+				EXPIRATION_DATE, RETENTION_PERIOD, IS_MANAGER, BIND_AUTHORITY, IS_OWNER, BIND_SEND_TYPE, REPLY_NO
+			FROM
+			(
+				SELECT
+				    BOARD.REG_NO, BOARD.COMP_ID, BOARD.BOARD_ID, BOARD.BOARD_NAME, BOARD.BULL_ID, BOARD.BULL_TITLE, 
+				    BOARD.HITNO, BOARD.ATTFILES, BOARD.OFFICIALFLAG, BOARD.CONTENTS, BOARD.DOC_VERSION,
+				    BOARD.REG_ID, BOARD.REG_NAME, BOARD.DOC_OWNER_ID, BOARD.DOC_OWNER_NAME, BOARD.REG_DEPT_ID, BOARD.REG_DEPT_NAME, REG_DATE,
+				    TO_CHAR(ADD_MONTHS(TO_DATE(BOARD.REG_DATE,'YYYY-MM-DD'),
+							DECODE(RETENTION_PERIOD,'DRY001',(12*1),'DRY002',(12*3),'DRY003',(12*5),'DRY004'
+									,(12*10),'DRY005',(12*20),'DRY006',(12*30),'DRY007',(12*50),1000)
+						), 'YYYY-MM-DD') AS EXPIRATION_DATE,
+					BOARD.RETENTION_PERIOD,
+					(CASE WHEN (SELECT COUNT(*) FROM TGW_APP_BIND_MANAGER
+						WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND BIND_ID = BOARD.BINDING_ID 
+							AND MANAGER_ID = :vo.userId ) > 0 THEN 'Y'
+						ELSE 'N' END) AS IS_MANAGER,
+					(SELECT BIND_AUTHORITY FROM TGW_APP_BIND_AUTHORITY
+						WHERE COMP_ID = :vo.compId AND AUTH_DEPT_ID = :vo.deptId
+							AND BIND_ID = BOARD.BINDING_ID) AS BIND_AUTHORITY,
+					DECODE(:vo.userId,BOARD.REG_ID,'Y',BOARD.DOC_OWNER_ID,'Y','N') AS IS_OWNER,
+					BIND.SEND_TYPE AS BIND_SEND_TYPE,
+				    NVL(REPLY.CNT,'0') AS REPLY_NO
+				FROM TGW_APP_BOARD BOARD, 
+					(SELECT BOARD.BULL_ID, COUNT(*) as CNT FROM TGW_APP_BOARD BOARD, TGW_APP_BOARD_REPLY REPLY
+						WHERE BOARD.BULL_ID = REPLY.BULL_ID GROUP BY BOARD.BULL_ID) REPLY,
+					--(SELECT BIND_ID FROM TGW_APP_BIND WHERE DEPT_ID = :vo.deptId AND COMP_ID = :vo.compId AND SEND_TYPE = 'DST004'
+					--UNION ALL SELECT BIND_ID FROM TGW_APP_BIND_AUTHORITY WHERE AUTH_DEPT_ID = :vo.deptId)BIND
+					(SELECT A.BIND_ID, A.ORG_BIND_ID, A.SEND_TYPE FROM TGW_APP_BIND A, TGW_APP_BIND_AUTHORITY B 
+						WHERE A.COMP_ID = B.COMP_ID AND A.DEPT_ID = B.DEPT_ID AND A.BIND_ID = B.BIND_ID
+							AND B.AUTH_DEPT_ID = :vo.deptId AND B.DEPT_ID = :vo.deptId
+						)BIND
+				WHERE 	BOARD.BULL_ID = REPLY.BULL_ID(+)
+				AND IS_ACTIVE = 'Y'
+					#if (!$vo.bindingId.equals("ROOT")&&!$vo.bindingId.equals("DEPT")&&!$vo.bindingId.equals("SHARE"))
+						#if ($vo.bindSendType.equals("DST004"))
+							AND BOARD.BINDING_ID = BIND.ORG_BIND_ID
+							AND BIND.ORG_BIND_ID = :vo.orgBindId
+						#else
+							AND BOARD.BINDING_ID = BIND.BIND_ID
+							AND BIND.BIND_ID = :vo.bindingId
+						#end
+					#else
+						#if ($vo.bindingId.equals("ROOT"))
+							AND BOARD.BINDING_ID = DECODE(BIND.SEND_TYPE, 'DST004', BIND.ORG_BIND_ID, BIND.BIND_ID)
+							AND BIND.SEND_TYPE IN('DST001', 'DST002', 'DST004')
+						#elseif ($vo.bindingId.equals("DEPT"))
+							AND BOARD.BINDING_ID = DECODE(BIND.SEND_TYPE, 'DST004', BIND.ORG_BIND_ID, BIND.BIND_ID)
+							AND BIND.SEND_TYPE IN('DST001', 'DST002')
+						#elseif ($vo.bindingId.equals("SHARE"))
+							AND BOARD.BINDING_ID = BIND.ORG_BIND_ID
+							AND BIND.SEND_TYPE IN('DST004')
+						#end
+					#end
+					#if ($vo.radioType.equals("ownerDocument"))
+						AND BOARD.DOC_OWNER_ID = :vo.docOwnerId
+					#end
+					#if ($vo.searchYn.equals("Y"))
+						AND BOARD.REG_DATE BETWEEN TO_DATE(:vo.startDate, 'yyyy-MM-dd') AND TO_DATE(:vo.endDate, 'yyyy-MM-dd')
+					#end
+					#if ($vo.docDisplayType.equals("retentionDoc"))
+						AND TO_CHAR(ADD_MONTHS(TO_DATE(BOARD.REG_DATE,'YYYY-MM-DD'),
+							DECODE(RETENTION_PERIOD,'DRY001',(12*1),'DRY002',(12*3),'DRY003',(12*5),'DRY004'
+									,(12*10),'DRY005',(12*20),'DRY006',(12*30),'DRY007',(12*50),1000)
+						), 'YYYY-MM-DD') BETWEEN TO_DATE(:vo.startDate, 'yyyy-MM-dd') AND TO_DATE(:vo.endDate, 'yyyy-MM-dd')
+					#end
+					#if ($vo.docDisplayType.equals("expirationDoc"))
+						AND SYSDATE>TO_CHAR(ADD_MONTHS(TO_DATE(BOARD.REG_DATE,'YYYY-MM-DD'),
+							DECODE(RETENTION_PERIOD,'DRY001',(12*1),'DRY002',(12*3),'DRY003',(12*5),'DRY004'
+									,(12*10),'DRY005',(12*20),'DRY006',(12*30),'DRY007',(12*50),1000)
+						), 'YYYY-MM-DD')
+					#end
+					#if (!$vo.searchWord.equals(""))
+						#if ($vo.searchType.equals("searchTitle"))
+							AND UPPER(BOARD.BULL_TITLE) LIKE UPPER('%' || :vo.searchWord || '%')
+						#end
+						#if ($vo.searchType.equals("searchDocKeyword"))
+							AND UPPER(BOARD.DOC_KEYWORD) LIKE UPPER('%' || :vo.searchWord || '%')
+						#end
+					#end
+			)
+			ORDER BY
+				#if ($vo.docDisplayType.equals("retentionDoc")||$vo.docDisplayType.equals("expirationDoc"))
+					EXPIRATION_DATE DESC,
+				#else 
+					REG_DATE DESC, 
+				#end
+				REG_NO DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>	
+		
+		
+		<!-- 게시글 작성 -->
+		<query id="board.insertBull">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BOARD
+					(
+					COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE, 
+					HITNO, ATTFILES, OFFICIALFLAG, CONTENTS, 
+					REG_ID, REG_NAME, REG_DEPT_ID, DOC_OWNER_ID, DOC_VERSION, REG_DEPT_NAME, REG_DATE, 
+					MOD_ID, MOD_NAME, MOD_DEPT_ID, DOC_OWNER_NAME, DOC_KEYWORD, BINDING_ID, BINDING_NAME,
+					RETENTION_PERIOD, SECURITY_TYPE, MOD_DEPT_NAME, MOD_DATE, REG_NO
+					)
+				VALUES
+					( 
+					:vo.compId, :vo.boardId, :vo.boardName, :vo.bullId, :vo.bullTitle,
+					0, :vo.attfiles, nvl(:vo.officialflag,'0'), :vo.contents,
+					:vo.regId, :vo.regName, :vo.regDeptId, :vo.docOwnerId, :vo.docVersion, :vo.regDeptName, to_char(sysdate, 'yyyy-mm-dd'),
+					:vo.modId, :vo.modName, :vo.modDeptId, :vo.docOwnerName, :vo.docKeyword, :vo.bindingId, :vo.bindingName, :vo.retentionPeriod,
+					:vo.securityType, :vo.modDeptName, to_char(sysdate, 'yyyy-mm-dd'),
+					NVL( (SELECT MAX(CAST(REG_NO AS INT)) + 1
+					      FROM TGW_APP_BOARD 
+					      WHERE 	BOARD_ID = :vo.boardId ),1 )
+					)
+			]]>
+			</statement>
+		</query>	
+		
+		<!-- 수정 후 게시글 작성 -->
+		<query id="board.upInsertBull">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BOARD
+					(
+					COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE,
+					HITNO, ATTFILES, OFFICIALFLAG, CONTENTS,
+					REG_ID, REG_NAME, REG_DEPT_ID, DOC_OWNER_ID, DOC_VERSION, REG_DEPT_NAME, REG_DATE,
+					MOD_ID, MOD_NAME, MOD_DEPT_ID, DOC_OWNER_NAME, DOC_KEYWORD, BINDING_ID, BINDING_NAME,
+					RETENTION_PERIOD, SECURITY_TYPE, MOD_DEPT_NAME, MOD_DATE, REG_NO
+					)
+				VALUES
+					(
+					:vo.compId, :vo.boardId, :vo.boardName, :vo.bullId, :vo.bullTitle,
+					0, :vo.attfiles, nvl(:vo.officialflag,'0'), nvl(:vo.contents, ' '),
+					:vo.regId, :vo.regName, :vo.regDeptId, :vo.docOwnerId, :vo.docVersion, :vo.regDeptName, to_char(sysdate, 'yyyy-mm-dd'),
+					:vo.modId, :vo.modName, :vo.modDeptId, :vo.docOwnerName, :vo.docKeyword, :vo.bindingId, :vo.bindingName, :vo.retentionPeriod,
+					:vo.securityType, :vo.modDeptName, to_char(sysdate, 'yyyy-mm-dd'),
+					:vo.regNo
+					)
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 버전이 다를 경우 수정 -->
+		<query id="board.updateBull">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BOARD SET
+					MOD_ID  		=  NVL(:vo.modId, MOD_ID),
+					MOD_NAME 		=  NVL(:vo.modName, MOD_NAME),
+					MOD_DEPT_ID  	=  NVL(:vo.modDeptId, MOD_DEPT_ID),
+					MOD_DEPT_NAME  	=  NVL(:vo.modDeptName, MOD_DEPT_NAME),
+					IS_ACTIVE    	=  'N' ,
+					MOD_DATE  		=  to_char(sysdate, 'yyyy-mm-dd')
+				WHERE 	BULL_ID = :vo.bullId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 버전이 같을 경우 수정 -->
+		<query id="board.modifyUpdateBull">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BOARD SET
+					BULL_TITLE  	=  NVL(:vo.bullTitle, BULL_TITLE),
+					ATTFILES  		=  NVL(:vo.attfiles, ATTFILES),
+					OFFICIALFLAG  	=  NVL(:vo.officialflag ,'0'),
+					CONTENTS  		=  NVL(:vo.contents, ' '),
+					MOD_ID  		=  NVL(:vo.modId, MOD_ID),
+					MOD_NAME 		=  NVL(:vo.modName, MOD_NAME),
+					MOD_DEPT_ID  	=  NVL(:vo.modDeptId, MOD_DEPT_ID),
+					MOD_DEPT_NAME  	=  NVL(:vo.modDeptName, MOD_DEPT_NAME),
+					BINDING_ID  	=  NVL(:vo.bindingId, BINDING_ID),
+					BINDING_NAME  	=  NVL(:vo.bindingName, BINDING_NAME),
+					DOC_KEYWORD		=  NVL(:vo.docKeyword, ''),
+					RETENTION_PERIOD  	=  NVL(:vo.retentionPeriod, RETENTION_PERIOD),
+					SECURITY_TYPE  	=  NVL(:vo.securityType, SECURITY_TYPE),
+					IS_ACTIVE    	=  'Y' ,
+					MOD_DATE  		=  to_char(sysdate, 'yyyy-mm-dd'),
+				    DOC_OWNER_ID     = NVL(:vo.docOwnerId, DOC_OWNER_ID), 
+				    DOC_OWNER_NAME   = NVL(:vo.docOwnerName, DOC_OWNER_NAME)
+				WHERE 	BULL_ID = :vo.bullId
+				--AND 	DOC_VERSION = :vo.docVersion
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 첨부파일 등록 -->
+		<query id="board.updateAttach">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BOARD SET
+					ATTFILES  		=  :vo.attfiles
+				WHERE 	BULL_ID = :vo.bullId
+			]]>
+			</statement>
+		</query>
+
+
+		<!-- 조회수 -->
+		<query id="board.updateHitno">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_BOARD SET
+					HITNO  	= HITNO + 1
+				WHERE 	COMP_ID = :vo.compId
+				AND		BOARD_ID = :vo.boardId
+				AND		BULL_ID = :vo.bullId
+			]]>
+			</statement>
+		</query>		
+
+
+		<!-- 게시물 삭제 -->
+		<query id="board.deleteBull">
+			<statement>
+			<![CDATA[
+				DELETE TGW_APP_BOARD 
+					WHERE 	BULL_ID = :vo.bullId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 게시물 삭제시 댓글 삭제 -->
+		<query id="board.alldeleteBull">
+			<statement>
+			<![CDATA[
+				DELETE TGW_APP_BOARD_REPLY 
+					WHERE 	BULL_ID = :vo.bullId
+			]]>
+			</statement>
+		</query>
+		
+		
+		<!-- 게시물 보기 -->
+		<query id="board.viewBoard">
+			<statement>
+			<![CDATA[
+				SELECT
+					REG_NO, COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE, IS_ACTIVE,
+					HITNO, ATTFILES, nvl(OFFICIALFLAG,'0') OFFICIALFLAG, nvl(CONTENTS,'') CONTENTS, 
+					REG_ID, REG_NAME, REG_DEPT_ID, DOC_OWNER_ID, DOC_VERSION, REG_DEPT_NAME, REG_DATE, 
+					MOD_ID, MOD_NAME, MOD_DEPT_ID, DOC_OWNER_NAME, DOC_KEYWORD, BINDING_ID, BINDING_NAME,
+					RETENTION_PERIOD, SECURITY_TYPE, MOD_DEPT_NAME, MOD_DATE,
+					(CASE WHEN (SELECT COUNT(*) FROM TGW_APP_BIND_MANAGER
+						WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND BIND_ID = BINDING_ID 
+							AND MANAGER_ID = :vo.userId ) > 0 THEN 'Y'
+						ELSE 'N' END) AS IS_MANAGER,
+					(SELECT BIND_AUTHORITY FROM TGW_APP_BIND_AUTHORITY
+						WHERE COMP_ID = :vo.compId AND AUTH_DEPT_ID = :vo.deptId
+							AND BIND_ID = BINDING_ID) AS BIND_AUTHORITY,
+					DECODE(:vo.userId,REG_ID,'Y',DOC_OWNER_ID,'Y','N') AS IS_OWNER,
+					:vo.bindSendType AS BIND_SEND_TYPE,
+					(SELECT PATH FROM (SELECT 1 A, REPLACE(WM_CONCAT(PATH_TABLE.PATH),',',' > ') AS PATH FROM (
+			        SELECT BIND_NAME AS PATH FROM TGW_APP_BIND_OLD
+			        START WITH bind_id= (SELECT MAX(BINDING_ID) FROM TGW_APP_BOARD WHERE BULL_ID = :vo.bullId)
+			        CONNECT BY PRIOR PARENT_BIND_ID = BIND_ID
+			        ORDER BY LEVEL DESC ) PATH_TABLE
+			        GROUP BY 1)
+			        ) AS BINDING_NAME
+				FROM TGW_APP_BOARD
+				WHERE 	BULL_ID = :vo.bullId
+				AND 	DOC_VERSION = :vo.docVersion
+				AND 	IS_ACTIVE =  'Y'
+				ORDER BY REG_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>
+		
+		
+		<!-- 게시물 보기 -->
+		<query id="board.viewBoardShare">
+			<statement>
+			<![CDATA[
+				SELECT
+					REG_NO, COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE, IS_ACTIVE,
+					HITNO, ATTFILES, nvl(OFFICIALFLAG,'0') OFFICIALFLAG, nvl(CONTENTS,'') CONTENTS, 
+					REG_ID, REG_NAME, REG_DEPT_ID, DOC_OWNER_ID, DOC_VERSION, REG_DEPT_NAME, REG_DATE, 
+					MOD_ID, MOD_NAME, MOD_DEPT_ID, DOC_OWNER_NAME, DOC_KEYWORD, BINDING_ID, BINDING_NAME,
+					RETENTION_PERIOD, SECURITY_TYPE, MOD_DEPT_NAME, MOD_DATE,
+					(CASE WHEN (SELECT COUNT(*) FROM TGW_APP_BIND_MANAGER
+						WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND BIND_ID = BINDING_ID 
+							AND MANAGER_ID = :vo.userId ) > 0 THEN 'Y'
+						ELSE 'N' END) AS IS_MANAGER,
+					(SELECT BIND_AUTHORITY FROM TGW_APP_BIND_AUTHORITY
+						WHERE COMP_ID = :vo.compId AND AUTH_DEPT_ID = :vo.deptId
+							AND BIND_ID = BINDING_ID) AS BIND_AUTHORITY,
+					DECODE(:vo.userId,REG_ID,'Y',DOC_OWNER_ID,'Y','N') AS IS_OWNER,
+					:vo.bindSendType AS BIND_SEND_TYPE,
+					(SELECT PATH FROM (SELECT 1 A, REPLACE(WM_CONCAT(PATH_TABLE.PATH),',',' > ') AS PATH FROM (
+			        SELECT BIND_NAME AS PATH FROM TGW_APP_BIND_OLD
+			        START WITH bind_id= (SELECT MAX(BINDING_ID) FROM TGW_APP_BOARD WHERE BULL_ID = :vo.bullId)
+			        CONNECT BY PRIOR PARENT_BIND_ID = BIND_ID
+			        ORDER BY LEVEL DESC ) PATH_TABLE
+			        GROUP BY 1)
+			        ) AS BINDING_NAME
+				FROM TGW_APP_BOARD
+				WHERE 	BULL_ID = :vo.bullId
+				AND 	DOC_VERSION = :vo.docVersion
+				AND 	IS_ACTIVE =  'Y'
+				ORDER BY REG_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>
+		
+		<!-- 이전 이력 확인하기 -->
+		<query id="board.viewVersionBoard">
+			<statement>
+			<![CDATA[
+				SELECT
+					REG_NO, COMP_ID, BOARD_ID, BOARD_NAME, BULL_ID, BULL_TITLE, IS_ACTIVE,
+					HITNO, ATTFILES, nvl(OFFICIALFLAG,'0') OFFICIALFLAG, nvl(CONTENTS,'') CONTENTS, 
+					REG_ID, REG_NAME, REG_DEPT_ID, DOC_OWNER_ID, DOC_VERSION, REG_DEPT_NAME, REG_DATE, 
+					MOD_ID, MOD_NAME, MOD_DEPT_ID, DOC_OWNER_NAME, DOC_KEYWORD, BINDING_ID, BINDING_NAME,
+					RETENTION_PERIOD, SECURITY_TYPE, MOD_DEPT_NAME, MOD_DATE,
+					(CASE WHEN (SELECT COUNT(*) FROM TGW_APP_BIND_MANAGER
+						WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND BIND_ID = BINDING_ID
+							AND MANAGER_ID = :vo.userId ) > 0 THEN 'Y'
+						ELSE 'N' END) AS IS_MANAGER,
+					(SELECT BIND_AUTHORITY FROM TGW_APP_BIND_AUTHORITY
+						WHERE COMP_ID = :vo.compId AND AUTH_DEPT_ID = :vo.deptId
+							AND BIND_ID = BINDING_ID) AS BIND_AUTHORITY,
+					DECODE(:vo.userId,REG_ID,'Y',DOC_OWNER_ID,'Y','N') AS IS_OWNER,
+					:vo.bindSendType AS BIND_SEND_TYPE,
+					(SELECT PATH FROM (SELECT 1 A, REPLACE(WM_CONCAT(PATH_TABLE.PATH),',',' > ') AS PATH FROM (
+			        SELECT BIND_NAME AS PATH FROM TGW_APP_BIND_OLD
+			        START WITH bind_id= (SELECT MAX(BINDING_ID) FROM TGW_APP_BOARD WHERE BULL_ID = :vo.bullId)
+			        CONNECT BY PRIOR PARENT_BIND_ID = BIND_ID
+			        ORDER BY LEVEL DESC ) PATH_TABLE
+			        GROUP BY 1)
+			        ) AS BINDING_NAME
+				FROM TGW_APP_BOARD
+				WHERE 	BULL_ID = :vo.bullId
+				AND 	DOC_VERSION = :vo.docVersion
+				ORDER BY REG_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>
+		
+		<!-- 버전 불러오기 -->
+		<query id="board.viewBoardv">
+			<statement>
+			<![CDATA[
+				SELECT BULL_ID, DOC_VERSION, IS_ACTIVE, SECURITY_TYPE
+				FROM TGW_APP_BOARD
+				WHERE 	BULL_ID = :vo.bullId
+				ORDER BY DOC_VERSION ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>
+		
+		<!-- TITLE 불러오기 -->
+		<query id="board.viewBoardTitle">
+			<statement>
+			<![CDATA[
+				SELECT BULL_TITLE
+				FROM TGW_APP_BOARD
+				ORDER BY BULL_TITLE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>
+		
+		<!-- 등록 된 문서권한 조회 -->
+		<query id="board.selectBind">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, BIND_ID, AUTH_DEPT_ID, BIND_AUTHORITY
+				FROM TGW_APP_BIND_AUTHORITY
+				WHERE COMP_ID = :vo.compId
+				AND DEPT_ID = :vo.deptId
+				AND BIND_ID = :vo.bindingId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardVO" />
+		</query>
+		
+		<!-- 첨부파일 보기 -->
+		<query id="board.viewAttach">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID, 
+					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, 
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO
+				WHERE 	DOC_ID = :vo.bullId
+				AND 	DOC_VERSION = :vo.docVersion
+				ORDER BY FILE_TYPE ASC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>		
+		
+		<!-- 이전 첨부파일 보기 -->
+		<query id="board.viewAttachVersion">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, FILE_ID, 
+					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, 
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO_HIS
+				WHERE 	DOC_ID = :vo.bullId
+				AND 	DOC_VERSION = :vo.docVersion
+				ORDER BY FILE_TYPE ASC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>
+		
+		<!-- 첨부파일 삭제 -->
+		<query id="board.deleteFileMap">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :bullId 
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+				#if ($fileType)	
+					AND FILE_TYPE = :fileType
+				#end
+			]]>
+			</statement>
+		</query>
+		
+		
+		<!-- 첨부파일 수정 -->
+		<query id="board.listFile">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID, 
+					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, 
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+				FROM TGW_FILE_INFO
+				WHERE 
+					DOC_ID = :bullId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+				#if ($fileType && $fileExType)	
+					AND (FILE_TYPE = :fileType OR FILE_TYPE = :fileExType)
+				#elseif ($fileType)	
+					AND FILE_TYPE = :fileType
+				#elseif ($fileExType)	
+					AND FILE_TYPE = :fileExType
+				#end
+					ORDER BY FILE_TYPE ASC, FILE_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>	
+		
+		
+		<!-- 댓글 입력 -->
+		<query id="board.insertReply">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_BOARD_REPLY
+					(
+					COMP_ID, BULL_ID, REPLY_ID, RECONTENTS, 
+					REG_ID, REG_NAME, REG_DEPT_ID, REG_DEPT_NAME, REG_DATE 
+					)
+				VALUES
+					(
+					:vo.compId, :vo.bullId, :vo.replyId,:vo.recontents, 
+					:vo.regId, :vo.regName, :vo.regDeptId, :vo.regDeptName, SYSDATE
+					)
+			]]>
+			</statement>
+		</query>	
+		
+		<!-- 댓글보기 -->
+	 	<query id="board.viewReply">
+			<statement>
+			<![CDATA[
+				SELECT
+					COMP_ID, BULL_ID, REPLY_ID, RECONTENTS, 
+					REG_ID, REG_NAME, REG_DEPT_ID, REG_DEPT_NAME, REG_DATE
+					
+				FROM TGW_APP_BOARD_REPLY
+				WHERE 	BULL_ID = :vo.bullId
+				ORDER BY REG_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.board.vo.AppBoardReplyVO" />
+		</query>	
+		
+		<!-- 댓글 삭제 -->
+		<query id="boardReply.delete">
+			<statement>
+			<![CDATA[
+				DELETE TGW_APP_BOARD_REPLY 
+					WHERE 	REPLY_ID = :vo.replyId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 관리자 삭제 -->
+		<query id="board.adminDelete">
+			<statement>
+			<![CDATA[
+				DELETE TGW_APP_BOARD 
+					WHERE BULL_ID IN ( {{vo.bullId}})
+					
+			]]>
+			</statement>
+		</query>
+	
+		<!-- 관리자 댓글 삭제 -->
+		<query id="board.adminDeleteReply">
+			<statement>
+			<![CDATA[
+				DELETE TGW_APP_BOARD_REPLY 
+					WHERE BULL_ID IN ( {{vo.bullId}})	
+			]]>
+			</statement>
+		</query>
+		
+	</queries>
+</queryservice>

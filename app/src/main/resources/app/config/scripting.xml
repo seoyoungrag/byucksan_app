@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='euc-kr' ?>
+<cross-site-scripting>
+	<!-- XML용 특수문자(<, >, &, ", ')가 포함된 경우 변환해서 사용 -->
+	<scriptings>
+		<scripting>&lt;script&gt;</scripting>
+		<scripting>&lt;/script&gt;</scripting>
+		<scripting>&lt;object&gt;</scripting>
+		<scripting>&lt;/object&gt;</scripting>
+		<scripting>&lt;applet&gt;</scripting>
+		<scripting>&lt;/applet&gt;</scripting>
+		<scripting>&lt;embed&gt;</scripting>
+		<scripting>&lt;/embed&gt;</scripting>
+		<scripting>&lt;form&gt;</scripting>
+		<scripting>&lt;/form&gt;</scripting>
+		<scripting>&lt;iframe&gt;</scripting>
+		<scripting>&lt;/iframe&gt;</scripting>
+		<scripting>background:url</scripting>
+		<scripting>document.cookie</scripting>
+		<scripting>document.location</scripting>
+		<scripting>document.write</scripting>
+		<scripting>location.href</scripting>
+		<scripting>waitfor delay</scripting>
+		
+		<scripting>%3Cscript</scripting>
+		<scripting>\\x3Cscript</scripting>
+		<scripting>javascript:</scripting>
+		<scripting>%00</scripting>
+		<scripting>expression *\\(*\\)</scripting>
+	
+		<scripting>onblur</scripting>
+		<scripting>onchange</scripting>
+		<scripting>onclick</scripting>
+		<scripting>ondblclick</scripting>
+		<scripting>ondragdrop</scripting>
+		<scripting>onerror</scripting>
+		<scripting>onfocus</scripting>
+		<scripting>onmousemove</scripting>
+		<scripting>onmouseout</scripting>
+		<scripting>onmouseover</scripting>
+		<scripting>onmouseup</scripting>
+		<scripting>onmove</scripting>
+		<scripting>onreset</scripting>
+		<scripting>onresize</scripting>
+		<scripting>onabort</scripting>
+		<scripting>onkeydown</scripting>
+		<scripting>onkeypress</scripting>
+		<scripting>onkeyup</scripting>
+		<scripting>onload</scripting>
+		<scripting>onmousedown</scripting>
+		<scripting>onselect</scripting>
+		<scripting>onsubmit</scripting>
+		<scripting>onunload</scripting>
+
+		<scripting>src*=</scripting>
+		<scripting>src *=</scripting>
+	</scriptings>
+	<exceptions>
+	
+<!--	
+		<exception module="portal" command="jsp" field="wec"></exception>
+		<exception module="portal" command="jsp" field="contents"></exception>
+-->
+	</exceptions>
+</cross-site-scripting>

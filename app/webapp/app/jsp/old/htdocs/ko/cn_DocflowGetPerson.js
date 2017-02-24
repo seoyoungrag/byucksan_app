@@ -1,0 +1,1 @@
+var ALERT_NOT_SET_YOURSELF = "자신은 선택될 수 없습니다.";

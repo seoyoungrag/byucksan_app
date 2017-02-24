@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-web-app xmlns="http://www.bea.com/ns/weblogic/90" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<context-root>/ep</context-root>
+	<container-descriptor>
+		<servlet-reload-check-secs>3</servlet-reload-check-secs>
+		<resource-reload-check-secs>-1</resource-reload-check-secs>
+		<prefer-web-inf-classes>false</prefer-web-inf-classes>
+	</container-descriptor>	
+	<resource-description> 
+		<res-ref-name>iamDataSource</res-ref-name> 
+		<jndi-name>iamDataSource</jndi-name> 
+	</resource-description> 
+	<resource-description> 
+		<res-ref-name>iam60DataSource</res-ref-name> 
+		<jndi-name>iam60DataSource</jndi-name> 
+	</resource-description>
+	
+	<!-- weblogic 추가 -->
+	<resource-description> 
+		<res-ref-name>appDataSource</res-ref-name> 
+		<jndi-name>appDataSource</jndi-name> 
+	</resource-description>
+	<!-- weblogic 추가 -->
+	
+	
+	<jsp-descriptor>
+		<page-check-seconds>1</page-check-seconds>
+		<working-dir>C:/acube/app/workingDir</working-dir>
+		<keepgenerated>true</keepgenerated>
+	</jsp-descriptor>
+	<session-descriptor> 
+		<timeout-secs>3600</timeout-secs>
+		<invalidation-interval-secs>20</invalidation-interval-secs>
+		<debug-enabled>false</debug-enabled> 
+		<id-length>52</id-length> 
+		<cookie-name>JSESSIONID_APP</cookie-name> 
+	</session-descriptor>
+</weblogic-web-app>

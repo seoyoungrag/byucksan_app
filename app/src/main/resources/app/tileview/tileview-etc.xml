@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 공람게시 종료처리 -->
+	<definition name="EtcController.closePublicPost" template="/app/jsp/etc/ProcResult.jsp"/>
+	
+	<!-- 포탈제공 건수 -->
+	<definition name="ListEtcController.responsePortalCount" template="/app/jsp/etc/ProcPortalCountResult.jsp"/>
+	
+	<!-- 문서유통 임시 테스트 페이지 -->
+	<definition name="RelayContorller.getRecvPubdoc" template="/app/jsp/etc/RelayTest.jsp"/>
+	
+</tiles-definitions>

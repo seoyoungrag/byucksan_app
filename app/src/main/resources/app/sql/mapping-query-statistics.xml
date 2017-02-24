@@ -1,0 +1,1509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="statistics.approvalRoleStatisticsDept" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT
+				    
+				    CASE
+				
+				        WHEN APPROVER_DEPT_ID IS NULL THEN :vo.replaceDbDept
+				        ELSE APPROVER_DEPT_ID
+				
+				    END APPROVER_DEPT_ID
+				    ,
+				    CASE
+				
+				        WHEN APPROVER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE APPROVER_DEPT_NAME
+				
+				    END APPROVER_DEPT_NAME
+				    
+				    , ART010
+				    , ART020
+				    
+				    #if ($vo.opt003GYn.equals("Y"))
+				    	, ART030
+				    #else
+				    	, '0' ART030
+				    #end
+				    
+				    #if ($vo.opt053GYn.equals("Y"))
+				    	, ART130
+				    #else
+				    	, '0' ART130
+				    #end
+
+				    #if ($vo.opt009GYn.equals("Y"))
+				    	, ART040
+				    #else
+				    	, '0' ART040
+				    #end
+				    
+				    , ART050
+				    
+				    #if ($vo.opt019GYn.equals("Y"))
+				    	, ART060
+				    #else
+				    	, '0' ART060
+				    #end
+				    
+				    , ART070
+				FROM (
+				
+				    SELECT			    	
+				    	
+				    	
+				        APPROVER_DEPT_ID
+				        ,APPROVER_DEPT_NAME
+				    	
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ASK_TYPE = :vo.art010 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) ART010
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ASK_TYPE = :vo.art020 THEN 1
+				                WHEN ASK_TYPE = :vo.art021 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) ART020
+				        
+				        #if ($vo.opt003GYn.equals("Y"))
+				        
+					        ,SUM(
+					
+					            CASE
+					
+					                WHEN ASK_TYPE = :vo.art030 THEN 1
+					                WHEN ASK_TYPE = :vo.art031 THEN 1
+					                WHEN ASK_TYPE = :vo.art032 THEN 1
+					                WHEN ASK_TYPE = :vo.art033 THEN 1
+					                WHEN ASK_TYPE = :vo.art034 THEN 1
+					                WHEN ASK_TYPE = :vo.art035 THEN 1
+					                ELSE 0
+					
+					            END
+					
+					        ) ART030
+					        
+					   #end
+				        #if ($vo.opt053GYn.equals("Y"))
+				        
+					        ,SUM(
+					
+					            CASE
+					
+					                WHEN ASK_TYPE = :vo.art130 THEN 1
+					                WHEN ASK_TYPE = :vo.art131 THEN 1
+					                WHEN ASK_TYPE = :vo.art132 THEN 1
+					                WHEN ASK_TYPE = :vo.art133 THEN 1
+					                WHEN ASK_TYPE = :vo.art134 THEN 1
+					                WHEN ASK_TYPE = :vo.art135 THEN 1
+					                ELSE 0
+					
+					            END
+					
+					        ) ART130
+					        
+					   #end					   
+				       #if ($vo.opt009GYn.equals("Y"))
+				        
+					        ,SUM(
+					
+					            CASE
+					
+					                WHEN ASK_TYPE = :vo.art040 THEN 1
+					                WHEN ASK_TYPE = :vo.art041 THEN 1
+					                WHEN ASK_TYPE = :vo.art042 THEN 1
+					                WHEN ASK_TYPE = :vo.art043 THEN 1
+					                WHEN ASK_TYPE = :vo.art044 THEN 1
+					                WHEN ASK_TYPE = :vo.art045 THEN 1
+					                WHEN ASK_TYPE = :vo.art046 THEN 1
+					                WHEN ASK_TYPE = :vo.art047 THEN 1
+					                ELSE 0
+					
+					            END
+					
+					        ) ART040
+					        
+				       #end 
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ASK_TYPE = :vo.art050 THEN 1
+				                WHEN ASK_TYPE = :vo.art051 THEN 1
+				                WHEN ASK_TYPE = :vo.art052 THEN 1
+				                WHEN ASK_TYPE = :vo.art053 THEN 1
+				                WHEN ASK_TYPE = :vo.art054 THEN 1
+				                WHEN ASK_TYPE = :vo.art055 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) ART050
+				        
+				        #if ($vo.opt019GYn.equals("Y"))
+				        	, NVL(ART060.CNT, 0) ART060
+				        #end
+				         
+				        , NVL(ART070.CNT, 0) ART070
+				       
+				
+				    FROM TGW_APP_LINE A,
+				    	#if ($vo.opt019GYn.equals("Y"))
+				    	
+					    	(
+					            SELECT PROCESSOR_DEPT_ID , PROCESSOR_DEPT_NAME, COUNT(DOC_ID) CNT FROM TGW_ENF_LINE ENF
+					            WHERE ENF.COMP_ID = :vo.compId 
+					            AND ENF.ASK_TYPE = :vo.art060            
+					            AND ENF.PROC_TYPE = :vo.procType			            
+					            AND ENF.PROCESS_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+					            
+					            GROUP BY PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME
+					        ) ART060
+					        ,
+					        
+				        #end 
+				        
+				        (
+				            SELECT PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, COUNT(DOC_ID) CNT FROM TGW_ENF_LINE ENF
+				            WHERE ENF.COMP_ID = :vo.compId  
+				            AND ENF.ASK_TYPE = :vo.art070            
+				            AND ENF.PROC_TYPE = :vo.procType
+				            AND ENF.PROCESS_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+				            
+				            GROUP BY PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME
+				        ) ART070
+				
+				    WHERE COMP_ID = :vo.compId
+				    AND PROC_TYPE = :vo.procType
+				    AND TEMP_YN = 'N'
+				    AND PROCESS_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+				    
+				    #if ($vo.opt019GYn.equals("Y"))
+					    AND ART060.PROCESSOR_DEPT_ID(+) = A.APPROVER_DEPT_ID 	
+					    AND ART060.PROCESSOR_DEPT_NAME(+) = A.APPROVER_DEPT_NAME
+				    #end
+				       
+				    AND ART070.PROCESSOR_DEPT_ID(+) = A.APPROVER_DEPT_ID  	
+				    AND ART070.PROCESSOR_DEPT_NAME(+) = A.APPROVER_DEPT_NAME
+				    			    
+					#if ($vo.opt019GYn.equals("Y"))
+						GROUP BY  APPROVER_DEPT_ID, APPROVER_DEPT_NAME, ART060.CNT, ART070.CNT
+					#else
+						GROUP BY  APPROVER_DEPT_ID, APPROVER_DEPT_NAME, ART070.CNT
+					#end
+				    
+				
+				) ORDER BY  APPROVER_DEPT_NAME ASC				
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.approvalRoleStatisticsPerson" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT
+				    CASE
+				
+				        WHEN APPROVER_DEPT_ID IS NULL THEN :vo.replaceDbDept
+				        ELSE APPROVER_DEPT_ID
+				
+				    END APPROVER_DEPT_ID
+				    ,
+				    CASE
+				
+				        WHEN APPROVER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE APPROVER_DEPT_NAME
+				
+				    END APPROVER_DEPT_NAME
+				    
+				     ,APPROVER_POS
+				     ,
+				    APPROVER_ID,  
+				    CASE 
+				        WHEN APPROVER_NAME IS NULL THEN  :vo.replaceDbPerson
+				        ELSE APPROVER_NAME
+				    END  APPROVER_NAME
+				    
+				    , ART010
+				    , ART020
+				    
+				    #if ($vo.opt003GYn.equals("Y"))
+				    	, ART030
+				    #else
+				    	, '0' ART030
+				    #end
+				    
+				    #if ($vo.opt053GYn.equals("Y"))
+				    	, ART130
+				    #else
+				    	, '0' ART130
+				    #end	
+				    			    
+				    #if ($vo.opt009GYn.equals("Y"))
+				    	, ART040
+				    #else
+				    	, '0' ART040
+				    #end
+				    
+				    , ART050
+				    
+				    #if ($vo.opt019GYn.equals("Y"))
+				    	, ART060
+				    #else
+				    	, '0' ART060
+				    #end
+				    
+				    , ART070
+				FROM (
+				
+				    SELECT			    	
+				    	
+				    	
+				        APPROVER_DEPT_ID
+				        ,APPROVER_DEPT_NAME
+			    		,APPROVER_POS				    		
+			    		,APPROVER_ID
+			    		,APPROVER_NAME
+				    	
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ASK_TYPE = :vo.art010 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) ART010
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ASK_TYPE = :vo.art020 THEN 1
+				                WHEN ASK_TYPE = :vo.art021 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) ART020
+				        
+				        #if ($vo.opt003GYn.equals("Y"))
+				        
+					        ,SUM(
+					
+					            CASE
+					
+					                WHEN ASK_TYPE = :vo.art030 THEN 1
+					                WHEN ASK_TYPE = :vo.art031 THEN 1
+					                WHEN ASK_TYPE = :vo.art032 THEN 1
+					                WHEN ASK_TYPE = :vo.art033 THEN 1
+					                WHEN ASK_TYPE = :vo.art034 THEN 1
+					                WHEN ASK_TYPE = :vo.art035 THEN 1
+					                ELSE 0
+					
+					            END
+					
+					        ) ART030
+					        
+					    #end
+				        
+				        #if ($vo.opt053GYn.equals("Y"))
+				        
+					        ,SUM(
+					
+					            CASE
+					
+					                WHEN ASK_TYPE = :vo.art130 THEN 1
+					                WHEN ASK_TYPE = :vo.art131 THEN 1
+					                WHEN ASK_TYPE = :vo.art132 THEN 1
+					                WHEN ASK_TYPE = :vo.art133 THEN 1
+					                WHEN ASK_TYPE = :vo.art134 THEN 1
+					                WHEN ASK_TYPE = :vo.art135 THEN 1
+					                ELSE 0
+					
+					            END
+					
+					        ) ART130
+					        
+					    #end
+
+				        #if ($vo.opt009GYn.equals("Y"))
+				        
+					        ,SUM(
+					
+					            CASE
+					
+					                WHEN ASK_TYPE = :vo.art040 THEN 1
+					                WHEN ASK_TYPE = :vo.art041 THEN 1
+					                WHEN ASK_TYPE = :vo.art042 THEN 1
+					                WHEN ASK_TYPE = :vo.art043 THEN 1
+					                WHEN ASK_TYPE = :vo.art044 THEN 1
+					                WHEN ASK_TYPE = :vo.art045 THEN 1
+					                WHEN ASK_TYPE = :vo.art046 THEN 1
+					                WHEN ASK_TYPE = :vo.art047 THEN 1
+					                ELSE 0
+					
+					            END
+					
+					        ) ART040
+				        
+				        #end
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ASK_TYPE = :vo.art050 THEN 1
+				                WHEN ASK_TYPE = :vo.art051 THEN 1
+				                WHEN ASK_TYPE = :vo.art052 THEN 1
+				                WHEN ASK_TYPE = :vo.art053 THEN 1
+				                WHEN ASK_TYPE = :vo.art054 THEN 1
+				                WHEN ASK_TYPE = :vo.art055 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) ART050
+				        
+				        ,
+				        
+				        #if ($vo.opt019GYn.equals("Y"))
+					        (
+					            SELECT COUNT(DOC_ID) FROM TGW_ENF_LINE ENF
+					            WHERE ENF.COMP_ID = :vo.compId 
+					            AND ENF.ASK_TYPE = :vo.art060            
+					            AND ENF.PROC_TYPE = :vo.procType
+				            	AND ENF.PROCESSOR_ID = A.APPROVER_ID
+				            	AND ENF.PROCESSOR_NAME = A.APPROVER_NAME
+				            	AND ENF.PROCESSOR_DEPT_ID = :vo.searchDeptId
+					            AND ENF.PROCESS_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+					        ) ART060				   
+				        
+				        	,
+				        
+				        #end
+				        
+				        (
+				            SELECT COUNT(DOC_ID) FROM TGW_ENF_LINE ENF
+				            WHERE ENF.COMP_ID = :vo.compId  
+				            AND ENF.ASK_TYPE = :vo.art070            
+				            AND ENF.PROC_TYPE = :vo.procType				            
+			            	AND ENF.PROCESSOR_ID = A.APPROVER_ID
+			            	AND ENF.PROCESSOR_NAME = A.APPROVER_NAME
+			            	AND ENF.PROCESSOR_DEPT_ID = :vo.searchDeptId				            
+				            AND ENF.PROCESS_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+				        ) ART070
+				       
+				
+				    FROM TGW_APP_LINE A
+				
+				    WHERE COMP_ID = :vo.compId
+				    AND PROC_TYPE = :vo.procType
+				    AND TEMP_YN = 'N'
+				    AND PROCESS_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+				    AND APPROVER_DEPT_ID = :vo.searchDeptId
+					GROUP BY  APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID, APPROVER_DEPT_NAME
+					
+				    
+				
+				) ORDER BY  APPROVER_DEPT_NAME ASC, APPROVER_NAME ASC
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.docKindStatisticsDept" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_ID IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_ID
+				
+				    END DRAFTER_DEPT_ID
+				    ,
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_NAME
+				
+				    END DRAFTER_DEPT_NAME
+				    
+				    , DET001
+				    , DET002
+				    , DET003
+				FROM (
+				
+				    SELECT			    	
+				    	
+				    	
+				        DRAFTER_DEPT_ID
+				        ,DRAFTER_DEPT_NAME
+				    	
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det001 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET001
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det002 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET002
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det003 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET003				       
+				
+				    FROM TGW_APP_DOC A
+				
+				    WHERE COMP_ID = :vo.compId
+				    AND A.DOC_STATE IN ( {{vo.docAppState}} )
+				    AND LAST_UPDATE_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')				    
+					AND TEMP_YN = 'N'
+					AND DELETE_YN = 'N'
+					GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME
+				    
+				
+				) ORDER BY  DRAFTER_DEPT_NAME ASC				
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.docKindStatisticsPerson" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT
+				
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_ID IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_ID
+				
+				    END DRAFTER_DEPT_ID
+				    ,
+				    
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_NAME
+				
+				    END DRAFTER_DEPT_NAME
+				    
+				    ,DRAFTER_POS
+				    ,DRAFTER_ID, 
+				    CASE 
+				        WHEN DRAFTER_NAME IS NULL THEN  :vo.replaceDbPerson
+				        ELSE DRAFTER_NAME
+				    END  DRAFTER_NAME
+				    
+				    , DET001
+				    , DET002
+				    , DET003
+				FROM (
+				
+				    SELECT			    	
+				    	
+				    	
+				        DRAFTER_DEPT_ID
+				        ,DRAFTER_DEPT_NAME
+				        ,DRAFTER_POS
+				        ,DRAFTER_ID 
+				    	,DRAFTER_NAME 
+				    	
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det001 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET001
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det002 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET002
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det003 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET003				       
+				
+				    FROM TGW_APP_DOC A
+				
+				    WHERE COMP_ID = :vo.compId
+				    AND A.DOC_STATE IN ( {{vo.docAppState}} )
+				    AND A.DRAFTER_DEPT_ID = :vo.searchDeptId	
+				    AND LAST_UPDATE_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')				    				    
+					AND TEMP_YN = 'N'
+					AND DELETE_YN = 'N'
+					GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS
+				    
+				
+				) ORDER BY  DRAFTER_DEPT_NAME ASC, DRAFTER_NAME ASC			
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.approvalCntStatistics" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT
+				    
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_ID IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_ID
+				
+				    END DRAFTER_DEPT_ID
+				    ,
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_NAME
+				
+				    END DRAFTER_DEPT_NAME
+				    
+				    , APP_ING
+				    , APP_COMPLETE
+				FROM (
+				
+				    SELECT			    	
+				    	
+				    	
+				        DRAFTER_DEPT_ID
+				        ,DRAFTER_DEPT_NAME
+				    	
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN A.DOC_STATE IN ( {{vo.docAppState}} ) THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) APP_ING
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                 WHEN A.DOC_STATE IN ( {{vo.docAppStateAdd}} ) THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) APP_COMPLETE
+				        
+				       				       
+				
+				    FROM TGW_APP_DOC A
+				
+				    WHERE COMP_ID = :vo.compId
+				    AND LAST_UPDATE_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')				    
+					AND TEMP_YN = 'N'
+					AND DELETE_YN = 'N'
+					GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME
+				
+				) 
+				
+				ORDER BY  DRAFTER_DEPT_NAME ASC				
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.sendCntStatistics" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT (CASE WHEN DOC_STATE IN ( {{vo.docAppState}} ) AND DRAFTER_DEPT_ID IS NOT NULL								
+				        THEN DRAFTER_DEPT_ID END) DRAFTER_DEPT_ID								
+				        ,(CASE WHEN DOC_STATE IN ( {{vo.docAppState}} ) THEN DRAFTER_DEPT_NAME END) DRAFTER_DEPT_NAME								
+				        ,SUM(CASE								
+				                WHEN DOC_STATE IN ( {{vo.docAppState}} ) 								
+						     AND ENF_TYPE = :vo.det002 THEN CNT ELSE 0 END) DET002						
+					,SUM(CASE							
+				                WHEN DOC_STATE IN ( {{vo.docAppState}} ) 								
+						     AND ENF_TYPE = :vo.det003 THEN CNT ELSE 0 END) DET003						
+					,SUM(CASE							
+				                WHEN DOC_STATE IN ( {{vo.docAppState}} ) 								
+						AND ENF_TYPE = :vo.det004 THEN CNT ELSE 0 END) DET004						
+				FROM								
+				(								
+				SELECT			    	   				
+				        DRAFTER_DEPT_ID								
+				        ,DRAFTER_DEPT_NAME								
+					,ENF_TYPE							
+					,DOC_STATE							
+					,count(*) CNT							
+				FROM TGW_APP_DOC A								
+				    WHERE COMP_ID =  :vo.compId	
+				    AND LAST_UPDATE_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') 								
+				                             AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')				    				    
+					AND TEMP_YN = 'N'							
+					AND DELETE_YN = 'N'							
+					GROUP BY  DRAFTER_DEPT_ID							
+				        ,DRAFTER_DEPT_NAME								
+					,ENF_TYPE							
+					,DOC_STATE							
+				) 								
+				GROUP BY (CASE WHEN DOC_STATE IN ( {{vo.docAppState}} ) AND DRAFTER_DEPT_ID IS NOT NULL								
+				        THEN DRAFTER_DEPT_ID END),								
+				         (CASE WHEN DOC_STATE IN ( {{vo.docAppState}} ) THEN DRAFTER_DEPT_NAME END)								
+				ORDER BY DRAFTER_DEPT_NAME ASC								
+												
+												
+			
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.receiveCntStatistics" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				SELECT
+				    
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_ID IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_ID
+				
+				    END DRAFTER_DEPT_ID
+				    ,
+				    
+				    CASE
+				
+				        WHEN DRAFTER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_NAME
+				
+				    END DRAFTER_DEPT_NAME
+				    
+				    , DET002
+				    , DET003
+				    , DET004
+				FROM (
+				
+				    SELECT			    	
+				    	
+				    	
+				        ACCEPT_DEPT_ID DRAFTER_DEPT_ID
+				        ,ACCEPT_DEPT_NAME DRAFTER_DEPT_NAME				    	
+				        
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det002 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET002
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det003 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET003
+				        
+				        ,SUM(
+				
+				            CASE
+				
+				                WHEN ENF_TYPE = :vo.det004 THEN 1
+				                ELSE 0
+				
+				            END
+				
+				        ) DET004					       
+				
+				    FROM TGW_ENF_DOC A
+				
+				    WHERE COMP_ID = :vo.compId
+				    AND A.DOC_STATE IN ( {{vo.docEnfState}} )
+				    AND LAST_UPDATE_DATE BETWEEN TO_DATE(:vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE(:vo.endDate,'yyyy-MM-dd hh24:mi:ss')				    				    
+					AND DELETE_YN = 'N'
+					GROUP BY  ACCEPT_DEPT_ID, ACCEPT_DEPT_NAME
+				    
+				
+				) ORDER BY  DRAFTER_DEPT_NAME ASC			
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		
+		<query id="statistics.registCntStatistics" isDynamic="true">
+			<statement>
+			<![CDATA[
+
+				
+			WITH
+			    
+			     -- 생산문서 가상 VIEW
+				 APP_DOC_VIEW AS (
+					SELECT
+						COMP_ID, DOC_ID, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, SERIAL_NUMBER, REGIST_DATE
+					FROM TGW_APP_DOC
+			  		WHERE COMP_ID = :vo.compId
+				    AND ( DOC_STATE IN ( {{vo.docAppState}} ) OR TRANSFER_YN = 'Y' )
+				    AND DELETE_YN = 'N'
+				    AND APPROVAL_DATE BETWEEN TO_DATE( :vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE( :vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+			
+			      )
+			      -- 날인문서 가상 VIEW
+			      ,STAMP_LIST_VIEW AS (
+			        SELECT
+			            COMP_ID, DOC_ID, REGISTER_DEPT_ID, REGISTER_DEPT_NAME, SEAL_TYPE
+			        FROM TGW_STAMP_LIST
+			        WHERE COMP_ID = :vo.compId
+			        AND STAMP_ID > ' '
+			        AND SEAL_TYPE IN  ( {{vo.sptAll}} )
+			        AND SEAL_DATE BETWEEN TO_DATE( :vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE( :vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+			
+			      )
+			
+			SELECT
+					DRAFTER_DEPT_ID, 
+					
+					CASE
+				
+				        WHEN DRAFTER_DEPT_NAME IS NULL THEN :vo.replaceDbDept
+				        ELSE DRAFTER_DEPT_NAME
+				
+				    END DRAFTER_DEPT_NAME
+				    				
+				   ,SUM(CASE
+			       WHEN LOBCODE = :vo.lol001 THEN DOC_REGIST_CNT
+			       ELSE 0
+			       END)   {{vo.lol001}}
+		       
+			       ,SUM (CASE
+			       WHEN LOBCODE = :vo.lol002 THEN DOC_REGIST_CNT
+			       ELSE 0
+			       END)   {{vo.lol002}}	
+			      		
+			       ,SUM (CASE
+			       WHEN LOBCODE = :vo.lol003 THEN DOC_REGIST_CNT
+			       ELSE 0
+			       END)   {{vo.lol003}}			       
+			      
+			       ,SUM (CASE
+			       WHEN LOBCODE = :vo.lol004 THEN DOC_REGIST_CNT
+			       ELSE 0
+			       END)   {{vo.lol004}}			       
+			      
+			       ,SUM (CASE
+			       WHEN LOBCODE = :vo.lol005 THEN DOC_REGIST_CNT
+			       ELSE 0
+			       END)   {{vo.lol005}}
+			       
+			       ,SUM (CASE
+			       WHEN LOBCODE = :vo.lol008 THEN DOC_REGIST_CNT
+			       ELSE 0
+			       END)   {{vo.lol008}}			       
+			       
+			       
+			FROM (
+				#if ($vo.opt201Yn.equals("Y"))
+					/*등록대장*/
+					SELECT
+						:vo.lol001 LOBCODE, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DOC_REGIST_CNT
+					FROM (
+						SELECT DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, COUNT(DOC_REGIST_CNT) DOC_REGIST_CNT
+						FROM
+						      (
+						      -- 등록대장(생산)
+						      SELECT A.DOC_ID DOC_REGIST_CNT, C.OWN_DEPT_ID DRAFTER_DEPT_ID, C.OWN_DEPT_NAME DRAFTER_DEPT_NAME
+						      FROM APP_DOC_VIEW A, TGW_SEND_INFO B, TGW_OWN_DEPT C
+						      WHERE A.COMP_ID = :vo.compId
+						      AND A.DOC_ID = B.DOC_ID(+)
+						      AND A.DOC_ID = C.DOC_ID
+						      AND A.COMP_ID = B.COMP_ID(+)
+						      AND A.COMP_ID = C.COMP_ID
+						      AND A.SERIAL_NUMBER > 0
+				
+				
+						      UNION ALL
+				
+						      -- 등록대장(접수)
+						      SELECT A.DOC_ID DOC_REGIST_CNT, C.OWN_DEPT_ID, C.OWN_DEPT_NAME
+						      FROM TGW_ENF_DOC A, TGW_ENF_RECV B, TGW_OWN_DEPT C
+						      WHERE B.RECV_COMP_ID = :vo.compId
+						      AND A.DOC_ID = B.DOC_ID(+)
+						      AND A.DOC_ID = C.DOC_ID
+						      AND A.COMP_ID = B.COMP_ID(+)
+						      AND A.COMP_ID = C.COMP_ID
+						      AND ( A.DOC_STATE IN  ( {{vo.docEnfState}} ) OR A.TRANSFER_YN = 'Y' )		     
+						      AND A.SERIAL_NUMBER > 0
+						      AND A.DELETE_YN = 'N'
+						      AND A.ACCEPT_DATE BETWEEN TO_DATE( :vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE( :vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+						      GROUP BY A.DOC_ID, C.OWN_DEPT_ID, C.OWN_DEPT_NAME
+				
+						)
+				
+						GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME
+					)
+				#else
+					SELECT :vo.lol001 LOBCODE, '' DRAFTER_DEPT_ID, '' DRAFTER_DEPT_NAME,  0 DOC_REGIST_CNT FROM DUAL
+				#end
+				
+				UNION ALL
+				
+				#if ($vo.opt202Yn.equals("Y"))
+					
+					/* 배부대장 */
+					SELECT
+						:vo.lol002 LOBCODE, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, COUNT(DOC_REGIST_CNT)
+					FROM (	
+					
+					      -- 배부대장
+					      SELECT A.DOC_ID DOC_REGIST_CNT, A.ACCEPT_DEPT_ID DRAFTER_DEPT_ID, A.ACCEPT_DEPT_NAME DRAFTER_DEPT_NAME
+					      FROM TGW_ENF_DOC A, TGW_ENF_RECV B
+					      WHERE B.RECV_COMP_ID = :vo.compId
+					      AND A.COMP_ID = B.COMP_ID
+					      AND A.DOC_ID = B.DOC_ID
+					      AND B.ENF_TYPE = :vo.det003
+					      AND B.RECV_DEPT_ID = :vo.compId
+					      AND TO_CHAR(A.DISTRIBUTE_DATE,'yyyy-MM-dd hh24:mi:ss') != '9999-12-31 23:59:59'
+						  AND A.RECEIVE_DATE > TO_DATE('2000','YYYY')	
+						  AND B.REGIST_DATE > TO_DATE('2000','YYYY')	
+						  AND A.DISTRIBUTE_YN IN ('Y', 'YY')
+						  AND A.DELETE_YN = 'N'
+						  AND A.DISTRIBUTE_DATE BETWEEN TO_DATE( :vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE( :vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+				
+						
+					)
+					GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME
+				#else
+					SELECT :vo.lol002 LOBCODE, '' DRAFTER_DEPT_ID, '' DRAFTER_DEPT_NAME,  0 DOC_REGIST_CNT FROM DUAL
+				#end
+				
+				UNION ALL
+				
+				#if ($vo.opt203Yn.equals("Y"))					
+					
+					/* 미등록대장 */
+					SELECT
+						:vo.lol003 LOBCODE, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DOC_REGIST_CNT
+					FROM (
+						SELECT DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, COUNT(DOC_REGIST_CNT) DOC_REGIST_CNT
+						FROM
+						      (
+						      -- 미등록대장(생산)
+						      SELECT A.DOC_ID DOC_REGIST_CNT, C.OWN_DEPT_ID DRAFTER_DEPT_ID, C.OWN_DEPT_NAME DRAFTER_DEPT_NAME
+						      FROM APP_DOC_VIEW A, TGW_SEND_INFO B, TGW_OWN_DEPT C
+						      WHERE A.COMP_ID = :vo.compId
+						      AND A.DOC_ID = B.DOC_ID(+)
+						      AND A.DOC_ID = C.DOC_ID
+						      AND A.COMP_ID = B.COMP_ID(+)
+						      AND A.COMP_ID = C.COMP_ID
+						      AND A.SERIAL_NUMBER = 0
+				
+				
+						      UNION ALL
+				
+						      -- 미등록대장(접수)
+						      SELECT A.DOC_ID DOC_REGIST_CNT, C.OWN_DEPT_ID, C.OWN_DEPT_NAME
+						      FROM TGW_ENF_DOC A, TGW_ENF_RECV B, TGW_OWN_DEPT C
+						      WHERE B.RECV_COMP_ID = :vo.compId
+						      AND A.DOC_ID = B.DOC_ID(+)
+						      AND A.DOC_ID = C.DOC_ID
+						      AND A.COMP_ID = B.COMP_ID(+)
+						      AND A.COMP_ID = C.COMP_ID
+						      AND ( A.DOC_STATE IN  ( {{vo.docEnfState}} ) OR A.TRANSFER_YN = 'Y' )		     
+						      AND A.SERIAL_NUMBER = 0
+						      AND A.DELETE_YN = 'N'
+						      AND A.ACCEPT_DATE BETWEEN TO_DATE( :vo.startDate,'yyyy-MM-dd hh24:mi:ss') AND TO_DATE( :vo.endDate,'yyyy-MM-dd hh24:mi:ss')
+						      GROUP BY A.DOC_ID, C.OWN_DEPT_ID, C.OWN_DEPT_NAME
+				
+						)
+				
+						GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME
+					)
+				#else
+					SELECT :vo.lol003 LOBCODE, '' DRAFTER_DEPT_ID, '' DRAFTER_DEPT_NAME,  0 DOC_REGIST_CNT FROM DUAL
+				#end
+				
+				UNION ALL
+				
+				#if ($vo.opt204Yn.equals("Y"))
+				    
+				    /* 서명인날인대장*/
+				    SELECT :vo.lol004 LOBCODE, REGISTER_DEPT_ID DRAFTER_DEPT_ID, REGISTER_DEPT_NAME DRAFTER_DEPT_NAME, COUNT(REGISTER_DEPT_ID) DOC_REGIST_CNT
+				    FROM STAMP_LIST_VIEW
+				    WHERE SEAL_TYPE = :vo.spt002
+				    GROUP BY REGISTER_DEPT_ID, REGISTER_DEPT_NAME
+				#else
+					SELECT :vo.lol004 LOBCODE, '' DRAFTER_DEPT_ID, '' DRAFTER_DEPT_NAME,  0 DOC_REGIST_CNT FROM DUAL
+				#end 
+			    
+			    UNION ALL
+			    
+			    #if ($vo.opt205Yn.equals("Y"))    
+				    
+				    /* 직인날인대장*/
+				    SELECT :vo.lol005 LOBCODE, REGISTER_DEPT_ID DRAFTER_DEPT_ID, REGISTER_DEPT_NAME DRAFTER_DEPT_NAME, COUNT(REGISTER_DEPT_ID) DOC_REGIST_CNT
+				    FROM STAMP_LIST_VIEW
+				    WHERE SEAL_TYPE = :vo.spt001
+				    GROUP BY REGISTER_DEPT_ID, REGISTER_DEPT_NAME
+				#else
+					SELECT :vo.lol005 LOBCODE, '' DRAFTER_DEPT_ID, '' DRAFTER_DEPT_NAME,  0 DOC_REGIST_CNT FROM DUAL
+				#end
+			    
+			    UNION ALL
+			    
+			    #if ($vo.opt208Yn.equals("Y"))
+				    /* 감사직인날인대장*/
+				    SELECT :vo.lol008 LOBCODE, REGISTER_DEPT_ID DRAFTER_DEPT_ID, REGISTER_DEPT_NAME DRAFTER_DEPT_NAME, COUNT(REGISTER_DEPT_ID) DOC_REGIST_CNT
+				    FROM STAMP_LIST_VIEW
+				    WHERE SEAL_TYPE = :vo.spt005
+				    GROUP BY REGISTER_DEPT_ID, REGISTER_DEPT_NAME
+				    
+				#else
+					SELECT :vo.lol008 LOBCODE, '' DRAFTER_DEPT_ID, '' DRAFTER_DEPT_NAME,  0 DOC_REGIST_CNT FROM DUAL
+				#end
+			    
+				
+			)
+			GROUP BY  DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME
+			
+			ORDER BY DRAFTER_DEPT_NAME
+						
+				
+				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>
+		
+		<query id="statistics.receiptStatusStatistics">
+			<statement>
+			<![CDATA[
+				SELECT 
+					DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, APP_COMPLETE, APP_ING 
+				FROM
+				(
+				#if (!$vo.searchDocType.equals("LINE"))
+					SELECT DISTINCT NVL(b.ref_dept_id, b.recv_dept_id) drafter_dept_id,
+                          NVL2(b.ref_dept_id, b.ref_dept_name, b.recv_dept_name) drafter_dept_name, 'RECV' app_complete,
+                          COUNT (b.recv_dept_id) app_ing
+					FROM 
+						TGW_ENF_DOC A, TGW_ENF_RECV B
+					WHERE
+						B.RECV_COMP_ID = :vo.compId AND A.DOC_ID = B.DOC_ID 
+						AND A.COMP_ID = B.COMP_ID AND A.TRANSFER_YN = 'N' AND A.DOC_STATE IN ( {{vo.docEnfState}} )
+						AND (   (    b.enf_type = 'DET002'
+                               AND b.ref_dept_id IS NULL
+                              )
+                           OR (b.ref_dept_id IS NOT NULL)
+                          )
+						AND B.RECEIVER_ORDER > 0 
+						AND B.REGIST_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')	
+						AND A.DELETE_YN = 'N'  
+						AND A.RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')
+				    #if (!$vo.searchDeptId.equals(""))
+				    	AND NVL(b.ref_dept_id, b.recv_dept_id) = :vo.searchDeptId
+					#end
+				    #if (!$vo.searchDeptName.equals(""))
+				    	AND NVL2(b.ref_dept_id, b.ref_dept_name, b.recv_dept_name) LIKE '%' || :vo.searchDeptName || '%'
+					#end
+					GROUP BY NVL(b.ref_dept_id, b.recv_dept_id), NVL2(b.ref_dept_id, b.ref_dept_name, b.recv_dept_name)
+				#end
+
+				#if ($vo.searchDocType.equals("ALL"))
+					UNION ALL
+				#end
+
+				#if (!$vo.searchDocType.equals("RECV"))
+					SELECT ACCEPT_DEPT_ID DRAFTER_DEPT_ID, ACCEPT_DEPT_NAME DRAFTER_DEPT_NAME, 'LINE' APP_COMPLETE, COUNT(ACCEPT_DEPT_ID) APP_ING 
+					FROM TGW_ENF_DOC
+					WHERE COMP_ID = :vo.compId AND RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')
+						AND DOC_STATE IN ( {{vo.docEnfStateAdd}} ) AND DELETE_YN = 'N' AND UNREGIST_YN = 'N'
+					#if (!$vo.searchDeptName.equals(""))
+				    	AND ACCEPT_DEPT_NAME LIKE '%' || :vo.searchDeptName || '%'
+					#end
+					GROUP BY ACCEPT_DEPT_ID, ACCEPT_DEPT_NAME
+				#end
+				)
+				ORDER BY APP_ING DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>	
+
+		<query id="statistics.listReceiptStatusRecv">
+			<statement>
+			<![CDATA[
+				SELECT A.DOC_ID, A.COMP_ID, A.TITLE, A.DEPT_CATEGORY, A.DOC_NUMBER, A.DOC_STATE,
+					A.SENDER_COMP_NAME, A.SENDER_DEPT_NAME, A.ORIGIN_COMP_ID,
+					A.URGENCY_YN, A.ELECTRON_DOC_YN, B.ENF_TYPE, 
+					TO_CHAR(A.DISTRIBUTE_DATE, 'yyyy-mm-dd hh24:mi:ss') DISTRIBUTE_DATE, 
+					TO_CHAR(A.ACCEPT_DATE, 'yyyy-mm-dd hh24:mi:ss') ACCEPT_DATE, 
+					TO_CHAR(A.RECEIVE_DATE, 'yyyy-mm-dd hh24:mi:ss') RECEIVE_DATE,
+				    TO_CHAR(LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE 
+				FROM TGW_ENF_DOC A, TGW_ENF_RECV B
+				WHERE 
+					B.RECV_COMP_ID = :vo.compId 
+					AND A.DOC_ID = B.DOC_ID 
+					AND A.COMP_ID = B.COMP_ID
+					AND A.DOC_STATE IN ( {{vo.docEnfState}} ) 
+					AND A.TRANSFER_YN = 'N'
+					AND 
+					(
+						( B.ENF_TYPE = :vo.det002 AND B.RECV_DEPT_ID = :vo.searchDeptId AND B.REF_DEPT_ID IS NULL ) 
+						OR 
+						( B.REF_DEPT_ID = :vo.searchDeptId ) 					
+					)
+					AND A.ACCEPT_DATE = TO_DATE('9999-12-31 23:59:59','yyyy-MM-dd hh24:mi:ss')
+					AND B.RECEIVER_ORDER > 0						/* TUNNING ADD JTH8172*/
+					AND B.REGIST_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')		/* TUNNING ADD JTH8172*/ 
+					AND A.DELETE_YN = 'N' 	    
+					AND A.RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')
+				#if (!$vo.searchWord(""))
+					AND A.TITLE LIKE '%' || :vo.searchWord || '%'
+				#end
+				ORDER BY A.LAST_UPDATE_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.enforce.vo.EnfDocVO" />
+		</query>	
+
+		<query id="statistics.listReceiptStatusLine">
+			<statement>
+			<![CDATA[
+				SELECT 
+					DOC_ID, COMP_ID, TITLE, DEPT_CATEGORY, DOC_NUMBER, DOC_STATE,
+					SENDER_COMP_NAME, SENDER_DEPT_NAME, ORIGIN_COMP_ID, 
+					URGENCY_YN, ELECTRON_DOC_YN, 
+					ACCEPT_DEPT_ID, ACCEPT_DEPT_NAME, ACCEPTER_ID, ACCEPTER_NAME,
+				    TO_CHAR(DISTRIBUTE_DATE, 'yyyy-mm-dd hh24:mi:ss') DISTRIBUTE_DATE,
+				    TO_CHAR(ACCEPT_DATE, 'yyyy-mm-dd hh24:mi:ss') ACCEPT_DATE,
+				    TO_CHAR(RECEIVE_DATE, 'yyyy-mm-dd hh24:mi:ss') RECEIVE_DATE,
+				    TO_CHAR(LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE 
+				FROM TGW_ENF_DOC
+				WHERE COMP_ID = :vo.compId 
+					AND RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')
+					AND ACCEPT_DEPT_ID = :vo.searchDeptId 
+					AND DOC_STATE IN ( {{vo.docEnfState}} ) 
+					AND TRANSFER_YN = 'N'
+					AND DELETE_YN = 'N'
+					AND UNREGIST_YN = 'N'
+				#if (!$vo.searchWord(""))
+					AND TITLE LIKE '%' || :vo.searchWord || '%'
+				#end
+				ORDER BY LAST_UPDATE_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.enforce.vo.EnfDocVO" />
+		</query>	
+
+		<query id="statistics.processStatusStatistics">
+			<statement>
+			<![CDATA[
+				SELECT DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, SUM(APP_ING) APP_ING 
+				FROM
+				(
+				#if ($vo.searchDocType.equals("ALL") || $vo.searchDocType.equals("APP"))
+					SELECT DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, SUM(APP_ING) APP_ING
+					FROM
+					(
+						SELECT PROCESSOR_DEPT_ID DRAFTER_DEPT_ID, PROCESSOR_DEPT_NAME DRAFTER_DEPT_NAME,
+							PROCESSOR_ID DRAFTER_ID, PROCESSOR_NAME DRAFTER_NAME, PROCESSOR_POS DRAFTER_POS, 
+							COUNT(PROCESSOR_ID) APP_ING 
+						FROM TGW_APP_DOC
+						WHERE COMP_ID = :vo.compId 
+							AND DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+							AND TRANSFER_YN = 'N' 
+							AND DELETE_YN = 'N' 
+							AND UNREGIST_YN = 'N' 
+							AND DOC_STATE IN ( {{vo.docAppState}} )
+							AND BATCH_DRAFT_NUMBER = 1
+						#if (!$vo.searchDeptId.equals(""))
+					    	AND PROCESSOR_DEPT_ID = :vo.searchDeptId
+						#end
+					    #if (!$vo.searchDeptName.equals(""))
+					    	AND PROCESSOR_DEPT_NAME LIKE '%' || :vo.searchDeptName || '%'
+						#end
+					    #if (!$vo.searchUserId.equals(""))
+					    	AND PROCESSOR_ID = :vo.searchUserId
+						#end
+					    #if (!$vo.searchUserName.equals(""))
+					    	AND PROCESSOR_NAME LIKE '%' || :vo.searchUserName || '%'
+						#end
+						GROUP BY PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, PROCESSOR_ID, PROCESSOR_NAME, PROCESSOR_POS
+						
+						UNION ALL
+						
+						SELECT B.APPROVER_DEPT_ID DRAFTER_DEPT_ID, B.APPROVER_DEPT_NAME DRAFTER_DEPT_NAME, B.APPROVER_ID DRAFTER_ID, B.APPROVER_NAME DRAFTER_NAME, B.APPROVER_POS DRAFTER_POS, COUNT(B.DOC_ID) APP_ING
+						FROM TGW_APP_DOC A, TGW_APP_LINE B
+						WHERE A.COMP_ID = :vo.compId 
+                        	AND A.DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+                        	AND A.DOC_ID = B.DOC_ID
+                        	AND B.ASK_TYPE IN ( {{vo.askType}} )
+                        	AND B.PROC_TYPE IN ( {{vo.procType}} )
+                        	AND B.TEMP_YN = 'N'
+                        	AND A.TRANSFER_YN = 'N' 
+                        	AND A.DELETE_YN = 'N' 
+							AND A.UNREGIST_YN = 'N' 
+                        	AND A.DOC_STATE IN ( {{vo.docAppStateAdd}} )
+                        	AND A.BATCH_DRAFT_NUMBER = 1 
+					    #if (!$vo.searchDeptId.equals(""))
+					    	AND B.APPROVER_DEPT_ID = :vo.searchDeptId
+						#end
+					    #if (!$vo.searchDeptName.equals(""))
+					    	AND B.APPROVER_DEPT_NAME LIKE '%' || :vo.searchDeptName || '%'
+						#end
+					    #if (!$vo.searchUserId.equals(""))
+					    	AND B.APPROVER_ID = :vo.searchUserId
+						#end
+					    #if (!$vo.searchUserName.equals(""))
+					    	AND B.APPROVER_NAME LIKE '%' || :vo.searchUserName || '%'
+						#end         
+                    	GROUP BY B.APPROVER_DEPT_ID, B.APPROVER_DEPT_NAME, B.APPROVER_ID, B.APPROVER_NAME, B.APPROVER_POS
+                    	
+                    	UNION ALL
+                    	
+						SELECT B.REPRESENTATIVE_DEPT_ID DRAFTER_DEPT_ID, B.REPRESENTATIVE_DEPT_NAME DRAFTER_DEPT_NAME, B.REPRESENTATIVE_ID DRAFTER_ID, B.REPRESENTATIVE_NAME DRAFTER_NAME, B.REPRESENTATIVE_POS DRAFTER_POS, COUNT(B.DOC_ID) APP_ING
+						FROM TGW_APP_DOC A, TGW_APP_LINE B
+						WHERE A.COMP_ID = :vo.compId 
+                        	AND A.DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+                        	AND A.DOC_ID = B.DOC_ID
+                        	AND B.ASK_TYPE IN ( {{vo.askType}} )
+                        	AND B.PROC_TYPE IN ( {{vo.procType}} )
+                        	AND B.TEMP_YN = 'N'
+                        	AND A.TRANSFER_YN = 'N' 
+                        	AND A.DELETE_YN = 'N' 
+							AND A.UNREGIST_YN = 'N' 
+                        	AND A.DOC_STATE IN ( {{vo.docAppStateAdd}} )
+                        	AND A.BATCH_DRAFT_NUMBER = 1
+                        	AND B.REPRESENTATIVE_ID > ' '
+					    #if (!$vo.searchDeptId.equals(""))
+					    	AND B.REPRESENTATIVE_DEPT_ID = :vo.searchDeptId
+						#end
+					    #if (!$vo.searchDeptName.equals(""))
+					    	AND B.REPRESENTATIVE_DEPT_NAME LIKE '%' || :vo.searchDeptName || '%'
+						#end
+					    #if (!$vo.searchUserId.equals(""))
+					    	AND B.REPRESENTATIVE_ID = :vo.searchUserId
+						#end
+					    #if (!$vo.searchUserName.equals(""))
+					    	AND B.REPRESENTATIVE_NAME LIKE '%' || :vo.searchUserName || '%'
+						#end
+                    	GROUP BY B.REPRESENTATIVE_DEPT_ID, B.REPRESENTATIVE_DEPT_NAME, B.REPRESENTATIVE_ID, B.REPRESENTATIVE_NAME, B.REPRESENTATIVE_POS    	
+					)
+					GROUP BY DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS 					
+				#end
+					
+				#if ($vo.searchDocType.equals("ALL"))
+					UNION ALL
+				#end
+					
+				#if ($vo.searchDocType.equals("ALL") || $vo.searchDocType.equals("ENF"))
+					SELECT PROCESSOR_DEPT_ID DRAFTER_DEPT_ID, PROCESSOR_DEPT_NAME DRAFTER_DEPT_NAME,
+						PROCESSOR_ID DRAFTER_ID, PROCESSOR_NAME DRAFTER_NAME, PROCESSOR_POS DRAFTER_POS, 
+						COUNT(PROCESSOR_ID) APP_ING 
+					FROM TGW_ENF_DOC
+					WHERE COMP_ID = :vo.compId 
+						AND RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+						AND TRANSFER_YN = 'N' 
+						AND DELETE_YN = 'N' 
+						AND UNREGIST_YN = 'N' 
+				    #if (!$vo.searchDeptId.equals(""))
+				    	AND PROCESSOR_DEPT_ID = :vo.searchDeptId
+					#end
+				    #if (!$vo.searchDeptName.equals(""))
+				    	AND PROCESSOR_DEPT_NAME LIKE '%' || :vo.searchDeptName || '%'
+					#end
+				    #if (!$vo.searchUserId.equals(""))
+				    	AND PROCESSOR_ID = :vo.searchUserId
+					#end
+				    #if (!$vo.searchUserName.equals(""))
+				    	AND PROCESSOR_NAME LIKE '%' || :vo.searchUserName || '%'
+					#end
+						AND DOC_STATE IN ( {{vo.docEnfState}} ) 
+					GROUP BY PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, PROCESSOR_ID, PROCESSOR_NAME, PROCESSOR_POS
+				#end
+				)
+				GROUP BY DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS
+				ORDER BY APP_ING DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>	
+								
+		<query id="statistics.listProcessStatus">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, TITLE, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME,  
+					DRAFTER_ID, DRAFTER_NAME, LAST_UPDATE_DATE,
+					SENDER_DEPT_ID, SENDER_DEPT_NAME, SENDER_COMP_ID, SENDER_COMP_NAME,
+					RETURN_DOC_YN, URGENCY_YN, ELECTRON_DOC_YN, DOC_STATE, DRAFT_DATE, TRANSFER_YN, TEMP_YN 				
+				FROM
+				(
+				#if (!$vo.searchDocType.equals("ENF"))
+					SELECT A.DOC_ID, A.COMP_ID, A.TITLE, A.DRAFTER_DEPT_ID, A.DRAFTER_DEPT_NAME, 
+						A.DRAFTER_ID, A.DRAFTER_NAME, TO_CHAR(A.LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE, 
+						'' SENDER_DEPT_ID, '' SENDER_DEPT_NAME, '' SENDER_COMP_ID, '' SENDER_COMP_NAME,
+						'N' RETURN_DOC_YN, A.URGENCY_YN, A.ELECTRON_DOC_YN, A.DOC_STATE, 
+						TO_CHAR(A.DRAFT_DATE, 'yyyy-mm-dd hh24:mi:ss') DRAFT_DATE, A.TRANSFER_YN, A.TEMP_YN
+					FROM TGW_APP_DOC A, TGW_APP_LINE B
+					WHERE A.COMP_ID = :vo.compId
+						AND A.DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+						AND B.DOC_ID = A.DOC_ID 
+						AND B.COMP_ID = A.COMP_ID   
+						AND B.ASK_TYPE IN ( {{vo.askType}})     
+						AND A.DOC_STATE IN ( {{vo.docAppStateAdd}} )
+						AND A.DELETE_YN = 'N'  						
+						AND A.BATCH_DRAFT_NUMBER = 1			  			
+						AND A.ELECTRON_DOC_YN = 'Y'						
+						AND A.TRANSFER_YN = 'N'						
+						AND A.UNREGIST_YN = 'N'
+						AND B.COMP_ID  = :vo.compId											
+						AND A.TRANSFER_YN = A.DELETE_YN   
+						AND ( B.APPROVER_POS = :vo.searchUserPos OR B.REPRESENTATIVE_POS = :vo.searchUserPos )
+						AND 
+						(
+					   		(
+					   			B.PROC_TYPE = :vo.procType
+					   			AND ( B.APPROVER_ID = :vo.searchUserId OR NVL(B.REPRESENTATIVE_ID, '') = :vo.searchUserId )
+					   			AND B.TEMP_YN = 'N'
+					   		)
+					   		OR
+					   		(
+					   			B.PROC_TYPE = :vo.processorProcType AND B.PROCESSOR_ID = :vo.searchUserId
+					   			AND B.TEMP_YN = 'Y'
+					   		)	
+						)
+					#if (!$vo.searchWord(""))
+						AND A.TITLE LIKE '%' || :vo.searchWord || '%'
+					#end
+				   					  
+					UNION
+				  
+					SELECT DOC_ID, COMP_ID, TITLE, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, 
+						DRAFTER_ID, DRAFTER_NAME, TO_CHAR(LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE, 
+						'' SENDER_DEPT_ID, '' SENDER_DEPT_NAME, '' SENDER_COMP_ID, '' SENDER_COMP_NAME,
+						'Y' RETURN_DOC_YN, URGENCY_YN, ELECTRON_DOC_YN, DOC_STATE,
+						TO_CHAR(DRAFT_DATE, 'yyyy-mm-dd hh24:mi:ss') DRAFT_DATE, TRANSFER_YN, TEMP_YN
+					FROM TGW_APP_DOC
+					WHERE COMP_ID = :vo.compId
+						AND DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+						AND PROCESSOR_ID = :vo.searchUserId
+						AND DOC_STATE IN ( {{vo.docAppState}} )
+						AND BATCH_DRAFT_NUMBER = 1
+						AND DELETE_YN = 'N'
+						AND ELECTRON_DOC_YN = 'Y'	
+						AND TRANSFER_YN = 'N'
+						AND UNREGIST_YN = 'N' 
+						AND PROCESSOR_POS = :vo.searchUserPos				    
+					#if (!$vo.searchWord(""))
+						AND TITLE LIKE '%' || :vo.searchWord || '%'
+					#end
+				#end
+				
+				#if ($vo.searchDocType.equals("ALL"))
+					UNION ALL
+				#end
+				
+				#if (!$vo.searchDocType.equals("APP"))
+					SELECT A.DOC_ID, A.COMP_ID, A.TITLE, A.ACCEPT_DEPT_ID DRAFTER_DEPT_ID, A.ACCEPT_DEPT_NAME DRAFTER_DEPT_NAME,  
+						A.ACCEPTER_ID DRAFTER_ID, A.ACCEPTER_NAME DRAFTER_NAME, 
+						TO_CHAR(A.LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE, 
+						A.SENDER_DEPT_ID, A.SENDER_DEPT_NAME, A.SENDER_COMP_ID, A.SENDER_COMP_NAME,
+						'N' RETURN_DOC_YN, A.URGENCY_YN, A.ELECTRON_DOC_YN, A.DOC_STATE,
+						TO_CHAR(A.ACCEPT_DATE, 'yyyy-mm-dd hh24:mi:ss') ACCEPT_DATE, A.TRANSFER_YN, 'N' TEMP_YN
+					FROM TGW_ENF_DOC A, TGW_ENF_LINE B
+					WHERE A.COMP_ID = :vo.compId
+						AND A.RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')
+						AND A.DOC_ID = B.DOC_ID
+						AND A.COMP_ID = B.COMP_ID						  
+						AND A.DELETE_YN = 'N' 
+						AND A.TRANSFER_YN = 'N'
+						AND A.UNREGIST_YN = 'N' 
+						AND A.DOC_STATE IN ( {{vo.docEnfState}} )					  
+						AND ( B.PROCESSOR_ID = :vo.searchUserId OR NVL(B.REPRESENTATIVE_ID, '') = :vo.searchUserId )
+						AND B.PROC_TYPE = :vo.procType 
+						AND B.PROCESS_DATE = TO_DATE('9999-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')  
+						AND A.PROCESSOR_POS = :vo.searchUserPos
+ 					#if (!$vo.searchWord(""))
+						AND A.TITLE LIKE '%' || :vo.searchWord || '%'
+					#end
+  					  					  
+					UNION
+						  
+					SELECT A.DOC_ID, A.COMP_ID, A.TITLE, A.ACCEPT_DEPT_ID DRAFTER_DEPT_ID, A.ACCEPT_DEPT_NAME DRAFTER_DEPT_NAME,  
+						A.ACCEPTER_ID DRAFTER_ID, A.ACCEPTER_NAME DRAFTER_NAME, 
+						TO_CHAR(A.LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE, 
+						A.SENDER_DEPT_ID, A.SENDER_DEPT_NAME, A.SENDER_COMP_ID, A.SENDER_COMP_NAME,
+						'N' RETURN_DOC_YN, A.URGENCY_YN, A.ELECTRON_DOC_YN, A.DOC_STATE,
+						TO_CHAR(A.ACCEPT_DATE, 'yyyy-mm-dd hh24:mi:ss') ACCEPT_DATE, A.TRANSFER_YN, 'N' TEMP_YN
+					FROM TGW_ENF_DOC A, TGW_ENF_RECV B
+					WHERE B.RECV_COMP_ID = :vo.compId
+						AND A.RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+						AND A.DOC_ID = B.DOC_ID
+						AND A.COMP_ID = B.COMP_ID					  
+						AND A.DOC_STATE IN ( {{vo.docEnfStateAdd}} )
+						AND B.RECV_USER_ID = :vo.searchUserId	
+						AND A.TRANSFER_YN = 'N'	
+						AND A.DELETE_YN = 'N' 
+						/* TUNNING ADD JTH8172*/  
+						AND A.RECEIVE_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS')  	
+						AND A.UNREGIST_YN = 'N' 
+						AND A.PROCESSOR_POS = :vo.searchUserPos				    
+					#if (!$vo.searchWord(""))
+						AND A.TITLE LIKE '%' || :vo.searchWord || '%'
+					#end
+				#end
+			)
+			ORDER BY LAST_UPDATE_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppDocVO" />
+		</query>	
+		<query id="statistics.sendStatusStatistics">
+			<statement>
+			<![CDATA[
+                SELECT A.DRAFTER_DEPT_ID, A.DRAFTER_DEPT_NAME, COUNT(A.DRAFTER_DEPT_ID) APP_ING
+                FROM TGW_APP_DOC A, TGW_SEND_INFO B
+                WHERE A.COMP_ID = :vo.compId
+					AND A.DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+	                AND A.DOC_ID = B.DOC_ID
+	                AND A.COMP_ID = B.COMP_ID    
+	                AND A.DOC_STATE IN ( {{vo.docAppState}} )
+	                AND A.DELETE_YN = 'N'
+	                AND A.ELECTRON_DOC_YN = 'Y'
+	                AND A.TRANSFER_YN = 'N'
+	                AND B.TEMP_YN = 'N'
+	            #if (!$vo.searchWord(""))
+					AND A.DRAFTER_DEPT_NAME LIKE '%' || :vo.searchWord || '%'
+				#end
+				GROUP BY A.DRAFTER_DEPT_ID, A.DRAFTER_DEPT_NAME
+				ORDER BY APP_ING DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.statistics.vo.StatisticsVO" />
+		</query>	
+								
+		<query id="statistics.listSendStatus">
+			<statement>
+			<![CDATA[
+                SELECT
+					A.DOC_ID, A.COMP_ID, A.TITLE, A.DOC_TYPE, A.ENF_TYPE,
+					A.DEPT_CATEGORY, A.SERIAL_NUMBER, A.SUBSERIAL_NUMBER,   
+					A.DRAFTER_ID, A.DRAFTER_NAME, A.DRAFTER_DEPT_ID, A.DRAFTER_DEPT_NAME,
+					DECODE( B.DISPLAY_NAME_YN, 'Y', B.RECEIVERS, NVL(SUBSTR(B.RECEIVERS,1,INSTR(SUBSTR(B.RECEIVERS,1),',')-1),SUBSTR(B.RECEIVERS,1)) ) RECV_DEPT_NAMES, 
+					LENGTH (B.RECEIVERS)- LENGTH (REPLACE (B.RECEIVERS, ',')) RECV_DEPT_CNT,  
+					TO_CHAR(A.APPROVAL_DATE, 'yyyy-mm-dd hh24:mi:ss') APPROVAL_DATE, A.URGENCY_YN, A.DOC_STATE, 
+					TO_CHAR(A.DRAFT_DATE, 'yyyy-mm-dd hh24:mi:ss') DRAFT_DATE, A.TRANSFER_YN, A.ELECTRON_DOC_YN           
+                FROM TGW_APP_DOC A, TGW_SEND_INFO B
+                WHERE A.COMP_ID = :vo.compId
+					AND A.DRAFT_DATE > TO_DATE('2011-10-10 00:00:00','YYYY-MM-DD HH24:MI:SS') 
+	                AND A.DOC_ID = B.DOC_ID
+	                AND A.COMP_ID = B.COMP_ID    
+	                AND A.DOC_STATE IN ( {{vo.docAppState}} )
+					AND A.DRAFTER_DEPT_ID = :vo.searchDeptId
+	                AND A.DELETE_YN = 'N'
+	                AND A.ELECTRON_DOC_YN = 'Y'
+	                AND A.TRANSFER_YN = 'N'
+	                AND B.TEMP_YN = 'N'
+				#if (!$vo.searchWord(""))
+					AND A.TITLE LIKE '%' || :vo.searchWord || '%'
+				#end
+				#if (!$vo.searchDocType.equals("") && !$vo.searchDocType.equals("ALL"))
+					AND A.ENF_TYPE = :vo.searchDocType
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppDocVO" />
+		</query>	
+								
+	</queries>
+</queryservice>

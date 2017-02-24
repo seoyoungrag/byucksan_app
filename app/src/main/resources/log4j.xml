@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+    
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %c %n%m%n" />
+        </layout>   
+    </appender>
+<!-- 
+	<appender name="file" class="org.apache.log4j.FileAppender">
+	    <param name="File" value="C:/ats-1.6.1/logs/app.log"/>
+	    <param name="Append" value="true"/>    	  
+	    <layout class="org.apache.log4j.PatternLayout">
+	        <param name="ConversionPattern" value="%d %p [%c] - &lt;%m&gt;%n" />
+	    </layout>   
+	</appender>
+ -->
+	<appender name="file"
+		class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="C:/_localDev/logs/app/app.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %t %c - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="sqlfile"
+		class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="C:/_localDev/logs/app/app_sql.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %t %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="relayfile"
+		class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="C:/_localDev/logs/app/app_relay.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %t %c - %m%n" />
+		</layout>
+	</appender>
+		
+
+	<logger name="com.sds.acube.app" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>   
+
+	<logger name="org.apache.jsp.ep.app" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>   
+    
+    <!-- spring log config -->
+    <logger name="org.springframework" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>   
+    
+    <!--log SQL (pre-execution) plus exceptions caused by SQL-->
+	<logger name="jdbc.sqlonly" additivity="false">
+		<level value="DEBUG" />
+
+        <appender-ref ref="console"/>
+        <appender-ref ref="sqlfile"/>
+	</logger>
+	
+	<!--log SQL with timing information, post execution, all jdbc calls except ResultSet calls, jdbc ResultSet calls-->
+	<logger name="jdbc" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="console" />
+        <appender-ref ref="file"/>
+	</logger>
+	
+	
+    <!--CXF IN/OUT Bound Message-->
+	<logger name="org.apache.cxf.interceptor.LoggingInInterceptor" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>  
+    
+	<logger name="org.apache.cxf.interceptor.LoggingOutInterceptor" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>
+    
+    <!--SimpleWeb BeanMethod Message-->
+	<logger name="org.anyframe.simpleweb.beans.support" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </logger>
+    
+    <!--Relay Message-->
+	<logger name="com.sds.acube.app.relay" additivity="false">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="relayfile"/>
+    </logger>   
+        
+    <root>
+    	<level value="DEBUG"/>
+    	<appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </root>
+</log4j:configuration>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+      http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+      http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<util:properties id="contextProperties" location="classpath:/app/config/context.properties"/>
+
+	<!-- Load CXF modules from cxf.jar -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<!-- Enable message logging using the CXF logging feature -->
+	<cxf:bus>
+		<cxf:features>
+			<cxf:logging />
+		</cxf:features>
+	</cxf:bus>
+
+	<!-- 전자결재 Legacy Web Service -->
+	<jaxws:endpoint id="wsServerWSService"
+					implementor="#appDocWSService"
+					address="/service/EsbAppService">
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:endpoint>
+	<bean id="appDocWSService" class="com.sds.acube.app.ws.service.impl.EsbAppService"/>
+	
+	<jaxws:endpoint id="legacy"
+					implementor="#legacyService"
+					address="/service/LegacyService">
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:endpoint>
+	<bean id="legacyService" class="com.sds.acube.app.ws.service.impl.LegacyService"/>
+		
+	<!-- 메신저 알림 웹서비스 -->
+	<jaxws:client id="wsClientAlarmMsgrProviderService"
+		serviceClass="com.sds.acube.app.ws.client.alarm.MessengerProvider4WS"
+		address="http://#{contextProperties['esb.server']}/esb/service/EsbMsgrAlarmService" />
+		
+	<!--  //////////////////////   -->
+	<!--   전자결재 ESB client웹서비스  -->
+	<!--  //////////////////////   -->
+	<jaxws:client id="wsClientAppDocWSService" 
+				  serviceClass="com.sds.acube.app.ws.client.esbservice.EsbAppServiceProvider"					
+    			  address="http://#{contextProperties['esb.server']}/esb/service/EsbInternalAppService">
+   		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:client>
+
+	<!-- 전자결재 웹서비스 모바일 테스트용 -->
+	<jaxws:client id="wsClientEsbAppService" 
+				  serviceClass="com.sds.acube.app.mobile.ws.client.esbservice.IEsbAppService"					
+    			  address="http://70.6.70.212:8080/ep/app/esb/service/EsbAppService">
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+   	</jaxws:client>
+   	
+   	
+	<!-- 전자결재 웹서비스 모바일 파일바인딩용 -->
+	<jaxws:client id="wsClientMobileBindService" 
+				  serviceClass="com.sds.acube.app.ws.client.bind.IBindApproverInfoWCF"					
+    			  address="http://70.6.70.212:8088/acube/app/mobile/ws/bindWCF/BindApproverInfoWCF.svc">    			  		   
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="false" />
+		</jaxws:properties>
+   	</jaxws:client>
+   	
+</beans>

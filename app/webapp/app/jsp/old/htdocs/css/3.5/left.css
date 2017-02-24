@@ -1,0 +1,18 @@
+/* 기본 Hyperlink Style */
+A:link { font-size:9pt; font-family:돋움;color:#000000; text-decoration:none; }
+A:visited { font-size:9pt; font-family:돋움;color:#000000; text-decoration:none; }
+A:active { font-size:9pt; font-family:돋움;color:red; text-decoration:none; }
+A:hover { font-size:9pt; font-family:돋움;color:red ;text-decoration:none;}
+
+/* 탑메뉴 */
+.top { font-family: "돋움"; font-size: 12px; font-weight: bold; color: #FFFFFF; text-align: center; }
+
+/* 타이틀 */
+.title { font-family: "돋움"; font-size: 14px; font-weight: bold; color: #000000; text-align: center; }
+
+/* 커뮤니티 타이틀 */
+.com_title { font-family:"돋움"; font-size:9pt; color:#CC0000; line-height:12pt;  font-weight: bold;}
+
+/* 일반 텍스트 */
+.text { font-family:"돋움"; font-size:9pt; color:#000000; line-height:12pt}
+

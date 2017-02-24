@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+
+	<category name="general">
+		<debug>true</debug>
+		<installed>true</installed>
+		<use_https>true</use_https>		<!-- SSL 사용여부-->
+		<dev_mode>true</dev_mode> 	<!-- 개발 모드 여부. 사이트 운영환경일 경우는 해당 element 삭제 -->
+	</category>
+
+	<category name="companyinfo"> 						<!-- 전자결재를 사용하는 회사정보 -->
+		<compid>A10000,A20000,A30000,A40000,A50000</compid>     <!-- 회사별 코드 -->
+		<compname>(주)벽산,(주)하츠,임원단,벽산LTC,벽산페인트(주)</compname> 				<!-- 회사별 이름 -->
+	   	<category name="configfile"> 									<!-- 회사별 사용할 config 파일명 -->
+			<prefix>file_</prefix>										<!-- 회사별 config 파일을 정의한 element prefix  -->			
+			<!-- <file_1000001>app-config-1000001.xml</file_1000001> --> 		<!-- 산업은행 config 파일 -->
+			<!-- <file_2000001>app-config-2000001.xml</file_2000001> --> 		<!-- 테스트회사 config 파일 -->
+		</category>
+	</category>
+
+	<category name="path">
+		<was_servers></was_servers> 		<!-- 이중화 구성시 나머지 WAS서버 IP와 PORT -->
+		<was_url></was_url>
+		<was_uri>/ep</was_uri>
+		<web_url>http://localhost:8090</web_url>
+		<web_uri>/ep</web_uri>
+		<external_web>192.168.115.101,192.168.115.111,192.168.115.112</external_web>		<!-- 외부 접속 IP. 일부 기능 제약 -->
+	</category>
+
+    <category name="locale">
+        <lang>ko</lang>
+        <display_name>Korean</display_name>
+        <default>ko</default>
+        <db_korean_byte>2</db_korean_byte>					<!-- DB에 저장되는 한글 byte 크기 -->
+    </category>
+
+    <category name="portal">									<!-- 포탈 연결 접속 정보 -->
+        <portal_url>http://localhost</portal_url> 			<!-- 포탈 URL -->
+	</category>
+
+    <category name="login">																<!-- SSO 및 자체 로그인 설정 -->
+        <encode_algorithm>DES</encode_algorithm>										<!-- 포탈 및 타시스템 SSO, 자체 로그인을 위한 데이터 암호화 방식(DES, SHA-256) -->
+        <logout_redirect_page>/ep/app/jsp/login/login.jsp</logout_redirect_page> 		<!-- session 만료시 호출되는 페이지 -->
+    </category>
+
+    <category name="organization"> 												<!-- iam 연결 접속 정보 -->
+        <datasource>iamDataSource</datasource> 							<!-- datasource명 weblogic:iamDataSource   tomcat:jdbc/iamDataSource-->
+        <iam_url>http://localhost:8080</iam_url> 								<!-- iam 서버 주소 및 포트 -->
+        <iam_sso_uri>/acube/iam/identity/main/AutoLogin.form</iam_sso_uri> 		<!-- iam 서버 연계 URI -->
+        <encode_algorithm>SHA-256</encode_algorithm> 								<!-- IAM에서 사용하는 사용자 암호 및 결재암호 암호화 알고리즘(DES, MD2, MD5, SHA-1, SHA-256, SHA-384, SHA-512) -->
+   		<erpdatasource>erpDataSource</erpdatasource>
+    </category>
+    
+    <!-- 메일서버 url,  한글문서 변환 서버도 같이 설치되어있음. -->
+    <category name="mail"> 												
+   		<url>http://deepmail.bsco.co.kr:8080</url>
+   		<hwpurl>http://211.168.82.46:8088</hwpurl>
+    </category>
+
+    <category name="date">
+        <standard>yyyy-MM-dd HH:mm:ss</standard>
+        <format>yyyy/MM/dd HH:mm:ss</format>
+        <basic_format>yyyyMMddHHmmss</basic_format>
+        <std_date_format>yyyy-MM-dd</std_date_format>
+        <date_format>yyyy/MM/dd</date_format>
+        <time_format>HH:mm:ss</time_format>
+    </category>
+
+    <category name="attach"> 											<!-- 첨부파일 관련 설정 -->
+        <delete_period>1440</delete_period> 							<!-- WAS 임시 디렉토리 삭제주기 -->
+        <!--<upload_temp>C:/_localDev/temp</upload_temp> 					 WAS 임시 디렉토리 -->
+        <!-- <upload_temp>C:\\_localDev_151118\\workspace\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\app\\temp</upload_temp> 	한글 이미지변환 임시 디렉토리 -->
+        <upload_temp>C:\\_localDev_151118\\workspace\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\app\\temp</upload_temp>
+        <sftp_svr>127.0.0.1</sftp_svr>  								<!-- 첨부파일 업로드 서버  ip -->
+        <sftp_port>7775</sftp_port> 									<!-- 첨부파일 업로드 port -->
+        <!--<stor_svr>211.209.247.228</stor_svr>  -->
+        <stor_svr>211.168.82.39</stor_svr>  								<!-- 저장서버 ip -->
+        <stor_port>7082</stor_port> 									<!-- 저장서버 port -->
+        <stor_vol>102</stor_vol> 										<!-- 저장서버 volume id -->
+        <stor_filter>0</stor_filter>
+        <stor_savemode>0</stor_savemode> 								<!-- 파일 저장 방식. GENERAL : 0, GZIP : 1, ENCRYPT : 2, ENCRYPT : 3 -->
+        <cab_version>2,2,0,1</cab_version> 								<!-- 첨부 ActiveX 버전 -->
+        <limit_ext>exe,jsp,asp,mht,php,inc</limit_ext> 					<!-- 업로드 제한 확장자 -->
+    </category>
+
+   	<category name="role">
+		<!-- 부서 role	-->
+  		<role_group>O000</role_group>				 			<!-- 그룹 -->
+  		<role_company>O001</role_company> 						<!-- 회사 -->
+  		<role_institution>O002</role_institution> 				<!-- 기관 -->
+  		<role_headoffice>O003</role_headoffice> 				<!-- 본부 -->
+  		<role_process>O004</role_process> 						<!-- 처리과 -->
+  		<role_odcd>O005</role_odcd> 							<!-- 문서과 -->
+  		<role_auditdept>O006</role_auditdept> 					<!-- 감사과 -->
+
+		<!-- 사용자 role	-->
+  		<role_iam>1001</role_iam> 								<!-- 회사관리자(fixed value). 전자결재에서 IAM SSO 연계를 통해 조직/사용자/역할/분류체계 관리 -->  		
+
+  		<role_ceo>7001</role_ceo> 								<!-- CEO -->
+  		<role_officer>7002</role_officer> 						<!-- 임원 -->
+  		<role_manager>7003</role_manager> 						<!-- 부서장 -->
+
+   		<role_admin>7101</role_admin> 							<!-- 전자결재 시스템 관리자(서버환경설정, 스케줄 관리) -->
+   		<role_appadmin>7102</role_appadmin> 					<!-- 전자결재 관리자(회사별)(회사별 전자결재 옵션 관리) -->
+   		<role_doccharger>7103</role_doccharger> 				<!-- 처리과 문서책임자 -->
+   		<role_cordoccharger>7104</role_cordoccharger> 			<!-- 문서과 문서책임자 -->
+   		<role_signatoryadmin>7105</role_signatoryadmin> 		<!-- 서명인 날인관리자 -->
+   		<role_sealadmin>7106</role_sealadmin> 					<!-- 직인 날인관리자 -->
+
+  		<role_ceopostassignadmin>7201</role_ceopostassignadmin> 			<!-- 임원 담당부서 지정자(임원이 조회할 담당부서를 지정하는 사람) -->
+  		<role_auditpostassignadmin>7202</role_auditpostassignadmin> 		<!-- 감사 담당부서 지정자(감사자가 조회할 담당부서를 지정하는 사람) -->
+		<role_dailyinpectreader>7203</role_dailyinpectreader> 				<!-- 감사문서 조회자(role_dailyinpecttarget)이 처리한 문서를 보는 사람) -->
+  		<role_dailyinpecttarget>7204</role_dailyinpecttarget> 				<!-- 감사문서 대상자 -->
+  		<role_officecoordinationreader>7205</role_officecoordinationreader> <!-- 부서협조 열람자(부서에서 협조처리한 문서를 열람하는 권한) -->
+	</category>
+
+	<category name="etc">
+  		<admin></admin>							 		<!-- 관리자IP -->
+  		<regi_numbering>1</regi_numbering> 				<!-- 등록대장 채번 -->
+  		<numbering>1</numbering> 						<!-- 기타 채번 -->
+  		<unitdate>2009-01-01 00:00:00</unitdate> 		<!-- 문서 시작기준일 -->
+  		<bindBatchType>default</bindBatchType> 			<!-- 편철 일괄 등록 타입 설정 TYPE : default(회사별 기본 편철기준), custom(전년도 편철기준) -->
+  		<periodType>Y</periodType> 						<!-- 기간유형(Y:연도 , P:회기) -->
+	</category>
+
+	<category name="excel"> 													<!-- 목록 등 EXCEL 저장시 기본 정보 -->
+		<fontname>Gulim,Dotum,Arial</fontname> 									<!-- 폰트명 -->
+		<fontsize>8,9,10,11,12,14,16,18,20,22,24,26,28,36,48,72</fontsize> 		<!-- 폰트크기 -->
+	</category>
+
+    <category name="drm"> 						<!-- drm 설정 (프로젝트 상황에 맞게 수정하여 사용) -->
+        <use_yn>N</use_yn> 						<!-- drm 사용여부 -->
+        <datasource>drmPool</datasource>
+        <config_file></config_file>
+    </category>
+
+	<category name="certification"> 		<!-- 인증서 설정 정보 (프로젝트 상황에 맞게 수정하여 사용) -->
+		<web_url></web_url>
+		<web_uri></web_uri>
+	</category>
+
+	<category name="pdf"> 		<!-- PDF 변환 설정 정보 (프로젝트 상황에 맞게 수정하여 사용) -->
+		<server></server> 		<!-- PDF 변환서버 ip -->
+		<port></port> 			<!-- PDF 변환서버 port -->
+		<extensions>hwp,doc,ppt,xls,docx,pptx,xlsx,html,htm,txt,jpg,bmp,gif,tiff</extensions> 		<!-- PDF 변환대상 파일 확장자 -->
+	</category>
+
+	<category name="docmgr"> 					<!-- 문서관리 연계 (프로젝트 상황에 맞게 수정하여 사용) -->
+		<server_url></server_url> 				<!-- 문서관리 서버 URL -->
+		<document_wsdl></document_wsdl> 		<!-- 문서관리 웹서비스 WSDL -->
+		<folder_wsdl></folder_wsdl> 			<!-- 편철 웹서비스 WSDL -->
+		<account></account> 					<!-- 문서관리 접속 계정 -->
+		<password></password> 					<!-- 문서관리 접속 계정 패스워드 -->
+		<subDays></subDays> 					<!-- 문서관리 queue 삭제 주기 -->
+		<endTime></endTime> 					<!-- 문서관리 연계 스케줄러 종료시간 -->
+		<rowSize></rowSize> 					<!-- 한번에 처리하는 문서 건수 -->
+	</category>
+
+	<category name="accessHistory">			 		<!-- 접속이력 삭제 -->
+		<maintain_period>90</maintain_period> 		<!-- 접속이력 유지 기간 -->
+	</category>
+
+	<category name="systemOperation"> 					<!-- 시스템운영관리 -->
+		<draftYn>Y</draftYn>
+		<limitedAdmin></limitedAdmin>
+		<systemUser>xygate</systemUser>
+		<systemUserCert>appadmin</systemUserCert>
+	</category>
+
+	<category name="relay"> 																<!-- 공문서 유통 설정 -->
+		<relay_use>N</relay_use> 															<!-- 문서유통 사용유무 -->
+		<relay_adminUid>U2c4ee314eac04031ffd</relay_adminUid> 								<!-- 문서유통 수신 등록자 UID -->
+		<relay_adminName>관리자</relay_adminName> 											<!-- 문서유통 수신 등록자 명 -->
+		<relay_send>C:/_localDev_harmony/temp/relay/send</relay_send> 								<!-- 발송폴더 위치 -->
+		<relay_send_working>D:/ats-1.6.1/temp/relay/send_working</relay_send_working> 		<!-- 발송용 통합팩 생성 위치 -->
+		<relay_recv>C:/_localDev/temp/relay/recv</relay_recv> 								<!-- 수신폴더 위치 -->
+		<relay_recvtemp>C:/_localDev/temp/relay/recvtemp</relay_recvtemp> 					<!-- 수신 임시폴더 위치 -->
+		<relay_recv_working>C:/_localDev/temp/relay/recv_working</relay_recv_working> 		<!-- 수신된 통합팩 작업 위치 -->
+		<relay_dtd>C:/_localDev/temp/relay/dtd</relay_dtd> 									<!-- XML Validation 파일 위치 -->
+		<send_gw>Acube</send_gw> 															<!-- 그룹웨어 명 and 버전 -->
+		<dtd_version>2.0</dtd_version> 														<!-- 문서참조 dtd 버전 -->
+		<xsl_version>2.0</xsl_version> 														<!-- 문서유통 xsl 버전 -->
+		<charset>euc-kr</charset> 															<!-- 문서 charset -->
+		<encoding>base64</encoding> 														<!-- 문서 암호화 종류 -->
+		<orgcode_use>N</orgcode_use> 														<!-- 발신시 최상위 기관코드 강제사용 유무 -->
+		<category name="ldapAccessInfo"> 					<!-- 행정기관 수신자 정보 -->
+			<connectionIP>pub.dir.go.kr</connectionIP> 		<!-- 접속 ip -->
+			<rootDN>o=Government of Korea,c=kr</rootDN> 	<!-- 최상위 DN -->
+			<rootName>Government of Korea</rootName> 		<!-- 최상위 정보명 -->
+			<portNo>389</portNo> 							<!-- 접속 port -->
+			<sortType>UNITNAME</sortType> 					<!-- 수신자 정렬  기준 OUORDER, UNITNAME -->
+		</category>
+	</category>
+
+	<category name="legacy"> 									<!-- Legacy 시스템 연계 정보 -->
+		<systemCd>ACUBE</systemCd> 								<!-- 송신시스템코드 -->
+		<businessCd>APP</businessCd> 							<!-- 업무구분코드 -->
+		<businessDivDetailCd>DRAFT</businessDivDetailCd> 		<!-- 업무상세코드 -->
+		<maintainPeriod>60</maintainPeriod> 					<!-- 연계이력 유지 기간 -->
+		<category name="TR01">									<!-- 연계업무 설정 (업무코드). 프로젝트에서 사용하는 연계업무만큼 등록하여 사용 -->
+			<category name="send">								<!-- ACK 발신 설정 -->
+				<legacyType>FILE</legacyType> 					<!-- 연계 종류 (FILE, SOAP, FTP, SFTP) -->
+				<serverIP>70.6.70.212</serverIP> 				<!-- 연계시스템 서버 IP -->
+				<serverPort>7028</serverPort> 					<!-- 연계시스템 서버 PORT -->
+				<loginId>user001</loginId> 						<!-- 연계시스템 서버  로그인 ID -->
+				<loginPw>sds000</loginPw> 						<!-- 연계시스템 서버 로그인 PW -->
+				<path>C:/_localDev/temp/legacy/BizTrip</path> 	<!-- 연계시스템 서버 경로 -->
+			</category>
+			<category name="receive">							<!-- 데이터 수신 설정 -->
+				<legacyType>FILE</legacyType> 					<!-- 연계 종류 (FILE, SOAP, FTP, SFTP) -->
+				<serverIP>70.6.70.212</serverIP> 				<!-- 연계시스템 서버 IP -->
+				<serverPort>7028</serverPort> 					<!-- 연계시스템 서버 PORT -->
+				<loginId>user001</loginId> 						<!-- 연계시스템 서버  로그인 ID -->
+				<loginPw>sds000</loginPw> 						<!-- 연계시스템 서버 로그인 PW -->
+				<path>C:/_localDev/temp/legacy/BizTrip</path> 	<!-- 연계시스템 서버 경로 -->
+			</category>
+		</category>
+	</category>
+
+</properties>

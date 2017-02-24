@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 전자결재 로그인 -->
+	<definition name="appLayout" template="/app/jsp/main/Standard.jsp"/>
+	<definition name="docLayout" template="/app/jsp/main/docStandard.jsp"/>
+	<definition name="appLayoutWithTop" template="/app/jsp/main/StandardWithTop.jsp"/>
+
+	<definition name="top" template="/app/jsp/main/Top.jsp"/>
+	<definition name="ListBoxController.listBox" template="/app/jsp/list/ListBox.jsp"/>
+	<definition name="ListBoxController.docListBox" template="/app/jsp/list/docListBox.jsp"/>
+	<definition name="body" template="/app/jsp/main/Body.jsp"/>
+
+	<definition name="main.body" template="/app/jsp/main/Body.jsp"/>
+	<definition name="main.popup" template="/app/jsp/main/Popup.jsp"/>
+
+	<definition name="error" template="/app/jsp/error/Error.jsp"/>
+</tiles-definitions>

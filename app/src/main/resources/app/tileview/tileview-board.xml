@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+
+	<!-- 공유게시판 메인-->
+	<definition name="BoardController.managerBull" template="/app/jsp/board/BullManager.jsp"/>
+	
+	
+	<!-- 공유게시판 메인-->
+	<definition name="BoardController.bullShare" template="/app/jsp/board/BullShare.jsp"/>
+	
+	
+	
+	<!-- 보존년한도래문서 -->
+	<definition name="BoardController.retentionDocBull" template="/app/jsp/board/BullRetentionDoc.jsp"/>
+	
+	<!-- 보존년한경과문서 -->
+	<definition name="BoardController.expirationDocBull" template="/app/jsp/board/BullExpirationDoc.jsp"/>
+	
+	<!-- 공유게시판 목록-->
+	<definition name="BoardController.listBull" template="/app/jsp/board/BullList.jsp"/>
+	
+	<!-- 공유게시판 목록-->
+	<definition name="BoardController.listBullShare" template="/app/jsp/board/BullListShare.jsp"/>
+	
+	
+	
+	
+	<!-- 공유게시판 글쓰기-->
+	<definition name="BoardController.listWrite" template="/app/jsp/board/BullWrite.jsp"/>
+	
+	<!-- 공유게시판 처리페이지-->
+	<definition name="BoardController.result" template="/app/jsp/board/BullResult.jsp"/>
+	
+	<!-- 이전 이력 조회-->
+	<definition name="BoardController.versionView" template="/app/jsp/board/BullView.jsp"/>
+	
+	<!-- 공유게시판 상세보기-->
+	<definition name="BoardController.viewOK" template="/app/jsp/board/BullView.jsp"/>
+	
+	<!-- 게시판 글 수정화면-->
+	<definition name="BoardController.viewModify" template="/app/jsp/board/BullModify.jsp"/>
+	
+	<!-- 댓글입력 -->
+	<definition name="BoardController.ReplyResult" template="/app/jsp/board/ReplyResult.jsp"/>
+	
+
+</tiles-definitions>

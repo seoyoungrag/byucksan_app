@@ -1,0 +1,33 @@
+<!--
+filename:         pack.dtd
+ Typical usage:
+         <?XML version="1.0" encoding="euc-kr" ?>
+         <!DOCTYPE pack SYSTEM "pack.dtd">
+         <pack> ... </pack>
+-->
+<!ELEMENT pack (header, contents)>
+
+<!ELEMENT header (send-orgcode, send-id, send-name, receive-id,
+date, title, doc-id, doc-type, send-gw, dtd-version, xsl-version)>
+<!ELEMENT send-orgcode (#PCDATA)>
+<!ELEMENT send-id (#PCDATA)>
+<!ELEMENT send-name (#PCDATA)>
+<!ELEMENT receive-id (#PCDATA)>
+<!ELEMENT date (#PCDATA)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT doc-id (#PCDATA)>
+<!ELEMENT doc-type EMPTY>
+<!ATTLIST doc-type type (send|fail|arrive|receive|accept|return|resend|req-resend|normal-resend) #REQUIRED>
+<!ATTLIST doc-type dept CDATA #REQUIRED>
+<!ATTLIST doc-type name CDATA #REQUIRED>
+<!ELEMENT send-gw (#PCDATA)>
+<!ELEMENT dtd-version (#PCDATA)>
+<!ELEMENT xsl-version (#PCDATA)>
+
+<!ELEMENT contents (content)*>
+ <!ELEMENT content (#PCDATA)>
+ <!ATTLIST content content-role CDATA #REQUIRED >
+ <!ATTLIST content content-transfer-encoding      CDATA "base64" >
+ <!ATTLIST content filename      CDATA #REQUIRED >
+ <!ATTLIST content content-type  CDATA #REQUIRED >
+ <!ATTLIST content charset  CDATA #REQUIRED >
