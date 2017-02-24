@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<!--
+     대한민국 정부 공문서 문서형 정의
+
+     This DTD module is identified by the PUBLIC and SYSTEM identifiers:
+
+     PUBLIC "-//KORGOVERN//DTD PUBDOC 2.0//EN"
+     SYSTEM "pubdoc.dtd"
+
+-->
+<!-- XHTML 1.0 for pubdoc -->
+<!ENTITY % xhtml4pubdoc.mod PUBLIC "-//KORGOVERN//ENTITIES XHTML 1.0 for pubdoc//EN"
+     "xhtml4pubdoc.mod">
+%xhtml4pubdoc.mod;
+<!--============================================================-->
+<!--=====          공문서 공통 엘리먼트 집합 정의          =====-->
+<!--============================================================-->
+<!--  공통 엘리먼트 정의 -->
+<!-- 번호 -->
+<!ELEMENT number (#PCDATA)>
+<!-- 시간 -->
+<!ELEMENT time (#PCDATA)>
+<!-- 날짜,일자,연도 -->
+<!ELEMENT date (#PCDATA)>
+<!-- 등록번호 -->
+<!ELEMENT regnumber (#PCDATA)>
+<!ATTLIST regnumber regnumbercode CDATA #REQUIRED>
+<!-- 시행일자 -->
+<!ELEMENT enforcedate (#PCDATA)>
+<!-- 공개여부 -->
+<!ELEMENT publication (#PCDATA)>
+<!ATTLIST publication code CDATA #REQUIRED>
+<!-- 제목 -->
+<!ELEMENT title (#PCDATA)>
+<!-- 머리표제 -->
+<!ELEMENT headcampaign (#PCDATA)>
+<!-- 바닥표제 -->
+<!ELEMENT footcampaign (#PCDATA)>
+<!-- 성명, 이름 -->
+<!ELEMENT name (#PCDATA)>
+<!-- 기관, 기관명 -->
+<!ELEMENT organ (#PCDATA)>
+<!-- 직위, 직급 -->
+<!ELEMENT position (#PCDATA)>
+<!-- 우편번호 -->
+<!ELEMENT zipcode (#PCDATA)>
+<!-- 주소 -->
+<!ELEMENT address (#PCDATA)>
+<!-- 전화번호 -->
+<!ELEMENT telephone (#PCDATA)>
+<!-- 전송 -->
+<!ELEMENT fax (#PCDATA)>
+<!-- 수신, 참조 -->
+<!ELEMENT recipient (rec)>
+<!-- 수신자 참조 -->
+<!ATTLIST recipient
+	refer (true | false) "false"
+>
+<!--  수신자 및 참조 -->
+<!ELEMENT rec (#PCDATA)>
+<!-- 경유 -->
+<!ELEMENT via (#PCDATA)>
+<!-- 발신명의 -->
+<!ELEMENT sendername (#PCDATA)>
+<!-- 결재 유형 -->
+<!ELEMENT type (#PCDATA)>
+<!-- 붙임 -->
+<!ELEMENT attach (title)+>
+<!-- 관인날인 -->
+<!ELEMENT seal (img?)>
+<!-- 관인생략 -->
+<!ATTLIST seal
+	omit (true | false) "false"
+>
+<!-- 본문 -->
+<!ELEMENT content (%flow;)*>
+<!-- 홈페이지주소 -->
+<!ELEMENT homeurl (#PCDATA)>
+<!-- 담당자 E-mail -->
+<!ELEMENT email (#PCDATA)>
+<!-- 결재자 -->
+<!ELEMENT approval (signposition, type, signimage?, name, date, time?)>
+<!-- 결재순서 -->
+<!ATTLIST approval
+	order CDATA #REQUIRED
+>
+<!-- 협조자 -->
+<!ELEMENT assist (signposition, type, (signimage | name)?, date, time?)>
+<!ATTLIST assist
+	order CDATA #REQUIRED
+>
+<!-- 결재자협조자 직위직급 -->
+<!ELEMENT signposition (#PCDATA)>
+<!-- 결재자협조자 이미지서명 -->
+<!ELEMENT signimage (img)>
+<!-- 기관의 심볼이미지 -->
+<!ELEMENT symbol (img)>
+<!-- 기관의 로고이미지 -->
+<!ELEMENT logo (img)>
+<!--==============================================================-->
+<!--=====              기안문(시행문 겸용)                   =====-->
+<!--==============================================================-->
+<!-- 공문서 -->
+<!ELEMENT pubdoc (head, body, foot, attach?)>
+<!-- 두문 -->
+<!ELEMENT head (organ, receiptinfo)>
+<!-- 본문 -->
+<!ELEMENT body (title, content)>
+<!ATTLIST body
+	separate (true | false) "false"
+>
+<!-- 결문 -->
+<!ELEMENT foot (sendername, seal?, approvalinfo, processinfo, sendinfo, campaign?)>
+
+<!-- 수신정보 -->
+<!ELEMENT receiptinfo (recipient, via?)>
+<!-- 결재정보 -->
+<!ELEMENT approvalinfo (approval+, assist*)>
+<!-- 처리정보 -->
+<!ELEMENT processinfo (regnumber, enforcedate, receipt?)>
+<!-- 발신정보 -->
+<!ELEMENT sendinfo (zipcode, address, homeurl?, telephone, fax, email?, publication, symbol?, logo?)>
+<!-- 접수정보 -->
+<!ELEMENT receipt (number, date, time?)>
+<!-- 캠페인정보-->
+<!ELEMENT campaign (headcampaign?, footcampaign?)>

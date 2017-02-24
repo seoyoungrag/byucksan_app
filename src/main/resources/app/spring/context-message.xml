@@ -1,0 +1,61 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	<bean id="messageSource" class="org.anyframe.spring.message.EncodingResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+			    <!-- Project Defined Message File -->
+			    <value>app/message/message-ko</value>
+			    <!-- Approval -->
+			    <value>app/message/message-approval</value>
+			    <!-- Enforce(접수) -->
+			    <value>app/message/message-enforce</value>
+			    
+			    <!-- Exchange(연계) -->
+			    <value>app/message/message-exchange</value>
+
+			    <!-- appcom -->
+			    <value>app/message/message-appcom</value>
+
+			    <!-- Common -->
+			    <value>app/message/message-filemanager</value>
+			    <value>app/message/message-hwpmanager</value>
+			    <value>app/message/message-calendar</value>
+			    <value>app/message/message-common</value>
+			    
+			    <!-- option -->
+			    <value>app/message/message-env</value>
+			    
+			    <!-- list -->
+			    <value>app/message/message-list</value>
+			    
+			    <!-- etc -->
+			    <value>app/message/message-etc</value>
+			    
+			    <!-- bind -->
+			    <value>app/message/message-bind</value>
+			    
+			    <!-- notice -->
+			    <value>app/message/message-notice</value>
+			    
+			    <!-- statistics -->
+			    <value>app/message/message-statistics</value>
+			    
+			    <!-- board -->
+			    <value>app/message/message-board</value>
+			    
+			    <!-- relay -->
+			    <value>app/message/message-relay</value>
+			    
+			    <!-- mobile -->
+			    <value>app/message/message-mobile</value>
+			    
+			    <!-- resource -->
+				<value>app/message/message-resource</value>
+				
+			</list>
+		</property>
+		<property name="defaultEncoding">
+			<value>UTF-8</value>
+		</property>
+	</bean>
+</beans>

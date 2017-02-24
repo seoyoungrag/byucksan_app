@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 모바일 webservice 테스트 -->
+	<definition name="MobileAppController.listMobileBox" template="/app/jsp/test/mobile/listMobileBox.jsp"/>
+	<definition name="MobileAppController.listMobileAppDoc" template="/app/jsp/test/mobile/listMobileAppDoc.jsp"/>
+	<definition name="MobileAppController.selectDocInfoMobile" template="/app/jsp/test/mobile/selectMobileDocInfo.jsp"/>
+	<definition name="MobileAppController.processDoc" template="/app/jsp/test/mobile/processAppMobile.jsp"/>
+	<definition name="MobileAppController.getAttachFile" template="/app/jsp/test/mobile/attachFileMobile.jsp"/>
+</tiles-definitions>

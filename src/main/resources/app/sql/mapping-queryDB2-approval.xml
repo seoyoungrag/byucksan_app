@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!-- GWACCGV -->	
+		<query id="db2.approval.listInvestUnion">
+			<statement>
+			<![CDATA[
+				SELECT
+					CDECDE, CDENAM
+				FROM @KDBC.GWACCGV			
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.GwAccgvVO" />
+		</query>	
+
+		<!-- GWPIBSV -->	
+		<query id="db2.approval.listCustomer">
+			<statement>
+			<![CDATA[
+				SELECT 
+					CUSCDE, CUSCEB, CUSNAM, BOSNAM, BRGCDE, 
+					BOSJUM, CRGCDE, MGTDPT, MGTUSR
+				FROM (
+				SELECT rownumber() over() as ROW_SEQ,
+					CUSCDE, CUSCEB, CUSNAM, BOSNAM, BRGCDE, 
+					BOSJUM, CRGCDE, MGTDPT, MGTUSR 
+				FROM @KDBC.GWIFCUV
+				#if (!$cusnam.equals(""))
+					WHERE CUSNAM LIKE :cusnam
+					OR BOSNAM LIKE :cusnam
+					OR BRGCDE LIKE :cusnam
+					OR BOSJUM LIKE :cusnam
+					OR CRGCDE LIKE :cusnam
+				#end
+				ORDER BY CUSNAM
+				) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ({{page}}-1)*10+1 AND ({{page}}-1)*10+10
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.GwIfcuvVO" />
+		</query>	
+
+		<query id="db2.approval.countCustomer">
+			<statement>
+			<![CDATA[
+				SELECT COUNT(*) CNT 
+				FROM @KDBC.GWIFCUV
+				#if (!$cusnam.equals(""))
+					WHERE CUSNAM LIKE :cusnam
+					OR BOSNAM LIKE :cusnam
+					OR BRGCDE LIKE :cusnam
+					OR BOSJUM LIKE :cusnam
+					OR CRGCDE LIKE :cusnam
+				#end
+			]]>
+			</statement>
+		</query>
+		
+		<!-- Send SMS -->
+		<query id="callProcKCSM220R" isDynamic="false">
+			<statement>{call @KDBC.KCSM220R (?,?,?,?,?,?,?)}</statement>			
+			<param type="VARCHAR" binding="OUT" name="sabun" />
+			<param type="VARCHAR" binding="OUT" name="toMobile" />
+			<param type="VARCHAR" binding="OUT" name="fromMobile" />
+			<param type="VARCHAR" binding="OUT" name="sendDate" />
+			<param type="VARCHAR" binding="OUT" name="sendTime" />
+			<param type="VARCHAR" binding="OUT" name="message" />
+			<param type="DATE" binding="IN" name="errCode" />			
+		</query>
+		<!--query id="callProcedure" isDynamic="false">
+			<statement>{call KCSM220R (:vo.sabun, :vo.toMobile, :vo.fromMobile, :vo.sendDate, :vo.sendTime, :vo.errCode, :vo.message)}</statement>			
+			<result class="com.sds.acube.app.common.vo.SendSmsVO" />		
+		</query>
+		<query id="db2.common.sendSMS">
+			<statement>
+			<![CDATA[
+				CALL KCSM220R(:vo.sabun, :vo.toMobile, :vo.fromMobile, :vo.sendDate, :vo.sendTime, :vo.errCode, :vo.message)
+			]]>
+			</statement>
+		</query-->
+		
+	</queries>
+</queryservice>

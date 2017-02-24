@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!-- 결재옵션 -->
+		<query id="env.selectOptionList">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, USE_YN, OPTION_VALUE, DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId
+				ORDER BY OPTION_ID				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>
+		<!-- query id="env.selectOptionGroupList">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, USE_YN, OPTION_VALUE
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_ID LIKE :vo.optionId || '%'
+				ORDER BY OPTION_ID				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query-->
+		<query id="env.selectOptionGroupList">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, USE_YN, OPTION_VALUE, DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_TYPE = :vo.optionType
+				ORDER BY OPTION_ID				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>
+		
+		<!-- 다국어 때문에 추가-->
+		<query id="env.selectOptionGroupListResource">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, 
+				       USE_YN, 
+				       FNC_GET_RESOURCE_NAME(:vo.compId, OPTION_VALUE, :vo.langType) AS OPTION_VALUE,
+				       OPTION_VALUE AS RESOURCE_ID,  
+				       DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_TYPE = :vo.optionType
+				ORDER BY OPTION_ID				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>		
+		
+		<!-- 다국어 때문에 추가-->
+		<query id="env.selectOptionGroupMap">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, USE_YN, OPTION_VALUE, DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_TYPE = :vo.optionType
+				ORDER BY OPTION_ID				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>
+		
+		<!-- 다국어 때문에 추가-->
+		<query id="env.selectOptionGroupMapResource">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, 
+				       USE_YN, 
+				       FNC_GET_RESOURCE_NAME(:vo.compId, OPTION_VALUE, :vo.langType) AS OPTION_VALUE,
+				       OPTION_VALUE AS RESOURCE_ID,  
+				       DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_TYPE = :vo.optionType
+				ORDER BY OPTION_ID				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>				
+		
+		<!-- 다국어 때문에 추가-->
+		<query id="env.selectOptionGroupListResourceOrderBySequence">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, 
+				       USE_YN, 
+					   FNC_GET_RESOURCE_NAME(:vo.compId, OPTION_VALUE, :vo.langType) AS OPTION_VALUE,
+				       OPTION_VALUE AS RESOURCE_ID, 				        
+				       DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId 
+				  AND OPTION_TYPE = :vo.optionType
+				  AND SEQUENCE != 0
+				ORDER BY SEQUENCE				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />		
+		</query>
+		
+		<query id="env.selectOptionGroupListOrderBySequence">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, USE_YN, OPTION_VALUE, DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_TYPE = :vo.optionType
+				  AND SEQUENCE != 0
+				ORDER BY SEQUENCE				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>
+		<query id="env.selectOption">
+			<statement>
+			<![CDATA[
+				SELECT OPTION_ID, USE_YN, OPTION_VALUE, DESCRIPTION 
+				FROM TGW_APP_OPTION
+				WHERE COMP_ID = :vo.compId AND OPTION_ID = :vo.optionId		
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.OptionVO" />
+		</query>
+		<query id="env.updateOption">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_OPTION SET USE_YN = :vo.useYn , OPTION_VALUE = :vo.optionValue
+				WHERE COMP_ID = :vo.compId AND OPTION_ID = :vo.optionId		
+			]]>
+			</statement>
+		</query>
+		<query id="env.updateOptionUseYn">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_OPTION SET USE_YN = :vo.useYn
+				WHERE COMP_ID = :vo.compId AND OPTION_ID = :vo.optionId		
+			]]>
+			</statement>
+		</query>
+		<query id="env.updateOptionValue">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_OPTION SET OPTION_VALUE = :vo.optionValue
+				WHERE COMP_ID = :vo.compId AND OPTION_ID = :vo.optionId		
+			]]>
+			</statement>
+		</query>
+		<!-- 캠페인/로고/심볼 -->
+		<query id="env.selectFormEnvList">
+			<statement>
+			<![CDATA[
+				SELECT FORM_ENV_ID, ENV_TYPE, ENV_INFO, DEFAULT_YN, REMARK, ENV_NAME, REGISTER_ID, REGISTER_DEPT_ID, REGISTER_NAME, REGIST_DATE
+				FROM TGW_FORM_ENV
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.registerDeptId ) 
+					AND REGISTER_DEPT_ID IN ( {{ vo.registerDeptId }} )
+				#end
+				AND ENV_TYPE = :vo.envType
+				#if ($vo.defaultYn)
+				AND DEFAULT_YN = :vo.defaultYn
+				#end
+				ORDER BY DEFAULT_YN DESC, REGIST_DATE DESC				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormEnvVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="env.selectFormEnvListResource">
+			<statement>
+			<![CDATA[
+				SELECT FORM_ENV_ID, 
+				       ENV_TYPE, 
+					   FNC_GET_RESOURCE_NAME(:vo.compId, ENV_INFO, :vo.langType) AS ENV_INFO,
+  					   ENV_INFO AS RESOURCE_ID, 				       				       
+				       DEFAULT_YN, 
+				       REMARK, 
+				       ENV_NAME, 
+				       REGISTER_ID, 
+				       REGISTER_DEPT_ID, 
+				       REGISTER_NAME, 
+				       REGIST_DATE
+				FROM TGW_FORM_ENV
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.registerDeptId ) 
+					AND REGISTER_DEPT_ID IN ( {{ vo.registerDeptId }} )
+				#end
+				AND ENV_TYPE = :vo.envType
+				#if ($vo.defaultYn)
+				AND DEFAULT_YN = :vo.defaultYn
+				#end
+				ORDER BY DEFAULT_YN DESC, REGIST_DATE DESC				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormEnvVO" />
+		</query>
+		
+		<query id="env.selectFormEnvVO">
+			<statement>
+			<![CDATA[
+				SELECT FORM_ENV_ID, ENV_TYPE, ENV_INFO, DEFAULT_YN, REMARK, ENV_NAME, REGISTER_ID, REGISTER_DEPT_ID, REGISTER_NAME, REGIST_DATE
+				FROM TGW_FORM_ENV
+				WHERE COMP_ID = :vo.compId AND FORM_ENV_ID = :vo.formEnvId			
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormEnvVO" />
+		</query>
+		<query id="env.selectDefaultFormEnvVO">
+			<statement>
+			<![CDATA[
+				SELECT FORM_ENV_ID, ENV_TYPE, ENV_INFO, DEFAULT_YN, REMARK, ENV_NAME, REGISTER_ID, REGISTER_DEPT_ID, REGISTER_NAME, REGIST_DATE
+				FROM TGW_FORM_ENV
+				WHERE COMP_ID = :vo.compId AND REGISTER_DEPT_ID = :vo.registerDeptId AND ENV_TYPE = :vo.envType AND DEFAULT_YN = 'Y'		
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormEnvVO" />
+		</query>
+		<query id="env.selectFormEnvFileList">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, ENV_INFO, REMARK, ENV_NAME
+				FROM TGW_FORM_ENV
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.registerDeptId)
+				AND REGISTER_DEPT_ID = :vo.registerDeptId 
+				#end
+				AND ENV_TYPE = 'FET001' OR ENV_TYPE = 'FET002'			
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormEnvVO" />
+		</query>
+		<query id="env.updateFormEnvDefaultYnAllN">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_FORM_ENV SET DEFAULT_YN = 'N'
+				WHERE COMP_ID = :vo.compId AND REGISTER_DEPT_ID = :vo.registerDeptId AND ENV_TYPE = :vo.envType		
+			]]>
+			</statement>
+		</query>
+		<query id="env.updateFormEnvDefault">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_FORM_ENV SET DEFAULT_YN = 'Y'
+				WHERE COMP_ID = :vo.compId AND FORM_ENV_ID = :vo.formEnvId		
+			]]>
+			</statement>
+		</query>
+		<query id="env.insertFormEnv">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_FORM_ENV (
+				COMP_ID, FORM_ENV_ID, ENV_TYPE, ENV_INFO, DEFAULT_YN, REMARK, ENV_NAME, 
+				REGISTER_ID, REGISTER_DEPT_ID, REGISTER_NAME, REGIST_DATE)
+				VALUES (
+				:vo.compId, :vo.formEnvId, :vo.envType, :vo.envInfo, :vo.defaultYn, :vo.remark, :vo.envName, 
+				:vo.registerId, :vo.registerDeptId, :vo.registerName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'))		
+			]]>
+			</statement>
+		</query>
+		<query id="env.deleteFormEnv">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_FORM_ENV 
+				WHERE COMP_ID = :vo.compId AND FORM_ENV_ID = :vo.formEnvId
+			]]>
+			</statement>
+		</query>
+		<!-- 발신명의 -->
+		<query id="env.selectSenderTitleList">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, SENDER_TITLE, SENDER_TITLE_ORDER, DEFAULT_YN, GROUP_TYPE, SENDER_TITLE_ID 
+				FROM TGW_SENDER_TITLE
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.deptId)
+				AND DEPT_ID = :vo.deptId
+				#end
+				#if ($vo.groupType)
+				AND GROUP_TYPE = :vo.groupType
+				#end
+				ORDER BY DEPT_ID DESC, DEFAULT_YN DESC, SENDER_TITLE_ORDER				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.SenderTitleVO" />
+		</query>
+		
+		<!-- 다국어 때문에 추가 -->
+		<query id="env.selectSenderTitleListResource">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, 
+				       DEPT_ID, 
+				       FNC_GET_RESOURCE_NAME(:vo.compId, SENDER_TITLE, :vo.langType) AS SENDER_TITLE, 
+				       SENDER_TITLE AS RESOURCE_ID, 
+				       SENDER_TITLE_ORDER, 
+				       DEFAULT_YN, 
+				       GROUP_TYPE, 
+				       SENDER_TITLE_ID 
+				FROM TGW_SENDER_TITLE
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.deptId)
+				AND DEPT_ID = :vo.deptId
+				#end
+				#if ($vo.groupType)
+				AND GROUP_TYPE = :vo.groupType
+				#end
+				ORDER BY DEPT_ID DESC, DEFAULT_YN DESC, SENDER_TITLE_ORDER				
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.SenderTitleVO" />
+		</query>
+		
+		<query id="env.selectSenderTitleAllList">
+			<statement>
+			<![CDATA[
+				SELECT (SELECT RESOURCE_NAME FROM TGW_APP_RESOURCE WHERE RESOURCE_ID = SENDER_TITLE AND LANG_TYPE = :vo.langType) SENDER_TITLE FROM (
+					SELECT COMP_ID, DEPT_ID, SENDER_TITLE, SENDER_TITLE_ORDER, DEFAULT_YN, GROUP_TYPE, SENDER_TITLE_ID 
+					FROM TGW_SENDER_TITLE
+					WHERE COMP_ID = :vo.compId AND DEPT_ID IN ( {{vo.deptIds}} )
+					ORDER BY GROUP_TYPE DESC, DEFAULT_YN DESC, SENDER_TITLE_ORDER )
+				GROUP BY SENDER_TITLE
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.SenderTitleVO" />
+		</query>		
+		<query id="env.selectDefaultSenderTitleVO">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, DEPT_ID, (SELECT RESOURCE_NAME FROM TGW_APP_RESOURCE WHERE RESOURCE_ID = SENDER_TITLE AND LANG_TYPE = :vo.langType) SENDER_TITLE, SENDER_TITLE_ORDER, DEFAULT_YN, GROUP_TYPE, SENDER_TITLE_ID 
+				FROM TGW_SENDER_TITLE
+				WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND DEFAULT_YN = 'Y'		
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.SenderTitleVO" />
+		</query>
+		<!-- query id="env.insertSenderTitle">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_SENDER_TITLE (
+				COMP_ID, DEPT_ID, SENDER_TITLE, SENDER_TITLE_ORDER, DEFAULT_YN, GROUP_TYPE)
+				VALUES (
+				:vo.compId, :vo.deptId, :vo.senderTitle, 
+				NVL((SELECT MAX(SENDER_TITLE_ORDER)+2 FROM TGW_SENDER_TITLE), 100), 
+				:vo.defaultYn, :vo.groupType)		
+			]]>
+			</statement>
+		</query-->
+		<query id="env.insertSenderTitle">
+			<statement>
+			<![CDATA[
+				MERGE INTO TGW_SENDER_TITLE A
+				USING (
+					SELECT COUNT(*) AS NUM FROM TGW_SENDER_TITLE
+					WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId AND SENDER_TITLE = :vo.senderTitle 
+				) B
+				ON (
+					B.NUM > 0
+				)
+				WHEN NOT MATCHED THEN
+					INSERT (A.COMP_ID, A.DEPT_ID, A.SENDER_TITLE, A.SENDER_TITLE_ORDER, A.DEFAULT_YN, A.GROUP_TYPE, SENDER_TITLE_ID)					
+					VALUES (:vo.compId, :vo.deptId, :vo.senderTitle,					 
+					NVL((SELECT MAX(SENDER_TITLE_ORDER)+2 FROM TGW_SENDER_TITLE), 100), 
+					:vo.defaultYn, :vo.groupType, :vo.senderTitleId)		
+			]]>
+			</statement>
+		</query>
+		<query id="env.updateSenderTitleDefaultYnAllN">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_SENDER_TITLE SET DEFAULT_YN = 'N'
+				WHERE COMP_ID = :vo.compId AND DEPT_ID = :vo.deptId	AND GROUP_TYPE = :vo.groupType 	
+			]]>
+			</statement>
+		</query>
+		<query id="env.updateSenderTitleDefaultYn">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_SENDER_TITLE SET DEFAULT_YN = 'Y'
+				WHERE COMP_ID = :vo.compId AND SENDER_TITLE_ID = :vo.senderTitleId
+			]]>
+			</statement>
+		</query>
+		<query id="env.deleteSenderTitle">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_SENDER_TITLE 
+				WHERE COMP_ID = :vo.compId AND SENDER_TITLE_ID = :vo.senderTitleId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 결재경로그룹 관리 -->
+		<query id="env.listAppLineGroup">
+			<statement>
+			<![CDATA[
+				SELECT LINE_GROUP_ID, LINE_GROUP_NAME, USING_TYPE, GROUP_TYPE, DEFAULT_YN 
+				FROM TGW_LINE_GROUP  
+				WHERE COMP_ID = :vo.compId AND GROUP_TYPE = :vo.groupType 
+				#if ($vo.registerId)
+				AND REGISTER_ID = :vo.registerId 
+				#end
+				#if ($vo.registerDeptId)
+				AND REGISTER_DEPT_ID = :vo.registerDeptId 
+				#end
+				#if ($vo.usingType)
+				AND USING_TYPE = :vo.usingType 
+				#end
+				ORDER BY REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.LineGroupVO" />
+		</query>
+		
+		<query id="env.listAppLineGroupP">
+			<statement>
+			<![CDATA[
+				SELECT LINE_GROUP_ID, LINE_GROUP_NAME, USING_TYPE, GROUP_TYPE, DEFAULT_YN
+				FROM TGW_LINE_GROUP  
+				WHERE COMP_ID = :vo.compId AND ((REGISTER_ID = :vo.registerId AND GROUP_TYPE = 'GUT004')
+				OR (REGISTER_DEPT_ID = :vo.registerDeptId AND GROUP_TYPE = 'GUT003')) AND USING_TYPE = :vo.usingType 			
+				ORDER BY GROUP_TYPE DESC, REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.LineGroupVO" />
+		</query>
+		
+		<query id="env.listAppLine">
+			<statement>
+			<![CDATA[
+				SELECT LINE_GROUP_ID, LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, 
+				APPROVER_POS, APPROVER_DEPT_ID, APPROVER_DEPT_NAME, ASK_TYPE
+				FROM TGW_LINE_GROUP_USER
+				WHERE COMP_ID= :vo.compId AND LINE_GROUP_ID = :vo.lineGroupId
+				ORDER By LINE_ORDER DESC, LINE_SUB_ORDER DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.LineUserVO" />
+		</query>
+		
+		<query id="env.listDefaultAppLine">
+			<statement>
+			<![CDATA[
+				SELECT LINE_GROUP_ID, LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, 
+				APPROVER_POS, APPROVER_DEPT_ID, APPROVER_DEPT_NAME, ASK_TYPE
+				FROM TGW_LINE_GROUP_USER
+				WHERE LINE_GROUP_ID = (
+					SELECT LINE_GROUP_ID FROM TGW_LINE_GROUP 
+					WHERE COMP_ID = :vo.compId AND GROUP_TYPE = :vo.groupType AND USING_TYPE = :vo.usingType  
+					AND DEFAULT_YN = 'Y'
+					#if ($vo.registerId)
+					AND REGISTER_ID = :vo.registerId 
+					#end
+					#if ($vo.registerDeptId)
+					AND REGISTER_DEPT_ID = :vo.registerDeptId 
+					#end
+				) 
+				ORDER By LINE_ORDER DESC, LINE_SUB_ORDER DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.LineUserVO" />
+		</query>
+		
+		
+		<query id="env.deleteAppLine">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_LINE_GROUP_USER 
+				WHERE COMP_ID = :vo.compId AND LINE_GROUP_ID = :vo.lineGroupId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deleteAppLineGroup">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_LINE_GROUP 
+				WHERE COMP_ID = :vo.compId AND LINE_GROUP_ID = :vo.lineGroupId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.insertAppLineGroup">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_LINE_GROUP (
+				COMP_ID, LINE_GROUP_ID, LINE_GROUP_NAME, REGISTER_ID, REGISTER_NAME,
+				REGISTER_DEPT_ID, REGISTER_DEPT_NAME, REGIST_DATE, USING_TYPE, GROUP_TYPE, DEFAULT_YN)
+				VALUES (
+				:vo.compId, :vo.lineGroupId, :vo.lineGroupName, :vo.registerId, :vo.registerName, :vo.registerDeptId,
+				:vo.registerDeptName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.usingType, :vo.groupType, :vo.defaultYn)	
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.insertAppLineGroupUser">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_LINE_GROUP_USER (
+				COMP_ID, LINE_GROUP_ID, LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, 
+				APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID, APPROVER_DEPT_NAME, ASK_TYPE)
+				VALUES (
+				:vo.compId, :vo.lineGroupId, :vo.lineOrder, :vo.lineSubOrder, :vo.approverId, :vo.approverName,
+				:vo.approverPos, :vo.approverDeptId, :vo.approverDeptName, :vo.askType)		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.updateAppLineGroup">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_LINE_GROUP SET LINE_GROUP_NAME = :vo.lineGroupName
+				WHERE COMP_ID = :vo.compId AND LINE_GROUP_ID = :vo.lineGroupId		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.updateDefaultAppLineGroup">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_LINE_GROUP SET DEFAULT_YN = 'Y' 
+				WHERE COMP_ID = :vo.compId AND LINE_GROUP_ID = :vo.lineGroupId		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.cancelDefaultAppLineGroup">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_LINE_GROUP SET DEFAULT_YN = 'N' 
+				WHERE COMP_ID = :vo.compId AND LINE_GROUP_ID = :vo.lineGroupId		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.updateDefaultAppLineAllN">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_LINE_GROUP SET DEFAULT_YN = 'N' 
+				WHERE COMP_ID = :vo.compId AND USING_TYPE = :vo.usingType AND GROUP_TYPE = :vo.groupType AND REGISTER_ID = :vo.registerId		
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 수신자그룹 관리 -->
+		<query id="env.insertRecvGroup">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_RECV_GROUP
+					(
+					COMP_ID, RECV_GROUP_ID, RECV_GROUP_NAME, REGISTER_ID, REGISTER_NAME, 
+					REGISTER_DEPT_ID, REGISTER_DEPT_NAME, REGIST_DATE, GROUP_TYPE
+					)
+				VALUES 
+					(
+					:vo.compId, :vo.recvGroupId, :vo.recvGroupName, :vo.registerId, :vo.registerName, 
+					:vo.registerDeptId, :vo.registerDeptName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.groupType
+					)		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.insertRecvGroupUser">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_RECV_GROUP_USER (
+				COMP_ID, RECV_GROUP_ID, RECV_ID, RECEIVER_ORDER, RECEIVER_TYPE, ENF_TYPE, 
+				RECV_DEPT_ID, RECV_DEPT_NAME, REF_DEPT_ID, REF_DEPT_NAME, RECV_USER_ID, RECV_USER_NAME, 
+				POST_NUMBER, ADDRESS, TELEPHONE, FAX, RECV_SYMBOL, RECV_COMP_ID, REF_SYMBOL, RECV_CHIEF_NAME, REF_CHIEF_NAME)
+				VALUES (
+				:vo.compId, :vo.recvGroupId, :vo.recvId, :vo.receiverOrder, :vo.receiverType, :vo.enfType, 
+				:vo.recvDeptId, :vo.recvDeptName, :vo.refDeptId, :vo.refDeptName, :vo.recvUserId, :vo.recvUserName,  
+				:vo.postNumber, :vo.address, :vo.telephone, :vo.fax, :vo.recvSymbol, :vo.recvCompId, :vo.refSymbol, :vo.recvChiefName,:vo.refChiefName)		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.listRecvGroup">
+			<statement>
+			<![CDATA[
+				SELECT A.RECV_GROUP_ID, A.RECV_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE, COUNT(*) RECV_COUNT
+				FROM TGW_RECV_GROUP A, TGW_RECV_GROUP_USER B   
+				WHERE A.RECV_GROUP_ID = B.RECV_GROUP_ID AND A.COMP_ID = :vo.compId				
+				#if ($vo.registerId)
+				AND A.REGISTER_ID = :vo.registerId 
+				#end
+				#if ($vo.groupType)
+				AND A.GROUP_TYPE = :vo.groupType 
+				#end
+				#if ($vo.registerDeptId)
+				AND A.REGISTER_DEPT_ID = :vo.registerDeptId 
+				#end
+				#if ($vo.registerId)
+				AND A.REGISTER_ID = :vo.registerId 
+				#end
+				GROUP BY A.RECV_GROUP_ID, A.RECV_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE 
+				ORDER BY GROUP_TYPE DESC, REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.RecvGroupVO" />
+		</query>
+		
+		<query id="env.listRecvGroupP">
+			<statement>
+			<![CDATA[
+				SELECT A.RECV_GROUP_ID, A.RECV_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE, COUNT(*) RECV_COUNT
+				FROM TGW_RECV_GROUP A, TGW_RECV_GROUP_USER B   
+				WHERE A.RECV_GROUP_ID = B.RECV_GROUP_ID AND A.COMP_ID = :vo.compId AND (GROUP_TYPE = 'GUT001' 
+				OR (A.REGISTER_DEPT_ID = :vo.registerDeptId AND GROUP_TYPE = 'GUT003')
+				OR (A.REGISTER_ID = :vo.registerId AND GROUP_TYPE = 'GUT004'))
+				GROUP BY A.RECV_GROUP_ID, A.RECV_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE 				
+				ORDER BY GROUP_TYPE DESC, REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.RecvGroupVO" />
+		</query>
+		
+		<query id="env.searchRecvGroupP">
+			<statement>
+			<![CDATA[
+				SELECT A.RECV_GROUP_ID, A.RECV_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE, COUNT(*) RECV_COUNT
+				FROM TGW_RECV_GROUP A, TGW_RECV_GROUP_USER B   
+				WHERE A.RECV_GROUP_ID = B.RECV_GROUP_ID 
+				AND A.COMP_ID = :vo.compId 
+				AND ( 
+						GROUP_TYPE = 'GUT001' 
+						OR (A.REGISTER_DEPT_ID = :vo.registerDeptId AND GROUP_TYPE = 'GUT003')
+						OR (A.REGISTER_ID = :vo.registerId AND GROUP_TYPE = 'GUT004')
+					)
+				AND UPPER(A.RECV_GROUP_NAME) LIKE UPPER('%' || :vo.searchDept || '%')
+				GROUP BY A.RECV_GROUP_ID, A.RECV_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE 				
+				ORDER BY GROUP_TYPE DESC, REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.RecvGroupVO" />
+		</query>
+		
+		<query id="env.listRecvLine">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, RECV_GROUP_ID, RECV_ID, RECEIVER_ORDER, RECEIVER_TYPE, ENF_TYPE, 
+				RECV_DEPT_ID, RECV_DEPT_NAME, REF_DEPT_ID, REF_DEPT_NAME, RECV_USER_ID, RECV_USER_NAME, 
+				POST_NUMBER, ADDRESS, TELEPHONE, FAX, RECV_SYMBOL, RECV_COMP_ID, REF_SYMBOL, RECV_CHIEF_NAME, REF_CHIEF_NAME
+				FROM TGW_RECV_GROUP_USER 
+				WHERE COMP_ID = :vo.compId AND RECV_GROUP_ID = :vo.recvGroupId
+				ORDER BY RECEIVER_ORDER
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.RecvUserVO" />
+		</query>
+		
+		<query id="env.updateRecvGroupUser">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_RECV_GROUP_USER
+					SET RECV_DEPT_NAME = :vo.recvDeptName, REF_DEPT_NAME = :vo.refDeptName, RECV_USER_NAME = :vo.recvUserName
+				WHERE COMP_ID = :vo.compId 
+					AND RECV_GROUP_ID = :vo.recvGroupId
+					AND RECV_ID = :vo.recvId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deleteRecvLine">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RECV_GROUP_USER 
+				WHERE COMP_ID = :vo.compId AND RECV_GROUP_ID = :vo.recvGroupId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deleteRecvGroupUser">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RECV_GROUP_USER 
+				WHERE COMP_ID = :vo.compId 
+				AND RECV_GROUP_ID = :vo.recvGroupId
+				AND RECV_ID = :vo.recvId
+				AND RECEIVER_TYPE = :vo.receiverType
+				AND RECV_USER_ID = :vo.recvUserId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deleteRecvGroup">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RECV_GROUP 
+				WHERE COMP_ID = :vo.compId AND RECV_GROUP_ID = :vo.recvGroupId
+			]]>
+			</statement>
+		</query>
+				
+		<query id="env.updateRecvGroup">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_RECV_GROUP SET RECV_GROUP_NAME = :vo.recvGroupName
+				WHERE COMP_ID = :vo.compId AND RECV_GROUP_ID = :vo.recvGroupId		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.selectRecvGroup">
+			<statement>
+			<![CDATA[
+				SELECT COMP_ID, RECV_GROUP_ID, RECV_GROUP_NAME, GROUP_TYPE FROM TGW_RECV_GROUP
+				ORDER BY COMP_ID, GROUP_TYPE
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.RecvGroupVO" />
+		</query>
+
+
+		<!-- 공람자그룹 관리 -->
+		<query id="env.insertPubViewGroup">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_PUBVIEW_GROUP (
+				COMP_ID, PUBVIEW_GROUP_ID, PUBVIEW_GROUP_NAME, REGISTER_ID, REGISTER_NAME, 
+				REGISTER_DEPT_ID, REGISTER_DEPT_NAME, REGIST_DATE, GROUP_TYPE )
+				VALUES (
+				:vo.compId, :vo.pubviewGroupId, :vo.pubviewGroupName, :vo.registerId, :vo.registerName, 
+				:vo.registerDeptId, :vo.registerDeptName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.groupType )		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.insertPubViewGroupUser">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_PUBVIEW_GROUP_USER 
+					(
+					COMP_ID, PUBVIEW_GROUP_ID, PUB_READER_ID, PUB_READER_NAME, PUB_READER_POS, 
+					PUB_READER_DEPT_ID,	PUB_READER_DEPT_NAME, PUB_READER_ROLE, PUB_READER_ORDER
+					)
+				VALUES 
+					(
+					:vo.compId, :vo.pubviewGroupId, :vo.pubReaderId, :vo.pubReaderName, :vo.pubReaderPos, 
+					:vo.pubReaderDeptId, :vo.pubReaderDeptName, :vo.pubReaderRole, :vo.pubReaderOrder
+					)		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.listPubViewGroup">
+			<statement>
+			<![CDATA[
+				SELECT A.PUBVIEW_GROUP_ID, A.PUBVIEW_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE, COUNT(*) PUBVIEW_COUNT
+				FROM TGW_PUBVIEW_GROUP A, TGW_PUBVIEW_GROUP_USER B   
+				WHERE A.PUBVIEW_GROUP_ID = B.PUBVIEW_GROUP_ID AND A.COMP_ID = :vo.compId				
+				#if ($vo.registerId)
+				AND A.REGISTER_ID = :vo.registerId 
+				#end
+				#if ($vo.groupType)
+				AND A.GROUP_TYPE = :vo.groupType 
+				#end
+				#if ($vo.registerDeptId)
+				AND A.REGISTER_DEPT_ID = :vo.registerDeptId 
+				#end
+				GROUP BY A.PUBVIEW_GROUP_ID, A.PUBVIEW_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE 
+				ORDER BY GROUP_TYPE DESC, REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PubViewGroupVO" />
+		</query>
+		
+		<query id="env.listPubView">
+			<statement>
+			<![CDATA[
+				SELECT 
+					COMP_ID, PUBVIEW_GROUP_ID, PUB_READER_ID, PUB_READER_NAME, PUB_READER_POS, 
+					PUB_READER_DEPT_ID, PUB_READER_DEPT_NAME, PUB_READER_ROLE, PUB_READER_ORDER
+				FROM 
+					TGW_PUBVIEW_GROUP_USER 
+				WHERE 
+					COMP_ID = :vo.compId AND PUBVIEW_GROUP_ID = :vo.pubviewGroupId
+				ORDER BY PUB_READER_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PubViewUserVO" />
+		</query>		
+		
+		<query id="env.deletePubView">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_PUBVIEW_GROUP_USER 
+				WHERE COMP_ID = :vo.compId AND PUBVIEW_GROUP_ID = :vo.pubviewGroupId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deletePubViewGroupByReaderId">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_PUBVIEW_GROUP_USER 
+				WHERE COMP_ID = :vo.compId 
+				AND PUBVIEW_GROUP_ID = :vo.pubviewGroupId
+				AND PUB_READER_ID = :vo.pubReaderId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deletePubViewGroup">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_PUBVIEW_GROUP 
+				WHERE COMP_ID = :vo.compId AND PUBVIEW_GROUP_ID = :vo.pubviewGroupId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.updatePubViewGroup">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_PUBVIEW_GROUP SET PUBVIEW_GROUP_NAME = :vo.pubviewGroupName
+				WHERE COMP_ID = :vo.compId AND PUBVIEW_GROUP_ID = :vo.pubviewGroupId		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.listPubViewGroupP">
+			<statement>
+			<![CDATA[
+				SELECT A.PUBVIEW_GROUP_ID, A.PUBVIEW_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE, COUNT(*) PUBVIEW_COUNT
+				FROM TGW_PUBVIEW_GROUP A, TGW_PUBVIEW_GROUP_USER B  
+				WHERE A.PUBVIEW_GROUP_ID = B.PUBVIEW_GROUP_ID AND A.COMP_ID = :vo.compId 
+				AND ( (GROUP_TYPE = 'GUT004' AND REGISTER_ID = :vo.registerId)
+				OR (A.REGISTER_DEPT_ID = :vo.registerDeptId AND GROUP_TYPE = 'GUT003') )				
+				GROUP BY A.PUBVIEW_GROUP_ID, A.PUBVIEW_GROUP_NAME, A.GROUP_TYPE, A.REGIST_DATE 
+				ORDER BY GROUP_TYPE DESC, REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PubViewGroupVO" />
+		</query>		
+		
+		
+		<!-- 코드관리 -->
+		<query id="env.listCode">
+			<statement>
+			<![CDATA[
+				SELECT CODE_ID, CODE_VALUE, PARENT_ID, CODE_NAME, DESCRIPTION
+				FROM TGW_APP_CODE 
+				WHERE PARENT_ID = :vo.parentId 
+				ORDER BY CODE_ID
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.AppCodeVO" />
+		</query>
+		
+		<query id="env.updateCode">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_CODE SET DESCRIPTION = :vo.description
+				WHERE CODE_ID = :vo.codeId		
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 회기관리 -->
+		<query id="env.listAllPeriod">
+			<statement>
+			<![CDATA[
+				SELECT PERIOD_ID, COMP_ID, PERIOD_TYPE, 
+					TO_CHAR(START_DATE, 'yyyy/mm/dd') START_DATE, TO_CHAR(END_DATE, 'yyyy/mm/dd') END_DATE, 
+					REGISTER_ID, REGISTER_DEPT_ID, 
+					TO_CHAR(REGIST_DATE, 'yyyy/mm/dd') REGIST_DATE, TO_CHAR(LAST_UPDATE_DATE, 'yyyy/mm/dd') LAST_UPDATE_DATE 
+				FROM TGW_APP_PERIOD 
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.periodId)
+				AND PERIOD_ID = :vo.periodId 
+				#end
+				ORDER BY START_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PeriodVO" />
+		</query>
+		
+		<!-- 회기관리 -->
+		<query id="env.selectPeriod">
+			<statement>
+			<![CDATA[
+				SELECT PERIOD_ID, COMP_ID, PERIOD_TYPE, TO_CHAR(START_DATE,'yyyy-mm-dd hh24:mi:ss') as START_DATE, TO_CHAR(END_DATE,'yyyy-mm-dd hh24:mi:ss') as END_DATE, 
+					REGISTER_ID, REGISTER_DEPT_ID, REGIST_DATE, LAST_UPDATE_DATE 
+				FROM TGW_APP_PERIOD 
+				WHERE COMP_ID = :vo.compId 
+				AND PERIOD_ID = :vo.periodId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PeriodVO" />
+		</query>
+		
+		<query id="env.listPeriod">
+			<statement>
+			<![CDATA[
+				SELECT PERIOD_ID, COMP_ID, PERIOD_TYPE, TO_CHAR(START_DATE,'yyyy-mm-dd hh24:mi:ss') as START_DATE, TO_CHAR(END_DATE,'yyyy-mm-dd hh24:mi:ss') as END_DATE, REGISTER_ID, REGISTER_DEPT_ID, REGIST_DATE, LAST_UPDATE_DATE 
+				FROM TGW_APP_PERIOD 
+				WHERE COMP_ID = :vo.compId 
+				AND TO_DATE(:vo.currentDate, 'yyyy-mm-dd hh24:mi:ss') > START_DATE
+				ORDER BY START_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PeriodVO" />
+		</query>
+		
+		<query id="env.currentPeriod">
+			<statement>
+			<![CDATA[
+				SELECT PERIOD_ID, COMP_ID, PERIOD_TYPE, TO_CHAR(START_DATE,'yyyy-mm-dd hh24:mi:ss') as START_DATE, TO_CHAR(END_DATE,'yyyy-mm-dd hh24:mi:ss') as END_DATE, REGISTER_ID, REGISTER_DEPT_ID, REGIST_DATE, LAST_UPDATE_DATE 
+				FROM TGW_APP_PERIOD 
+				WHERE COMP_ID = :vo.compId 
+				AND TO_DATE(:vo.currentDate, 'yyyy-mm-dd hh24:mi:ss') BETWEEN START_DATE AND END_DATE
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PeriodVO" />
+		</query>
+		
+		<query id="env.latestPeriod">
+			<statement>
+			<![CDATA[
+				SELECT PERIOD_ID, COMP_ID, PERIOD_TYPE, TO_CHAR(START_DATE,'yyyy-mm-dd hh24:mi:ss') as START_DATE, TO_CHAR(END_DATE,'yyyy-mm-dd hh24:mi:ss') as END_DATE, REGISTER_ID, REGISTER_DEPT_ID, TO_CHAR(REGIST_DATE,'yyyy-mm-dd hh24:mi:ss') as REGIST_DATE, TO_CHAR(LAST_UPDATE_DATE,'yyyy-mm-dd hh24:mi:ss') as LAST_UPDATE_DATE 
+				FROM TGW_APP_PERIOD 
+				WHERE COMP_ID = :vo.compId 
+				AND PERIOD_ID = (SELECT MAX(PERIOD_ID) FROM TGW_APP_PERIOD WHERE COMP_ID = :vo.compId AND PERIOD_TYPE = :vo.periodType)
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.PeriodVO" />
+		</query>
+		
+		<query id="env.insertPeriodAuto">
+			<statement>
+			<![CDATA[
+				MERGE INTO TGW_APP_PERIOD A 
+				USING ( 
+					SELECT COUNT(*) AS NUM FROM TGW_APP_PERIOD WHERE COMP_ID= :vo.compId AND PERIOD_ID = :vo.periodId + 1 	
+				) B 
+				ON (
+					B.NUM > 0
+				)
+				WHEN NOT MATCHED THEN 
+					INSERT ( 
+						A.PERIOD_ID, A.COMP_ID, A.PERIOD_TYPE, A.START_DATE, A.END_DATE, A.REGISTER_ID, A.REGISTER_DEPT_ID, A.REGIST_DATE, A.LAST_UPDATE_DATE ) 
+					VALUES (
+						:vo.periodId + 1, :vo.compId, :vo.periodType, 
+						ADD_MONTHS(TO_DATE(:vo.startDate, 'yyyy-mm-dd hh24:mi:ss'), 12), 
+						ADD_MONTHS(TO_DATE(:vo.endDate, 'yyyy-mm-dd hh24:mi:ss'), 12), 
+						:vo.registerId, :vo.registerDeptId, 
+						SYSDATE, SYSDATE )
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.insertPeriod">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_PERIOD (
+				PERIOD_ID, COMP_ID, PERIOD_TYPE, START_DATE, END_DATE, REGISTER_ID, REGISTER_DEPT_ID, REGIST_DATE, LAST_UPDATE_DATE )
+				VALUES (
+				:vo.periodId, :vo.compId, :vo.periodType, TO_DATE(:vo.startDate, 'yyyy-mm-dd hh24:mi:ss'), 
+				TO_DATE(:vo.endDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.registerId, :vo.registerDeptId, 
+				TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss') )		
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.deletePeriod">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_PERIOD 
+				WHERE COMP_ID = :vo.compId AND PERIOD_ID = :vo.periodId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.updatePeriod">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_PERIOD SET 
+					#if (!$vo.startDate.equals("9999/12/31 23:59:59"))
+					START_DATE = TO_DATE(:vo.startDate, 'yyyy-mm-dd hh24:mi:ss'), 
+					#end
+					END_DATE = TO_DATE(:vo.endDate, 'yyyy-mm-dd hh24:mi:ss'), 
+					LAST_UPDATE_DATE = TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss') 
+				WHERE COMP_ID = :vo.compId AND PERIOD_ID = :vo.periodId
+			]]>
+			</statement>
+		</query>
+		
+	</queries>
+</queryservice>

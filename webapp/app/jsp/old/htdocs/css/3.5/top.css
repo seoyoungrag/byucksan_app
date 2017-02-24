@@ -1,0 +1,27 @@
+/* global navigation Hyperlink Style */
+A:link { font-size:9pt; font-family:돋움;color:#FFFFFF; text-decoration:none; }
+A:visited { font-size:9pt; font-family:돋움;color:#FFFFFF; text-decoration:none; }
+A:active { font-size:9pt; font-family:돋움;color:#FFD800; text-decoration:none; }
+A:hover { font-size:9pt; font-family:돋움;color:#FFD800 ;text-decoration:none;}
+
+/* search Hyperlink Style */
+A.m:link { font-size:9pt; font-family:돋움;color:#000000; text-decoration:none; }
+A.m:visited { font-size:9pt; font-family:돋움;color:#000000; text-decoration:none; }
+A.m:active { font-size:9pt; font-family:돋움;color:red; text-decoration:none; }
+A.m:hover { font-size:9pt; font-family:돋움;color:red ;text-decoration:none;}
+
+/* process menu Hyperlink Style */
+A.p:link { font-size:8pt; font-family:돋움;color:#000000; text-decoration:none; }
+A.p:visited { font-size:8pt; font-family:돋움;color:#000000; text-decoration:none; }
+A.p:active { font-size:8pt; font-family:돋움;color:#FFFFFF; text-decoration:none; }
+A.p:hover { font-size:8pt; font-family:돋움;color:#FFFFFF;text-decoration:none;}
+
+
+/* 탑메뉴 */
+.top { font-family: "돋움"; font-size: 12px; font-weight: bold; color: #FFFFFF; text-align: center; }
+
+/* 일반 텍스트 */
+.text { font-family:"돋움"; font-size:9pt; color:#000000; line-height:12pt}
+
+/* 작은메뉴 */
+.s-top { font-family: "Arial, Helvetica, sans-serif"; font-size: 11px; color: #000000;}

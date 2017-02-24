@@ -1,0 +1,1 @@
+var PROPOSAL = "안";

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+
+	<!-- 공지사항 -->
+	<definition name="NoticeController.list" template="/app/jsp/notice/listPage.jsp" />
+	<definition name="NoticeController.menu" template="/app/jsp/notice/menuPage.jsp" />
+	<definition name="NoticeController.add" template="/app/jsp/notice/addPage.jsp" />
+	<definition name="NoticeController.edit" template="/app/jsp/notice/editPage.jsp" />
+	<definition name="NoticeController.print" template="/app/jsp/notice/printPage.jsp" />
+	<definition name="NoticeController.view" template="/app/jsp/notice/viewPage.jsp" />
+</tiles-definitions>
+

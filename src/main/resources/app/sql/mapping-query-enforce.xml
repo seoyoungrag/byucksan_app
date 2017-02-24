@@ -1,0 +1,1174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="enforce.selectEnforce">
+			<statement>
+			<![CDATA[
+					SELECT 
+						DOC_ID  ,
+						COMP_ID   ,
+						LINE_ORDER,
+						PROCESSOR_ID ,
+						PROCESSOR_NAME,
+						PROCESSOR_POS
+					FROM TGW_ENF_LINE
+					WHERE DOC_ID = :vo.docId
+					AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>		
+
+		<query id="enforce.selectEnfLineInfo">
+			<statement>
+			<![CDATA[
+					SELECT 
+					    DOC_ID  ,
+					    COMP_ID   ,
+					    LINE_ORDER,
+						PROCESSOR_ID,
+						PROCESSOR_DEPT_ID ,
+						PROCESSOR_NAME,
+						PROCESSOR_POS ,
+						PROCESSOR_DEPT_NAME ,
+						REPRESENTATIVE_ID ,
+						REPRESENTATIVE_DEPT_ID ,
+						REPRESENTATIVE_NAME ,
+						REPRESENTATIVE_POS ,
+						REPRESENTATIVE_DEPT_NAME ,
+						ASK_TYPE,
+						PROC_TYPE,
+						PROCESS_DATE,
+						READ_DATE
+					FROM TGW_ENF_LINE
+					WHERE DOC_ID = :vo.docId
+					AND COMP_ID = :vo.compId
+					AND PROC_TYPE = :vo.procType
+					AND (PROCESSOR_ID =:vo.processorId 
+						OR REPRESENTATIVE_ID = :vo.processorId)					
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>		
+		
+		<query id="enforce.selectNextLineUserList">
+			<statement>
+			<![CDATA[
+			
+			/* 결재자의 다음결재자들 list 조회 */
+				SELECT 
+				    DOC_ID  ,
+				    COMP_ID   ,
+				    LINE_ORDER,
+					PROCESSOR_ID,
+					PROCESSOR_DEPT_ID ,
+					PROCESSOR_NAME,
+					PROCESSOR_POS ,
+					PROCESSOR_DEPT_NAME ,
+					REPRESENTATIVE_ID ,
+					REPRESENTATIVE_DEPT_ID ,
+					REPRESENTATIVE_NAME ,
+					REPRESENTATIVE_POS ,
+					REPRESENTATIVE_DEPT_NAME ,
+					ASK_TYPE,
+					PROC_TYPE,
+					PROCESS_DATE,
+					READ_DATE
+				FROM TGW_ENF_LINE
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND LINE_ORDER > NVL(
+				                  (SELECT NVL(LINE_ORDER,0)
+					                   FROM TGW_ENF_LINE
+					                   WHERE DOC_ID = :vo.docId
+					                   AND PROC_TYPE = 'APT003'
+					                   AND (PROCESSOR_ID = :vo.processorId OR  REPRESENTATIVE_ID =:vo.processorId)
+				                   )
+				                 ,0)
+				ORDER BY LINE_ORDER ASC
+                   			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>		
+
+		<query id="enforce.selectEnfLineList">
+			<statement>
+			<![CDATA[
+			/* 결재자 list 조회 */
+				SELECT 
+				     DOC_ID
+					,COMP_ID
+					,LINE_ORDER
+					,PROCESSOR_ID
+					,PROCESSOR_NAME
+					,PROCESSOR_POS
+					,PROCESSOR_DEPT_ID
+					,PROCESSOR_DEPT_NAME
+					,REPRESENTATIVE_ID
+					,REPRESENTATIVE_NAME
+					,REPRESENTATIVE_POS
+					,REPRESENTATIVE_DEPT_ID
+					,REPRESENTATIVE_DEPT_NAME
+					,ASK_TYPE
+					,PROC_TYPE
+					,PROCESS_DATE
+					,READ_DATE
+					,REGISTER_ID
+					,REGISTER_NAME
+					,REGIST_DATE
+					,EDIT_LINE_YN
+					,MOBILE_YN
+					,PROC_OPINION
+					,SIGN_FILE_NAME
+					,LINE_HIS_ID
+					,FILE_HIS_ID
+					,ABSENT_REASON
+				FROM TGW_ENF_LINE
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				ORDER BY LINE_ORDER
+                   			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>	
+
+		<query id="enforce.selectNextLineUser">
+			<statement>
+			<![CDATA[
+			/*  결재자의 다음결재자 조회(접수라인등록시) */
+				SELECT 
+				    DOC_ID  ,
+				    COMP_ID   ,
+				    LINE_ORDER,
+					PROCESSOR_ID,
+					PROCESSOR_DEPT_ID ,
+					PROCESSOR_NAME,
+					PROCESSOR_POS ,
+					PROCESSOR_DEPT_NAME ,
+					REPRESENTATIVE_ID ,
+					REPRESENTATIVE_DEPT_ID ,
+					REPRESENTATIVE_NAME ,
+					REPRESENTATIVE_POS ,
+					REPRESENTATIVE_DEPT_NAME ,
+					ASK_TYPE,
+					PROC_TYPE,
+					PROCESS_DATE,
+					READ_DATE
+				FROM TGW_ENF_LINE
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND LINE_ORDER > ( SELECT NVL(MAX(LINE_ORDER),1)
+				                   FROM TGW_ENF_LINE
+				                   WHERE DOC_ID = :vo.docId
+				                   AND COMP_ID = :vo.compId
+				                   AND PROCESSOR_ID = :vo.processorId OR  REPRESENTATIVE_ID =:vo.processorId)
+				AND PROC_TYPE =:vo.procType
+				ORDER BY LINE_ORDER ASC
+                   			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>
+		
+		<query id="enforce.selectNextEnfLine">
+			<statement>
+			<![CDATA[
+			  /** 접수문서결재라인의 결재자 조회 **/
+					SELECT 
+						DOC_ID  ,
+						COMP_ID   ,
+						LINE_ORDER,
+						PROCESSOR_ID,
+						PROCESSOR_DEPT_ID ,
+						PROCESSOR_NAME,
+						PROCESSOR_POS ,
+						PROCESSOR_DEPT_NAME ,
+						REPRESENTATIVE_ID ,
+						REPRESENTATIVE_DEPT_ID ,
+						REPRESENTATIVE_NAME ,
+						REPRESENTATIVE_POS ,
+						REPRESENTATIVE_DEPT_NAME ,
+						ASK_TYPE,
+						PROC_TYPE,
+						PROCESS_DATE,
+						READ_DATE
+					FROM TGW_ENF_LINE
+					WHERE DOC_ID = :vo.docId
+					AND COMP_ID = :vo.compId
+					--AND LINE_ORDER = :vo.lineOrder
+					ORDER BY LINE_ORDER ASC
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>				
+		
+		
+		<query id="enforce.insertEnfLine"  >
+			<statement>
+			<![CDATA[
+			/** 접수경로 저장 **/
+				INSERT INTO TGW_ENF_LINE ( 
+				DOC_ID, 
+				COMP_ID, 
+				LINE_ORDER, 
+				PROCESSOR_ID, 
+				PROCESSOR_NAME, 
+				PROCESSOR_POS,
+				PROCESSOR_DEPT_ID,
+				PROCESSOR_DEPT_NAME,
+				REPRESENTATIVE_ID,
+				REPRESENTATIVE_NAME,
+				REPRESENTATIVE_POS,
+				REPRESENTATIVE_DEPT_ID,
+				REPRESENTATIVE_DEPT_NAME,
+				ASK_TYPE,
+				REGIST_DATE
+				#if($vo.procType)
+				, PROC_TYPE
+				#end
+				#if(!$vo.processDate.equals(""))
+				,PROCESS_DATE
+				#end
+				,REGISTER_ID
+				,REGISTER_NAME
+				,EDIT_LINE_YN
+				,MOBILE_YN
+				,PROC_OPINION
+				,SIGN_FILE_NAME
+				,LINE_HIS_ID
+				,FILE_HIS_ID
+				, ABSENT_REASON
+				,READ_DATE
+				)
+				VALUES (
+				:vo.docId,
+				:vo.compId,
+				:vo.lineOrder,
+				:vo.processorId,
+				:vo.processorName,
+				:vo.processorPos, 
+				:vo.processorDeptId, 
+				:vo.processorDeptName, 
+				:vo.representativeId,
+				:vo.representativeName,
+				:vo.representativePos,
+				:vo.representativeDeptId,
+				:vo.representativeDeptName,
+				:vo.askType, 
+				TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS')
+				#if($vo.procType)
+				,:vo.procType
+				#end
+				#if(!$vo.processDate.equals(""))
+				,TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS')
+				#end
+				,:vo.registerId
+				,:vo.registerName
+				,:vo.editLineYn
+				,:vo.mobileYn
+				,:vo.procOpinion
+				,:vo.signFileName
+				,:vo.lineHisId
+				,:vo.fileHisId
+				, :vo.absentReason
+				,TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS')
+				)
+			]]>
+			</statement>
+		</query>
+		
+  	    <query id="enforce.insertEnfLineHis"  >
+			<statement>
+			<![CDATA[
+			/** 접수경로 저장 **/
+				INSERT INTO TGW_ENF_LINE_HIS ( 
+				LINE_HIS_ID,
+				DOC_ID, 
+				COMP_ID, 
+				LINE_ORDER, 
+				PROCESSOR_ID, 
+				PROCESSOR_NAME, 
+				PROCESSOR_POS,
+				PROCESSOR_DEPT_ID,
+				PROCESSOR_DEPT_NAME,
+				REPRESENTATIVE_ID,
+				REPRESENTATIVE_NAME,
+				REPRESENTATIVE_POS,
+				REPRESENTATIVE_DEPT_ID,
+				REPRESENTATIVE_DEPT_NAME,
+				ASK_TYPE,
+				PROC_TYPE,
+				PROCESS_DATE,
+				READ_DATE,
+				REGISTER_ID,
+				REGISTER_NAME,
+				REGIST_DATE,
+				EDIT_LINE_YN,
+				PROC_OPINION,
+				SIGN_FILE_NAME
+				)
+				VALUES (
+				:vo.lineHisId,
+				:vo.docId,
+				:vo.compId,
+				:vo.lineOrder,
+				:vo.processorId,
+				:vo.processorName,
+				:vo.processorPos, 
+				:vo.processorDeptId, 
+				:vo.processorDeptName,
+				:vo.representativeId, 
+				:vo.representativeName, 
+				:vo.representativePos, 
+				:vo.representativeDeptId, 
+				:vo.representativeDeptName, 
+				:vo.askType, 
+				:vo.procType,
+				TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS') ,
+				TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS'), 
+				:vo.registerId,
+				:vo.registerName,
+				TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS') ,
+				:vo.editLineYn,
+				:vo.procOpinion,
+				:vo.signFileName
+				)
+			]]>
+			</statement>
+		</query>
+		
+  	    <query id="enforce.enfline.selectEnfLineHisList"  >
+			<statement>
+			<![CDATA[
+			/** 접수경로 조회 **/
+				SELECT  
+					LINE_HIS_ID,
+					DOC_ID, 
+					COMP_ID, 
+					LINE_ORDER, 
+					PROCESSOR_ID, 
+					PROCESSOR_NAME, 
+					PROCESSOR_POS,
+					PROCESSOR_DEPT_ID,
+					PROCESSOR_DEPT_NAME,
+					REPRESENTATIVE_ID,
+					REPRESENTATIVE_NAME,
+					REPRESENTATIVE_POS,
+					REPRESENTATIVE_DEPT_ID,
+					REPRESENTATIVE_DEPT_NAME,
+					ASK_TYPE,
+					PROC_TYPE,
+					PROCESS_DATE,
+					READ_DATE,
+					REGISTER_ID,
+					REGISTER_NAME,
+					REGIST_DATE,
+					EDIT_LINE_YN,
+					PROC_OPINION,
+					SIGN_FILE_NAME
+				FROM TGW_ENF_LINE_HIS 
+				WHERE DOC_ID= :vo.docId
+				AND COMP_ID=:vo.compId
+				AND LINE_HIS_ID = :vo.lineHisId
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineHisVO"/>
+		</query>
+		
+				
+		
+		<query id="enforce.updatePreRead">
+			<statement>
+			<![CDATA[
+			
+		        /** 선람처리용 update문 **/
+				UPDATE TGW_ENF_LINE 
+				SET PROC_TYPE = :vo.procType,
+				PROCESS_DATE = TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'),
+                READ_DATE = TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS'),
+                PROCESSOR_ID = :vo.processorId,
+				PROCESSOR_DEPT_ID = :vo.processorDeptId,
+				PROCESSOR_NAME =:vo.processorName,
+				PROCESSOR_POS =:vo.processorPos,
+				PROCESSOR_DEPT_NAME =:vo.processorDeptName,
+				REPRESENTATIVE_ID = :vo.representativeId,
+				REPRESENTATIVE_DEPT_ID = :vo.representativeDeptId,
+				REPRESENTATIVE_NAME =:vo.representativeName,
+				REPRESENTATIVE_POS =:vo.representativePos,
+				REPRESENTATIVE_DEPT_NAME =:vo.representativeDeptName
+				#if($vo.procOpinion)
+				, PROC_OPINION = :vo.procOpinion
+				#end
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROC_TYPE ='APT003'
+				AND PROCESSOR_ID = :vo.processorId
+				--OR REPRESENTATIVE_ID =:vo.processorId
+				--AND LINE_ORDER =:vo.lineOrder
+			]]>
+			</statement>
+		</query>
+
+
+		<query id="enforce.updateRetrieve">
+			<statement>
+			<![CDATA[
+			
+		        /** 회수처리 update문 **/
+				UPDATE TGW_ENF_LINE 
+				SET PROC_TYPE = :vo.procType,
+				PROCESS_DATE = TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'),
+                READ_DATE = TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS'),
+                PROCESSOR_ID = :vo.processorId,
+				PROCESSOR_DEPT_ID = :vo.processorDeptId,
+				PROCESSOR_NAME =:vo.processorName,
+				PROCESSOR_POS =:vo.processorPos,
+				PROCESSOR_DEPT_NAME =:vo.processorDeptName,
+				PROC_OPINION = :vo.procOpinion
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROC_TYPE ='APT001'
+				AND LINE_ORDER = ( SELECT NVL(LINE_ORDER,1) -1 
+				                   FROM TGW_ENF_LINE
+				                   WHERE DOC_ID = :vo.docId
+				                   AND COMP_ID = :vo.compId
+				                   AND PROC_TYPE ='APT003')
+				                   --AND PROCESSOR_ID = :vo.processorId OR  REPRESENTATIVE_ID =:vo.processorId)
+			]]>
+			</statement>
+		</query>
+
+		<query id="enforce.updateReject">
+			<statement>
+			<![CDATA[
+			
+		        /** 반송처리용 update문 **/
+				UPDATE TGW_ENF_LINE 
+				SET PROC_TYPE = :vo.procType,
+				PROCESS_DATE = TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'),
+				PROC_OPINION = :vo.procOpinion
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROC_TYPE = 'APT003'
+				AND PROCESSOR_ID = :vo.processorId 
+				--OR  REPRESENTATIVE_ID = :vo.processorId)
+
+			]]>
+			</statement>
+		</query>
+		
+		<query id="enforce.updateReadDate">
+			<statement>
+			<![CDATA[
+		        /** 열람일자처리용 update문 **/
+				UPDATE TGW_ENF_LINE
+				SET 
+				READ_DATE = TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS')
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				--AND PROC_TYPE = 'APT003'
+				AND (PROCESSOR_ID = :vo.processorId OR REPRESENTATIVE_ID = :vo.processorId)
+				AND (  READ_DATE = TO_DATE('9999-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS') OR 
+				       READ_DATE IS NULL)
+			]]>
+			</statement>
+			
+		</query>		
+		
+		<query id="enforce.updateEnfLineUser">
+			<statement>
+			<![CDATA[
+			
+		        /** 결재자 정보  수정**/
+				UPDATE TGW_ENF_LINE 
+				SET PROC_TYPE = :vo.procType,
+				PROCESSOR_ID = :vo.processorId,
+				PROCESSOR_DEPT_ID = :vo.processorDeptId,
+				PROCESSOR_NAME =:vo.processorName,
+				PROCESSOR_POS =:vo.processorPos,
+				PROCESSOR_DEPT_NAME =:vo.processorDeptName,
+				REPRESENTATIVE_ID = :vo.representativeId,
+				REPRESENTATIVE_DEPT_ID = :vo.representativeDeptId,
+				REPRESENTATIVE_NAME =:vo.representativeName,
+				REPRESENTATIVE_POS =:vo.representativePos,
+				REPRESENTATIVE_DEPT_NAME =:vo.representativeDeptName,
+				ABSENT_REASON = :vo.absentReason
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROCESSOR_ID = :vo.processorId
+				AND LINE_ORDER =:vo.lineOrder
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>
+
+		<query id="enforce.absentReason">
+			<statement>
+			<![CDATA[
+		        /** 부재정보  수정**/
+				UPDATE TGW_ENF_LINE 
+				SET ABSENT_REASON = :vo.absentReason,
+				    READ_DATE = TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS'),
+				    PROCESS_DATE = TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'),
+				    PROC_TYPE = :vo.procType
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROCESSOR_ID = :vo.processorId
+				AND LINE_ORDER =:vo.lineOrder
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>
+				
+		<query id="enforce.updateEnfProcDate">
+			<statement>
+			<![CDATA[
+			
+		        /** 결재처리용 update문 **/
+				UPDATE TGW_ENF_LINE 
+				SET PROC_TYPE = :vo.procType,
+				PROCESS_DATE = TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'),
+				PROCESSOR_ID = :vo.processorId,
+				PROCESSOR_DEPT_ID = :vo.processorDeptId,
+				PROCESSOR_NAME =:vo.processorName,
+				PROCESSOR_POS =:vo.processorPos,
+				PROCESSOR_DEPT_NAME =:vo.processorDeptName,
+				REPRESENTATIVE_ID = :vo.representativeId,
+				REPRESENTATIVE_DEPT_ID = :vo.representativeDeptId,
+				REPRESENTATIVE_NAME =:vo.representativeName,
+				REPRESENTATIVE_POS =:vo.representativePos,
+				REPRESENTATIVE_DEPT_NAME =:vo.representativeDeptName
+				
+				#if($vo.procOpinion)
+				, PROC_OPINION = :vo.procOpinion
+				#end
+				
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROCESSOR_ID = :vo.processorId
+				AND LINE_ORDER =:vo.lineOrder
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>		
+		
+		<query id= "enfDoc.updateDocState">
+			<statement>
+			<![CDATA[
+			
+		        /** 접수문서 처리상태와 다음 처리자  update문 **/
+				UPDATE TGW_ENF_DOC 
+				SET DOC_STATE = :vo.docState,
+				PROCESSOR_ID =:vo.processorId,
+				PROCESSOR_NAME =:vo.processorName,
+				PROCESSOR_POS =:vo.processorPos,
+				PROCESSOR_DEPT_ID =:vo.processorDeptId,
+				PROCESSOR_DEPT_NAME =:vo.processorDeptName,
+				LAST_UPDATE_DATE = TO_DATE(:vo.lastUpdateDate,'yyyy-mm-dd HH24:MI:SS')
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>		
+		
+		<query id= "enfLine.updatEnfLineHisId">
+			<statement>
+			<![CDATA[
+			
+		        /** 접수라인 처리자 line_his_id   update문 **/
+				UPDATE TGW_ENF_LINE 
+				SET LINE_HIS_ID = :lineHisId
+				WHERE DOC_ID = :docId
+				AND COMP_ID = :compId
+				AND PROC_TYPE ='APT003'
+				AND (PROCESSOR_ID =:processorId OR REPRESENTATIVE_ID = :processorId)
+			]]>
+			</statement>
+		</query>	
+		
+		<query id= "enforce.enfLine.deleteEnfLine">
+			<statement>
+			<![CDATA[
+			
+		        /** 접수라인  delete 문 **/
+				DELETE FROM TGW_ENF_LINE 
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+	
+		<query id= "enforce.insertEnfDoc">
+			<statement>
+			<![CDATA[
+			INSERT INTO TGW_ENF_DOC (
+				  DOC_ID
+				, COMP_ID
+				, ORIGIN_DOC_ID
+				, ENF_TYPE
+				, TITLE
+				, DOC_STATE
+				, DOC_NUMBER
+				, DEPT_CATEGORY
+				, SERIAL_NUMBER
+				, SUBSERIAL_NUMBER
+				, ACCEPTER_ID
+				, ACCEPTER_NAME
+				, ACCEPTER_POS
+				, ACCEPT_DEPT_ID
+				, ACCEPT_DEPT_NAME
+				, ACCEPT_DATE
+				, READ_RANGE
+				, CONSERVE_TYPE
+				, RECEIVE_DATE
+				, DISTRIBUTE_YN
+				, DISTRIBUTOR_ID
+				, DISTRIBUTOR_NAME
+				, DISTRIBUTOR_POS
+				, DISTRIBUTOR_DEPT_ID
+				, DISTRIBUTOR_DEPT_NAME
+				, DISTRIBUTE_DATE
+				, ELECTRON_DOC_YN
+				, ATTACH_COUNT
+				, DELETE_YN
+				, URGENCY_YN
+				, PUBLIC_POST
+				, BINDING_ID
+				, BINDING_NAME
+				, HANDOVER_YN
+				, MOBILE_YN
+				, TRANSFER_YN
+				, SENDER_ID
+				, SENDER_NAME
+				, SEND_DATE
+				, SEND_OPINION
+				, SENDER_POS
+				, SENDER_DEPT_ID
+				, SENDER_DEPT_NAME
+				, SENDER_COMP_ID
+				, SENDER_COMP_NAME
+				, PROCESSOR_ID
+				, PROCESSOR_NAME
+				, PROCESSOR_POS
+				, PROCESSOR_DEPT_ID
+				, PROCESSOR_DEPT_NAME
+				, OPEN_LEVEL
+				, OPEN_REASON
+				, DISTRIBUTE_NUMBER
+				, DOC_TYPE
+				, REGISTER_ID
+				, REGISTER_NAME
+				, REGIST_DATE
+				, LAST_UPDATE_DATE
+				, UNREGIST_YN
+				, CLASS_NUMBER
+				, DOCNUM_NAME
+				, ASSISTANT_LINE_TYPE
+				, AUDIT_LINE_TYPE
+			) VALUES (
+				  :vo.docId
+				, :vo.compId
+				, :vo.originDocId
+				, :vo.enfType
+				, :vo.title
+				, :vo.docState
+				, :vo.docNumber
+				, :vo.deptCategory
+				, :vo.serialNumber
+				, :vo.subserialNumber
+				, :vo.accepterId
+				, :vo.accepterName
+				, :vo.accepterPos
+				, :vo.acceptDeptId
+				, :vo.acceptDeptName
+				, TO_DATE(:vo.acceptDate, 'yyyy-mm-dd hh24:mi:ss')
+				, :vo.readRange
+				, :vo.conserveType
+				, TO_DATE(:vo.receiveDate, 'yyyy-mm-dd hh24:mi:ss')
+				, :vo.distributeYn
+				, :vo.distributorId
+				, :vo.distributorName
+				, :vo.distributorPos
+				, :vo.distributorDeptId
+				, :vo.distributorDeptName
+				, TO_DATE(:vo.distributeDate, 'yyyy-mm-dd hh24:mi:ss')
+				, :vo.electronDocYn
+				, :vo.attachCount
+				, :vo.deleteYn
+				, :vo.urgencyYn
+				, :vo.publicPost
+				, :vo.bindingId
+				, :vo.bindingName
+				, :vo.handoverYn
+				, :vo.mobileYn
+				, :vo.transferYn
+				, :vo.senderId
+				, :vo.senderName
+				, TO_DATE(:vo.sendDate, 'yyyy-mm-dd hh24:mi:ss')
+				, :vo.sendOpinion
+				, :vo.senderPos
+				, :vo.senderDeptId
+				, :vo.senderDeptName
+				, :vo.senderCompId
+				, :vo.senderCompName
+				, :vo.processorId
+				, :vo.processorName
+				, :vo.processorPos
+				, :vo.processorDeptId
+				, :vo.processorDeptName
+				, :vo.openLevel
+				, :vo.openReason
+				, :vo.distributeNumber
+				, :vo.docType
+				, :vo.registerId
+				, :vo.registerName
+				, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss')
+				, TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss')
+				, 'N'
+				, :vo.classNumber
+				, :vo.docnumName
+				, :vo.assistantLineType
+				, :vo.auditLineType
+			)
+			]]>
+			</statement>
+		</query>		
+		
+		<query id= "enforce.insertEnfRecv">
+			<statement>
+			<![CDATA[
+			INSERT INTO TGW_ENF_RECV(
+				  DOC_ID
+				, COMP_ID
+				, RECEIVER_ORDER
+				, RECEIVER_TYPE
+				, ENF_TYPE
+				, RECV_DEPT_ID
+				, RECV_DEPT_NAME
+				, REF_DEPT_ID
+				, REF_DEPT_NAME
+				, RECV_USER_ID
+				, RECV_USER_NAME
+				, RECV_COMP_ID
+				, RECV_SYMBOL
+				, REGIST_DATE
+				, RECV_STATE
+				, READ_DATE
+
+			) VALUES (
+				  :vo.docId
+				, :vo.compId
+				, :vo.receiverOrder
+				, :vo.receiverType
+				, :vo.enfType
+				, :vo.recvDeptId
+				, :vo.recvDeptName
+				, :vo.refDeptId
+				, :vo.refDeptName
+				, :vo.recvUserId
+				, :vo.recvUserName	
+				, :vo.recvCompId	
+				, :vo.recvSymbol
+				, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss')
+				, :vo.recvState
+				, TO_DATE('9999-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
+			)
+			]]>
+			</statement>
+		</query>
+		
+		<query id= "enforce.selectEnfDoc">
+			<statement>
+			<![CDATA[
+			SELECT
+				  DOC_ID
+				, COMP_ID
+				, ORIGIN_DOC_ID
+				, ENF_TYPE
+				, TITLE
+				, DOC_STATE
+				, DOC_NUMBER
+				, DEPT_CATEGORY
+				, SERIAL_NUMBER
+				, SUBSERIAL_NUMBER
+				, ACCEPTER_ID
+				, ACCEPTER_NAME
+				, ACCEPTER_POS
+				, ACCEPT_DEPT_ID
+				, ACCEPT_DEPT_NAME
+				, ACCEPT_DATE
+				, READ_RANGE
+				, CONSERVE_TYPE
+				, RECEIVE_DATE
+				, DISTRIBUTE_YN
+				, DISTRIBUTOR_ID
+				, DISTRIBUTOR_NAME
+				, DISTRIBUTOR_POS
+				, DISTRIBUTOR_DEPT_ID
+				, DISTRIBUTOR_DEPT_NAME
+				, DISTRIBUTE_DATE
+				, ELECTRON_DOC_YN
+				, ATTACH_COUNT
+				, DELETE_YN
+				, URGENCY_YN
+				, PUBLIC_POST
+				, BINDING_ID
+				, FNC_GET_RESOURCE_NAME(:compId, BINDING_NAME, :langType) AS BINDING_NAME
+				, BINDING_NAME AS BINDING_RESOURCE_ID
+				, HANDOVER_YN
+				, MOBILE_YN
+				, TRANSFER_YN
+				, SENDER_ID
+				, SENDER_NAME
+				, SEND_DATE
+				, SEND_OPINION
+				, SENDER_POS
+				, SENDER_DEPT_ID
+				, SENDER_DEPT_NAME
+				, SENDER_COMP_ID
+				, SENDER_COMP_NAME
+				, PROCESSOR_ID
+				, PROCESSOR_NAME
+				, PROCESSOR_POS
+				, PROCESSOR_DEPT_ID
+				, PROCESSOR_DEPT_NAME
+				, OPEN_LEVEL
+				, OPEN_REASON
+				, DISTRIBUTE_NUMBER
+				, DOC_TYPE
+				, REGISTER_ID
+				, REGISTER_NAME
+				, REGIST_DATE
+				, (SELECT CATEGORY_NAME FROM TGW_CATEGORY WHERE COMP_ID = TGW_ENF_DOC.COMP_ID AND  CATEGORY_ID = TGW_ENF_DOC.DOC_TYPE) CATEGORY_NAME
+				, UNREGIST_YN
+				, CLASS_NUMBER
+				, DOCNUM_NAME
+				, ASSISTANT_LINE_TYPE
+				, AUDIT_LINE_TYPE
+			FROM TGW_ENF_DOC
+			WHERE DOC_ID = :docId
+			AND COMP_ID = :compId
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfDocVO"/>
+		</query>
+		<query id= "enforce.selectEnfRecv">
+			<statement>
+			<![CDATA[
+			SELECT
+				  DOC_ID
+				, COMP_ID
+				, RECEIVER_ORDER
+				, RECEIVER_TYPE
+				, ENF_TYPE
+				, RECV_DEPT_ID
+				, RECV_DEPT_NAME
+				, REF_DEPT_ID
+				, REF_DEPT_NAME
+				, RECV_USER_ID
+				, RECV_USER_NAME
+				, RECV_COMP_ID
+				, RECV_SYMBOL
+				, REGIST_DATE
+			FROM TGW_ENF_RECV
+			WHERE DOC_ID = :docId
+			AND COMP_ID = :compId
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfRecvVO"/>
+		</query>
+		<query id= "enforce.selectEnfProc">
+			<statement>
+			<![CDATA[
+			SELECT
+				  DOC_ID
+				, COMP_ID
+				, PROC_ORDER
+				, PROC_TYPE
+				, PROCESSOR_ID
+				, PROCESSOR_NAME
+				, PROCESSOR_POS
+				, PROCESSOR_DEPT_ID
+				, PROCESSOR_DEPT_NAME
+				, PROCESS_DATE
+				, PROC_OPINION
+			FROM TGW_ENF_PROC
+			WHERE DOC_ID = :docId
+			AND COMP_ID = :compId
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.appcom.vo.EnfProcVO"/>
+		</query>
+		
+		<!-- 비전자 문서 접수처리를 수행한다. --> 
+		<query id= "enfDoc.updateEnfDoc01">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC 
+				SET   DOC_STATE				= :vo.docState
+				
+				#if($vo.bindingId)
+					, BINDING_ID			= :vo.bindingId
+					, BINDING_NAME			= :vo.bindingName
+				#end
+				#if($vo.conserveType)
+					, CONSERVE_TYPE      	= :vo.conserveType
+				#end	
+				#if($vo.classNumber)
+					, CLASS_NUMBER 			= :vo.classNumber
+					, DOCNUM_NAME 			= :vo.docnumName
+				#end
+				#if($vo.deptCategory)
+					, DEPT_CATEGORY 		= :vo.deptCategory 
+					, SERIAL_NUMBER 		= :vo.serialNumber 
+					, SUBSERIAL_NUMBER 		= :vo.subserialNumber
+				#end
+				#if($vo.accepterId)
+					, ACCEPTER_ID 			= :vo.accepterId 
+					, ACCEPTER_NAME 		= :vo.accepterName 
+					, ACCEPTER_POS 			= :vo.accepterPos 
+					, ACCEPT_DEPT_ID 		= :vo.acceptDeptId 
+					, ACCEPT_DEPT_NAME 		= :vo.acceptDeptName 
+					, ACCEPT_DATE 			= TO_DATE(:vo.acceptDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				#if($vo.processorId)
+					, PROCESSOR_ID 			= :vo.processorId
+					, PROCESSOR_NAME 		= :vo.processorName
+					, PROCESSOR_POS	 		= :vo.processorPos
+					, PROCESSOR_DEPT_ID 	= :vo.processorDeptId
+					, PROCESSOR_DEPT_NAME 	= :vo.processorDeptName
+				#end
+				#if($vo.lastUpdateDate)
+					, LAST_UPDATE_DATE 		= TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end
+					, PUBLIC_POST 			= :vo.publicPost
+				WHERE DOC_ID 	= :vo.docId
+				  AND COMP_ID 	= :vo.compId
+			]]>
+			</statement>
+		</query>
+		
+		<!-- 비전자 문서 정보를 변경한다.. 접수번호(부서약어) 수정 추가, jd.park, 20120509--> 
+		<query id= "enfDoc.updateNonEleEnfDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC 
+				SET   TITLE				= :vo.title
+					, DOC_NUMBER		= :vo.docNumber
+					, SENDER_DEPT_NAME  = :vo.senderDeptName
+					, DOC_TYPE			= :vo.docType
+					, ENF_TYPE			= :vo.enfType
+					, ATTACH_COUNT		= :vo.attachCount
+					, READ_RANGE		= :vo.readRange
+					, RECEIVE_DATE      = TO_DATE(:vo.receiveDate, 'yyyy-mm-dd hh24:mi:ss')
+				/**	, LAST_UPDATE_DATE  = TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss')    */
+					, PUBLIC_POST    	= :vo.publicPost
+					, DEPT_CATEGORY		= :vo.deptCategory
+					, CLASS_NUMBER 		= :vo.classNumber
+					, DOCNUM_NAME 		= :vo.docnumName
+					, CONSERVE_TYPE       = :vo.conserveType
+					, BINDING_ID	        = :vo.bindingId
+                    , BINDING_NAME       = :vo.bindingName
+				WHERE DOC_ID 	= :vo.docId
+				  AND COMP_ID 	= :vo.compId
+			]]>
+			</statement>
+		</query>
+				
+		<query id="enforce.selectDocMngInfo">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID,READ_RANGE, PUBLIC_POST,CONSERVE_TYPE
+				FROM TGW_ENF_DOC
+				WHERE
+					DOC_ID = :docId 
+				AND COMP_ID =:compId 					
+			]]>
+			</statement>
+		</query>		
+		
+		<query id="enforce.updateDocMngInfo">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC
+			    SET READ_RANGE = :readRange, 
+			    PUBLIC_POST =:publicPost, 
+			    CONSERVE_TYPE =:conserveType,
+			    URGENCY_YN =:urgencyYn,
+			    BINDING_ID = :bindingId,
+			    BINDING_NAME =:bindingName,
+			    TITLE = :title
+				WHERE
+					DOC_ID = :docId 
+				AND COMP_ID =:compId 					
+			]]>
+			</statement>
+		</query>
+     	
+     	<query id="enforce.updateEnfDocCharger">
+			<!-- 접수문서정보 변경(문서책임자) -->
+            <statement>
+            <![CDATA[
+				UPDATE TGW_ENF_DOC SET
+				       READ_RANGE = :vo.readRange,
+				       PUBLIC_POST = :vo.publicPost,
+				       URGENCY_YN = :vo.urgencyYn
+				WHERE  DOC_ID = :vo.docId 
+				AND    COMP_ID = :vo.compId
+            ]]>
+            </statement>
+        </query> 		
+					
+		<query id="enforce.updateAppRecv">
+			<statement>
+			<![CDATA[
+			    /* 수신접수에 담당자 수정 */
+				UPDATE TGW_APP_RECV
+				SET CHARGER_ID = :chargerId
+				   ,CHARGER_NAME= :chargerName
+				   ,CHARGER_POS= :chargerPos
+				   ,CHARGE_DEPT_ID =:chargeDeptId
+				   ,CHARGE_DEPT_NAME =:chargeDeptName
+				   ,CHARGE_PROC_DATE = TO_DATE(:chargeProcDate,'YYYY-MM-DD HH24:MI:SS')
+				   ,ENF_STATE = :enfState
+				WHERE 
+				DOC_ID = :docId   
+				--AND COMP_ID =:compId
+				AND RECEIVER_ORDER = (SELECT RECEIVER_ORDER FROM TGW_ENF_RECV
+				                      WHERE DOC_ID = :enfDocId
+				                      AND COMP_ID = :compId
+				                      )				
+			]]>
+			</statement>
+		</query>	
+	
+			<query id="enforce.selectCountByDocType">
+			<statement>
+			<![CDATA[
+			/* 
+				문서형태에 따른 건수 조회
+				-index 사용체크(DOC_TYPE)
+			 */
+				SELECT 
+					COUNT(*) CNT
+				FROM TGW_ENF_DOC
+				WHERE COMP_ID = :compId
+				AND DOC_TYPE = :docType
+			]]>
+			</statement>
+		</query>	
+	
+
+	
+		<query id="enforce.selectEnfLineProcOpinion">
+			<statement>
+			<![CDATA[
+				SELECT PROC_OPINION, NVL(LOWER(ASK_TYPE),'art070') ASK_TYPE
+				  FROM  TGW_ENF_LINE
+				 WHERE DOC_ID = :vo.docId
+				   AND COMP_ID =:vo.compId
+				   AND LINE_ORDER =(SELECT NVL(LINE_ORDER,0) 
+				                   FROM TGW_ENF_LINE 
+				                  WHERE DOC_ID =:vo.docId
+				                    AND COMP_ID =:vo.compId 
+				                    AND PROC_TYPE='APT003') -1
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfLineVO"/>
+		</query>	
+
+		<query id="enforce.unregistAppDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC
+				SET UNREGIST_YN = :unregistYn
+				WHERE DOC_ID = :docId AND COMP_ID = :compId 
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="enforce.checkDupAccept">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID FROM TGW_ENF_RECV
+				WHERE  DOC_ID = 'ENF' ||  SUBSTR(:vo.originDocId,4)
+				AND    RECV_COMP_ID = :vo.compId 
+				AND	   RECEIVER_ORDER = :vo.receiverOrder
+				AND    ENF_TYPE = :vo.enfType
+			]]>
+			</statement>
+			<result class ="com.sds.acube.app.enforce.vo.EnfRecvVO"/>
+		</query>
+		
+		<query id="enforce.totEnfRecvCnt">
+			<statement>
+			<![CDATA[
+				SELECT COUNT(*) CNT 
+				FROM TGW_ENF_RECV				
+				WHERE DOC_ID = :docId AND RECV_COMP_ID = :compId 
+			]]>
+			</statement>
+		</query>
+		
+		<query id="enforce.deleteEnfRecvByOrder">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_ENF_RECV				
+				WHERE DOC_ID = :vo.docId AND RECEIVER_ORDER = :vo.receiverOrder 
+			]]>
+			</statement>
+		</query>
+		
+		<query id="enforce.updateAppRecvByOrder">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_RECV
+				SET ENF_STATE = :vo.enfState, SEND_OPINION = :vo.sendOpinion				
+				WHERE DOC_ID = 'APP' ||  SUBSTR(:vo.docId,4) AND RECEIVER_ORDER = :vo.receiverOrder 
+			]]>
+			</statement>
+		</query>
+		
+		<query id="enforce.deleteEnfRecvAllEnfDoc">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_ENF_DOC								
+				WHERE DOC_ID = :docId AND ORIGIN_COMP_ID = :compId 
+			]]>
+			</statement>
+		</query>
+		
+		<query id="enforce.deleteEnfRecvAllFileInfo">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_FILE_INFO								
+				WHERE DOC_ID = :docId AND COMP_ID = :compId 
+			]]>
+			</statement>
+		</query>
+	
+		<query id="enforce.updateEnfLine">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_LINE
+				SET PROC_TYPE = :modProcType			
+				WHERE COMP_ID = :compId 
+				AND DOC_ID = :docId
+				AND PROC_TYPE = :selProcType
+			]]>
+			</statement>
+		</query>
+		
+		<query id="enforce.updateEnfDocState">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC
+				SET DOC_STATE = :docState, LAST_UPDATE_DATE = TO_DATE(:lastUpdateDate,'YYYY-MM-DD HH24:MI:SS')								
+				WHERE COMP_ID = :compId AND DOC_ID = :docId 
+			]]>
+			</statement>
+		</query>				
+	</queries>
+</queryservice>

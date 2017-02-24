@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="sendMessage.selectAppDocInfo">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID, TITLE, ELECTRON_DOC_YN
+				FROM TGW_APP_DOC
+				WHERE
+					DOC_ID = :docId
+				AND COMP_ID =:compId 
+			]]>
+			</statement>
+		</query>		
+	
+		<query id="sendMessage.selectEnfDocInfo">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID, TITLE, ELECTRON_DOC_YN
+				FROM TGW_ENF_DOC
+				WHERE
+					DOC_ID = :docId
+				AND COMP_ID =:compId 
+			]]>
+			</statement>
+		</query>		
+	</queries>
+</queryservice>

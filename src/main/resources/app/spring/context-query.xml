@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+						
+	<bean name="queryService" class="org.anyframe.query.impl.QueryServiceImpl" depends-on="memoryService">
+		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+		<property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+		<property name="sqlRepository" ref="sqlLoader"/>
+		<!--foundation propertyLobHandler-START-->
+		<property name="lobHandler" ref="lobHandler"/>
+		<!--foundation propertyLobHandler-END-->				
+	</bean>
+	
+	<!--  weblogic 사용을 위해 주석처리  
+	<bean name="queryServiceDB2" class="org.anyframe.query.impl.QueryServiceImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplateDB2"/>
+		<property name="pagingSQLGenerator" ref="pagingSQLGeneratorDB2"/>
+		<property name="sqlRepository" ref="sqlLoaderDB2"/>
+	</bean>
+	-->
+
+	<bean id="memoryService" class="com.sds.acube.app.common.service.impl.MemoryService">
+	</bean>
+	
+    <bean name="sqlLoader" 
+        class="org.anyframe.query.impl.config.loader.SQLLoader">
+        <property name="mappingFiles">
+            <value>
+            	classpath:app/sql/**/mapping-query-*.xml 
+            </value>
+        </property>	
+        <property name="nullchecks">
+            <map>
+                <entry key="VARCHAR" value=""/>
+            </map>
+        </property>
+        <property name="skipError" value="true" />	
+    </bean>
+	
+    <bean name="sqlLoaderDB2" 
+        class="org.anyframe.query.impl.config.loader.SQLLoader">
+        <property name="mappingFiles">
+            <value>
+            	classpath:app/sql/**/mapping-queryDB2-*.xml 
+            </value>
+        </property>	
+        <property name="nullchecks">
+            <map>
+                <entry key="VARCHAR" value=""/>
+            </map>
+        </property>
+        <property name="skipError" value="true" />	
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+      <property name="dataSource" ref="dataSource" />
+      <property name="exceptionTranslator" ref="exceptionTranslator" />
+    </bean>
+      
+    <bean id="jdbcTemplateDB2" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+      <property name="dataSource" ref="dataSourceDB2" />
+      <property name="exceptionTranslator" ref="exceptionTranslatorDB2" />
+    </bean>
+
+    <bean id="exceptionTranslator" class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    <bean id="exceptionTranslatorDB2" class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    
+   	<!--foundation generator-START-->
+	<bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+	<bean id="pagingSQLGeneratorDB2" class="org.anyframe.query.impl.jdbc.generator.DB2PagingSQLGenerator"/>
+	<!--foundation generator-END-->
+	
+	<!--foundation lobHandler-START-->
+	<bean id="nativeJdbcExtractor" 
+	    class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" 
+	    lazy-init="true"/>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+	        lazy-init="true">
+	    <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+	</bean>
+	<!--foundation lobHandler-END-->
+
+</beans>	

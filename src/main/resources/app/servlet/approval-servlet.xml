@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:anyframe="http://www.anyframejava.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.anyframejava.org/schema/mvc http://www.anyframejava.org/schema/mvc/anyframe-spring-mvc-5.2.xsd">
+
+	<mvc:view-controller path="/app/approval/createPassword.do" view-name="ApprovalServlet.createPassword" />
+	<mvc:view-controller path="/app/approval/createDocPassword.do" view-name="ApprovalServlet.createDocPassword" />
+	<mvc:view-controller path="/app/approval/createSummary.do" view-name="ApprovalServlet.createSummary" />
+	<mvc:view-controller path="/app/approval/createOpinion.do" view-name="ApprovalServlet.createOpinion" />
+	<mvc:view-controller path="/app/approval/createItemList.do" view-name="ApprovalServlet.createItemList" />
+	<mvc:view-controller path="/app/approval/selectAppLine.do" view-name="ApprovalServlet.selectAppLine" />
+	<mvc:view-controller path="/app/approval/selectRelatedDoc.do" view-name="ApprovalServlet.selectRelatedDoc" />
+	<mvc:view-controller path="/app/approval/selectRelatedRule.do" view-name="ApprovalServlet.selectRelatedRule" />
+	<mvc:view-controller path="/app/approval/processRelatedRule.do" view-name="ApprovalServlet.processRelatedRule" />
+	<mvc:view-controller path="/app/approval/selectCustomer.do" view-name="ApprovalServlet.selectCustomer" />
+	<mvc:view-controller path="/app/approval/createMobileDoc.do" view-name="ApprovalServlet.createMobileDoc" />
+	<mvc:view-controller path="/app/approval/selectOpinion.do" view-name="ApprovalServlet.selectOpinion" />
+	<mvc:view-controller path="/app/approval/createReason.do" view-name="ApprovalServlet.createReason" />
+	<mvc:view-controller path="/app/approval/setRelatedRule.do" view-name="ApprovalServlet.setRelatedRule" />
+	<mvc:view-controller path="/app/approval/selectOpenLevel.do" view-name="ApprovalServlet.selectOpenLevel" />
+	
+</beans>

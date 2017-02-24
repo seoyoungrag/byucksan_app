@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:anyframe="http://www.anyframejava.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.anyframejava.org/schema/mvc http://www.anyframejava.org/schema/mvc/anyframe-spring-mvc-5.2.xsd">
+
+	<anyframe:annotation-driven	synchronizeOnSession="true" />
+
+	<context:component-scan base-package="com.sds.acube.app"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+    <!-- Interceptor -->
+	<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/app/index.do"  />
+            <mvc:mapping path="/app/docMngIndex.do"  />
+            <mvc:mapping path="/app/list/webservice/approval/*.do"  />
+            <mvc:mapping path="/**/ListPortlet.do"  />
+            <mvc:mapping path="/app/approval/selectAppDoc.do"  />
+            <mvc:mapping path="/app/enforce/EnforceDocument.do"  />
+            <bean class="com.sds.acube.app.common.interceptor.SSOInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+	<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*.do"  />
+            <bean class="com.sds.acube.app.common.interceptor.RequestInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+    
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/app/env/admin/*.do"  />
+            <mvc:mapping path="/app/approval/admin/*.do"  />
+            <mvc:mapping path="/app/env/admincharge/*.do"  />
+            <mvc:mapping path="/app/list/admin/*.do"  />
+            <mvc:mapping path="/app/statistics/admin/*.do"  />
+            <bean class="com.sds.acube.app.env.interceptor.EnvAdminInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+<!-- 
+	<bean
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	</bean>
+-->
+	<bean id="exceptionResolver"
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="defaultErrorView" value="error" />
+	</bean>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<value>10000000</value>
+		</property>
+	</bean>
+	
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="ko_KR" />
+	</bean>
+	
+<!-- 
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="order" value="3"/>
+        <property name="prefix" value="/ep/app/jsp"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+ -->	
+	
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+		<property name="tilesInitializer">
+			<bean class="org.anyframe.tiles.ELTilesInitializer">
+				<property name="definitions">
+					<list>
+						<value>classpath:/app/tileview/tileview-*.xml</value>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="tilesViewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.tiles2.TilesView" />
+	</bean>
+
+	<mvc:view-controller path="/app/index.do" view-name="appLayout" />
+	<mvc:view-controller path="/app/docMngIndex.do" view-name="docLayout" />
+	<mvc:view-controller path="/app/body.do" view-name="main.body" />
+	<mvc:view-controller path="/app/popup.do" view-name="main.popup" />
+	<mvc:view-controller path="/app/top.do" view-name="top" />
+
+</beans>

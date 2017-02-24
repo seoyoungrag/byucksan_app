@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!-- TGW_PUB_POST -->
+		<query id="etc.insertPublicPost">
+			<statement>
+			<![CDATA[
+				MERGE INTO TGW_PUB_POST A
+					USING
+					(
+						SELECT 
+							COUNT(PUBLISH_ID) NUM 
+						FROM 
+							TGW_PUB_POST
+						WHERE 
+							COMP_ID = :vo.compId AND DOC_ID = :vo.docId
+					) B
+					ON
+					( 
+						B.NUM > 0
+					)
+					WHEN MATCHED THEN						
+						UPDATE
+						SET
+							PUBLISH_END_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+							, READ_RANGE = :vo.readRange
+						WHERE	
+						
+							#if (!$vo.orgPublishId.equals(""))
+								PUBLISH_ID = :vo.orgPublishId
+							#else 
+								PUBLISH_ID = :vo.publishId
+							#end
+							
+							AND COMP_ID = :vo.compId
+					WHEN NOT MATCHED THEN
+						INSERT
+							(
+							A.PUBLISH_ID, A.COMP_ID, A.DOC_ID, A.TITLE, A.PUBLISHER_ID,
+							A.PUBLISHER_NAME, A.PUBLISHER_POS, A.PUBLISH_DEPT_ID, A.PUBLISH_DEPT_NAME, A.PUBLISH_DATE,
+							A.PUBLISH_END_DATE, A.READ_COUNT, A.ATTACH_COUNT, A.READ_RANGE, A.ELECTRON_DOC_YN			
+							)
+						VALUES
+							(
+							:vo.publishId, :vo.compId, :vo.docId, :vo.title, :vo.publisherId, 
+							:vo.publisherName, :vo.publisherPos, :vo.publishDeptId, :vo.publishDeptName, TO_DATE(:vo.publishDate, 'yyyy-mm-dd hh24:mi:ss'),
+							TO_DATE(:vo.publishEndDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.readCount, :vo.attachCount, :vo.readRange, :vo.electronDocYn
+							)
+			]]>
+			</statement>
+		</query>	
+			
+		<query id="etc.updatePublicPost">
+			<statement>
+			<![CDATA[
+				UPDATE
+					TGW_PUB_POST
+				SET
+					READ_COUNT = READ_COUNT + 1
+				WHERE	
+					PUBLISH_ID = :publishId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="etc.selectPublicPost">
+			<statement>
+			<![CDATA[
+				SELECT 
+					PUBLISH_ID, DOC_ID, COMP_ID, TITLE, PUBLISHER_ID, 
+					PUBLISHER_NAME, PUBLISHER_POS, PUBLISH_DEPT_ID, PUBLISH_DEPT_NAME, TO_CHAR(PUBLISH_DATE, 'yyyy-mm-dd hh24:mi:ss') PUBLISH_DATE,
+					TO_CHAR(PUBLISH_END_DATE, 'yyyy-mm-dd hh24:mi:ss') PUBLISH_END_DATE, READ_COUNT, ATTACH_COUNT, READ_RANGE, 	ELECTRON_DOC_YN
+				FROM TGW_PUB_POST 
+				WHERE COMP_ID = :compId AND DOC_ID = :docId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.etc.vo.PubPostVO" />
+		</query>		
+
+
+		<query id="etc.closePublicPost">
+			<statement>
+			<![CDATA[
+				UPDATE 
+					TGW_PUB_POST
+				SET
+					PUBLISH_END_DATE = TO_DATE(:publishEndDate, 'yyyy-mm-dd hh24:mi:ss')
+				WHERE	
+					PUBLISH_ID = :publishId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="etc.deletePublicPost">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_PUB_POST A
+				WHERE
+					A.COMP_ID = :vo.compId AND A.DOC_ID = :vo.docId
+			]]>
+			</statement>
+		</query>	
+
+
+		<!-- TGW_POST_READER -->
+		<query id="etc.listPostReader">
+			<statement>
+			<![CDATA[
+				SELECT * FROM TGW_POST_READER
+				WHERE 
+					COMP_ID = :vo.compId
+				#if ($vo.publishId)	
+					AND PUBLISH_ID = :vo.publishId
+				#end	
+				#if ($vo.docId)	
+					AND PUBLISH_ID = (SELECT PUBLISH_ID FROM TGW_PUB_POST WHERE COMP_ID = :vo.compId AND DOC_ID = :vo.docId)
+				#end
+					ORDER BY READ_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.etc.vo.PostReaderVO" />
+		</query>
+
+		<query id="etc.insertPostReader">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_POST_READER
+					(
+					PUBLISH_ID, COMP_ID, READER_ID, READER_NAME, READER_POS, 
+					READER_DEPT_ID, READER_DEPT_NAME, READ_DATE
+					)
+				VALUES
+					(
+					:vo.publishId, :vo.compId, :vo.readerId, :vo.readerName, :vo.readerPos, 
+					:vo.readerDeptId, :vo.readerDeptName, TO_DATE(:vo.readDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="etc.selectPostReader">
+			<statement>
+			<![CDATA[
+				SELECT
+					PUBLISH_ID, COMP_ID, READER_ID, READER_NAME, READER_POS,
+					READER_DEPT_ID, READER_DEPT_NAME, TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss')
+				FROM TGW_POST_READER
+				WHERE 
+					PUBLISH_ID = :vo.publishId AND COMP_ID = :vo.compId AND READER_ID = :vo.readerId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.etc.vo.PostReaderVO" />
+		</query>
+		
+		<query id="etc.deletePostReader">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_POST_READER
+				WHERE 
+					PUBLISH_ID = (SELECT PUBLISH_ID FROM TGW_PUB_POST WHERE COMP_ID = :vo.compId AND DOC_ID = :vo.docId)
+					AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>
+	</queries>
+</queryservice>

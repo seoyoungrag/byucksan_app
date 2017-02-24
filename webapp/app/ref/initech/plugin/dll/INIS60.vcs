@@ -1,0 +1,63 @@
+;VCS 버전
+INIS60.vcs;1,0,0,1;PKCS#7Verify;
+
+;인증서 선택,관리창
+INICertManUI.dll;1,2,2,56;INICertManUI.dl_;
+
+;인증서 저장소
+INICertStore.dll;1,2,2,33;INICertStore.dl_;
+
+;인증서 저장소
+INICertStoreExt.dll;1,2,0,15;INICertStoreExt.dl_;
+
+;트레이
+INISAFEWeb60Tray.exe;1,2,0,9;INISAFEWeb60Tray.ex_;
+
+;업데이트 모듈
+INISAFEWeb60vcs.dll;1,1,1,25;INISAFEWeb60vcs.dl_;
+
+;암복호화
+INIWebCrypto.dll;6,2,3,62;INIWebCrypto.dl_;
+
+;경로검증
+INISAFEcpv.dll;0,0,0,0;INISAFEcpv.dl_;
+
+;cmp
+INISAFECmp.dll;1,2,0,31;INISAFECmp.dl_;
+
+;사이버카드
+;INISC.dll;1,0,0,4;INISC.dl_;
+
+;CMP PC정보 뽑아내는 모듈(공인인증서 yessing 발급시만 사용)
+;KTBdll.dll;1,0,1,2;KTBdll.dl_;
+
+;sso 지원용
+;INISafeWebSSO.exe;1,2,0,5;INISafeWebSSO.ex_;
+
+;재익더미드라이브
+;jscr.dll;0,0,0,0;jscr.dl_;
+
+;IniSignFile
+;IniSignFile.dll;1,0,0,5;IniSignFile.dl_;
+
+;securekey(usb)
+;iniskey.dll;1,0,0,8;iniskey.dl_;
+
+;magerkey(usb)
+mager_base.dll;2,2,0,0;mager_base.dl_;
+
+;iseckey(usb)
+;isec_base.dll;1,0,0,1;isec_base.dl_;
+
+;iskdbpkcs#11(usb)
+;iskdbpkcs#11.dll;5,0,0,0;iskdbpkcs11.dl_;
+
+;xml서명 (xml 라이브러리 쓰는 사이트만 주석 풀것)
+;libisafexml.dll;1,1,1,0;libisafexml.dl_;
+
+;e2e용 라이브러리(dll 타입 라이브러리 사용하는 경우만 주석 풀것)
+;INICRYPTOSDK.dll;1,0,0,2;INICRYPTOSDK.dl_;
+
+INISAFEWebHSM.dll;1,1,0,1;INISAFEWebHSM.dl_;
+
+INISAFEWebPCInfo.dll;1,1,0,7;INISAFEWebPCInfo.dl_;

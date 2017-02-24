@@ -1,0 +1,1614 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<!-- TGW_APP_DOC -->
+		<query id="approval.insertAppDoc">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_DOC
+					(
+					DOC_ID, COMP_ID, TITLE, DOC_TYPE, ENF_TYPE,
+					DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, 
+					DRAFT_DATE, APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID,
+					APPROVER_DEPT_NAME, APPROVAL_DATE, PROCESSOR_ID, PROCESSOR_NAME, PROCESSOR_POS,
+					PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, LAST_UPDATE_DATE, REGISTER_ID, REGISTER_NAME, 
+					REGIST_DATE, DOC_STATE, DEPT_CATEGORY, SERIAL_NUMBER,
+					SUBSERIAL_NUMBER, READ_RANGE, OPEN_LEVEL, OPEN_REASON, CONSERVE_TYPE, 
+					DELETE_YN, TEMP_YN, DOC_SOURCE, ORIGIN_DOC_ID, ORIGIN_DOC_NUMBER, 
+					BATCH_DRAFT_YN, BATCH_DRAFT_NUMBER, ELECTRON_DOC_YN, ATTACH_COUNT, URGENCY_YN, 
+					PUBLIC_POST, AUDIT_READ_YN, AUDIT_READ_REASON, AUDIT_YN, BINDING_ID, BINDING_NAME,
+					HANDOVER_YN, AUTO_SEND_YN, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE, MOBILE_YN, 
+					TRANSFER_YN, DOUBLE_YN, EXEC_DEPT_ID, EXEC_DEPT_NAME, EDITBODY_YN, 
+					EDITFILE_YN, SUMMARY, UNREGIST_YN, CLASS_NUMBER, DOCNUM_NAME,
+					ASSISTANT_LINE_TYPE, AUDIT_LINE_TYPE,SECURITY_PASS, SECURITY_YN, SECURITY_START_DATE, SECURITY_END_DATE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.title, :vo.docType, :vo.enfType,
+					:vo.drafterId, :vo.drafterName, :vo.drafterPos, :vo.drafterDeptId, :vo.drafterDeptName,
+					TO_DATE(:vo.draftDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.approverId, :vo.approverName, :vo.approverPos, :vo.approverDeptId,
+					:vo.approverDeptName, TO_DATE(:vo.approvalDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.processorId, :vo.processorName, :vo.processorPos,
+					:vo.processorDeptId, :vo.processorDeptName, TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.registerId, :vo.registerName, 
+					TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.docState, :vo.deptCategory, :vo.serialNumber,
+					:vo.subserialNumber, :vo.readRange, :vo.openLevel, :vo.openReason, :vo.conserveType, 
+					:vo.deleteYn, :vo.tempYn, :vo.docSource, :vo.originDocId, :vo.originDocNumber, 
+					:vo.batchDraftYn, :vo.batchDraftNumber, :vo.electronDocYn, :vo.attachCount, :vo.urgencyYn, 
+					:vo.publicPost, :vo.auditReadYn, :vo.auditReadReason, :vo.auditYn, :vo.bindingId, :vo.bindingName,
+					:vo.handoverYn, :vo.autoSendYn, :vo.bizSystemCode, :vo.bizTypeCode, :vo.mobileYn, 
+					:vo.transferYn, :vo.doubleYn, :vo.execDeptId, :vo.execDeptName, :vo.editbodyYn,
+					:vo.editfileYn, :vo.summary, 'N', :vo.classNumber, :vo.docnumName,
+					:vo.assistantLineType, :vo.auditLineType, :vo.securityPass, nvl(:vo.securityYn,'N'), TO_DATE(:vo.securityStartDate,'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.securityEndDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>
+		
+		<query id="approval.updateAppDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					TITLE = :vo.title, DOC_TYPE = :vo.docType, ENF_TYPE = :vo.enfType,
+				#if (!$vo.approverName.equals(""))	
+					APPROVER_ID = :vo.approverId, APPROVER_NAME = :vo.approverName, APPROVER_POS = :vo.approverPos, 
+					APPROVER_DEPT_ID = :vo.approverDeptId, APPROVER_DEPT_NAME = :vo.approverDeptName, APPROVAL_DATE = TO_DATE(:vo.approvalDate, 'yyyy-mm-dd hh24:mi:ss'), 
+				#end
+				#if (!$vo.drafterName.equals(""))	
+					DRAFTER_ID = :vo.drafterId, DRAFTER_NAME = :vo.drafterName, DRAFTER_POS = :vo.drafterPos, 
+					DRAFTER_DEPT_ID = :vo.drafterDeptId, DRAFTER_DEPT_NAME = :vo.drafterDeptName, DRAFT_DATE = TO_DATE(:vo.draftDate, 'yyyy-mm-dd hh24:mi:ss'), 
+				#end
+				#if(!($vo.securityYn.equals("Y") && $vo.securityPass.equals("")))
+					SECURITY_PASS = :vo.securityPass ,SECURITY_YN = nvl(:vo.securityYn,'N'),
+					SECURITY_START_DATE = TO_DATE(:vo.securityStartDate,'yyyy-mm-dd hh24:mi:ss') ,SECURITY_END_DATE = TO_DATE(:vo.securityEndDate, 'yyyy-mm-dd hh24:mi:ss'),
+				#end
+					PROCESSOR_ID = :vo.processorId, PROCESSOR_NAME = :vo.processorName, PROCESSOR_POS = :vo.processorPos,
+					PROCESSOR_DEPT_ID = :vo.processorDeptId, PROCESSOR_DEPT_NAME = :vo.processorDeptName, LAST_UPDATE_DATE = TO_DATE(:vo.lastUpdateDate, 'yyyy-mm-dd hh24:mi:ss'),
+					DOC_STATE = :vo.docState, DEPT_CATEGORY = :vo.deptCategory, SERIAL_NUMBER = :vo.serialNumber, 
+					SUBSERIAL_NUMBER = :vo.subserialNumber, READ_RANGE = :vo.readRange, OPEN_LEVEL = :vo.openLevel, 
+					OPEN_REASON = :vo.openReason, CONSERVE_TYPE = :vo.conserveType, DELETE_YN = :vo.deleteYn, 
+					TEMP_YN = :vo.tempYn, DOC_SOURCE = :vo.docSource, ORIGIN_DOC_ID = :vo.originDocId, 
+					ORIGIN_DOC_NUMBER = :vo.originDocNumber, BATCH_DRAFT_YN = :vo.batchDraftYn, BATCH_DRAFT_NUMBER = :vo.batchDraftNumber, 
+					ELECTRON_DOC_YN = :vo.electronDocYn, ATTACH_COUNT = :vo.attachCount, URGENCY_YN = :vo.urgencyYn, 
+					PUBLIC_POST = :vo.publicPost, AUDIT_READ_YN = :vo.auditReadYn, AUDIT_READ_REASON = :vo.auditReadReason, AUDIT_YN = :vo.auditYn, 
+					BINDING_ID = :vo.bindingId, BINDING_NAME = :vo.bindingName, HANDOVER_YN = :vo.handoverYn, 
+					AUTO_SEND_YN = :vo.autoSendYn, BIZ_SYSTEM_CODE = :vo.bizSystemCode, BIZ_TYPE_CODE = :vo.bizTypeCode, 
+					MOBILE_YN =:vo.mobileYn, TRANSFER_YN = :vo.transferYn, DOUBLE_YN = :vo.doubleYn, 
+					EXEC_DEPT_ID = :vo.execDeptId, EXEC_DEPT_NAME = :vo.execDeptName, EDITBODY_YN = :vo.editbodyYn, 
+					EDITFILE_YN = :vo.editfileYn, SUMMARY = :vo.summary, CLASS_NUMBER = :vo.classNumber, DOCNUM_NAME = :vo.docnumName				
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.updateNonEleAppDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					TITLE = :vo.title, DOC_TYPE = :vo.docType, ENF_TYPE = :vo.enfType,
+				#if (!$vo.approverName.equals(""))	
+					APPROVER_ID = :vo.approverId, APPROVER_NAME = :vo.approverName, APPROVER_POS = :vo.approverPos, 
+					APPROVER_DEPT_ID = :vo.approverDeptId, APPROVER_DEPT_NAME = :vo.approverDeptName, APPROVAL_DATE = TO_DATE(:vo.approvalDate, 'yyyy-mm-dd hh24:mi:ss'), 
+				#end
+				#if (!$vo.drafterName.equals(""))	
+					DRAFTER_ID = :vo.drafterId, DRAFTER_NAME = :vo.drafterName, DRAFTER_POS = :vo.drafterPos, 
+					DRAFTER_DEPT_ID = :vo.drafterDeptId, DRAFTER_DEPT_NAME = :vo.drafterDeptName, DRAFT_DATE = TO_DATE(:vo.draftDate, 'yyyy-mm-dd hh24:mi:ss'), 
+				#end
+					PROCESSOR_ID = :vo.processorId, PROCESSOR_NAME = :vo.processorName, PROCESSOR_POS = :vo.processorPos,
+					PROCESSOR_DEPT_ID = :vo.processorDeptId, PROCESSOR_DEPT_NAME = :vo.processorDeptName,
+					DOC_STATE = :vo.docState, DEPT_CATEGORY = :vo.deptCategory, SERIAL_NUMBER = :vo.serialNumber, 
+					SUBSERIAL_NUMBER = :vo.subserialNumber, READ_RANGE = :vo.readRange, OPEN_LEVEL = :vo.openLevel, 
+					OPEN_REASON = :vo.openReason, CONSERVE_TYPE = :vo.conserveType, DELETE_YN = :vo.deleteYn, 
+					TEMP_YN = :vo.tempYn, DOC_SOURCE = :vo.docSource, ORIGIN_DOC_ID = :vo.originDocId, 
+					ORIGIN_DOC_NUMBER = :vo.originDocNumber, BATCH_DRAFT_YN = :vo.batchDraftYn, BATCH_DRAFT_NUMBER = :vo.batchDraftNumber, 
+					ELECTRON_DOC_YN = :vo.electronDocYn, ATTACH_COUNT = :vo.attachCount, URGENCY_YN = :vo.urgencyYn, 
+					PUBLIC_POST = :vo.publicPost, AUDIT_READ_YN = :vo.auditReadYn, AUDIT_READ_REASON = :vo.auditReadReason, AUDIT_YN = :vo.auditYn, 
+					BINDING_ID = :vo.bindingId, BINDING_NAME = :vo.bindingName, HANDOVER_YN = :vo.handoverYn, 
+					AUTO_SEND_YN = :vo.autoSendYn, BIZ_SYSTEM_CODE = :vo.bizSystemCode, BIZ_TYPE_CODE = :vo.bizTypeCode, 
+					MOBILE_YN =:vo.mobileYn, TRANSFER_YN = :vo.transferYn, DOUBLE_YN = :vo.doubleYn, 
+					EXEC_DEPT_ID = :vo.execDeptId, EXEC_DEPT_NAME = :vo.execDeptName, EDITBODY_YN = :vo.editbodyYn, 
+					EDITFILE_YN = :vo.editfileYn, SUMMARY = :vo.summary, CLASS_NUMBER = :vo.classNumber, DOCNUM_NAME = :vo.docnumName
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.updateAppDoc.tempYn">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					PROCESSOR_ID = :processorId, PROCESSOR_NAME = :processorName, PROCESSOR_POS = :processorPos,
+					TEMP_YN = :tempYn
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.updateAppDoc.docState">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					DOC_STATE = :docState
+				#if ($deleteYn)	
+					, DELETE_YN = :deleteYn
+				#end
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>
+
+		<query id="approval.updateAppDoc.mobileYn">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+				#if ($mobileYn)	
+					MOBILE_YN = :mobileYn
+				#end
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>
+ 
+		<query id="approval.updateDocInfoByAdmin">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					TITLE = :title, READ_RANGE = :readRange, AUDIT_READ_YN = :auditReadYn, AUDIT_READ_REASON = :auditReadReason,
+				#if ($bindingId)
+					BINDING_ID = :bindingId, BINDING_NAME = :bindingName, CONSERVE_TYPE = :conserveType,
+					AUTO_SEND_YN = :autoSendYn, DEPT_CATEGORY = :deptCategory,
+				#end
+				#if ($classNumber)	
+					CLASS_NUMBER = :classNumber, DOCNUM_NAME = :docnumName,
+				#end
+				#if ($auditYn)
+					AUDIT_YN = :auditYn,
+				#end
+					URGENCY_YN = :urgencyYn, PUBLIC_POST = :publicPost
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="approval.updateDocInfoByManager">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					READ_RANGE = :readRange, URGENCY_YN = :urgencyYn, 
+				#if ($classNumber)	
+					CLASS_NUMBER = :classNumber, DOCNUM_NAME = :docnumName,
+				#end
+					PUBLIC_POST = :publicPost
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>
+
+		<query id="approval.updateAuditYnByAdmin">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					AUDIT_YN = :auditYn
+				WHERE
+					COMP_ID = :compId AND BATCH_DRAFT_YN = 'Y'
+					AND ((ORIGIN_DOC_ID = :docId AND BATCH_DRAFT_NUMBER > 1) OR (DOC_ID = :docId AND BATCH_DRAFT_NUMBER = 1))
+				#if ($draftDate)	
+					AND DRAFT_DATE = TO_DATE(:draftDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end	
+			]]>
+			</statement>
+		</query>
+		
+		<query id="approval.selectAppDoc">
+			<statement>
+			<![CDATA[
+				SELECT 
+					DOC_ID, COMP_ID, TITLE, DOC_TYPE, ENF_TYPE,
+					DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, 
+					TO_CHAR(DRAFT_DATE, 'yyyy-mm-dd hh24:mi:ss') DRAFT_DATE, APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID,
+					APPROVER_DEPT_NAME, TO_CHAR(APPROVAL_DATE, 'yyyy-mm-dd hh24:mi:ss') APPROVAL_DATE, PROCESSOR_ID, PROCESSOR_NAME, PROCESSOR_POS,
+					PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, TO_CHAR(LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE, REGISTER_ID, REGISTER_NAME, 
+					TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, DOC_STATE, DEPT_CATEGORY, SERIAL_NUMBER,
+					SUBSERIAL_NUMBER, READ_RANGE, OPEN_LEVEL, OPEN_REASON, CONSERVE_TYPE, 
+					DELETE_YN, TEMP_YN, DOC_SOURCE, ORIGIN_DOC_ID, ORIGIN_DOC_NUMBER, 
+					BATCH_DRAFT_YN, BATCH_DRAFT_NUMBER, ELECTRON_DOC_YN, ATTACH_COUNT, URGENCY_YN, 
+					PUBLIC_POST, AUDIT_READ_YN, AUDIT_READ_REASON, AUDIT_YN, BINDING_ID, 
+					FNC_GET_RESOURCE_NAME(:compId, (select BIND_NAME from tgw_app_bind where bind_id = BINDING_ID), :langType) AS BINDING_NAME,
+					(select BIND_NAME from tgw_app_bind where bind_id = BINDING_ID) AS BINDING_RESOURCE_ID, 
+					HANDOVER_YN, AUTO_SEND_YN, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE, MOBILE_YN, 
+					TRANSFER_YN, DOUBLE_YN, EXEC_DEPT_ID, EXEC_DEPT_NAME, EDITBODY_YN, 
+					EDITFILE_YN, SUMMARY,
+					(
+					SELECT
+						CATEGORY_NAME 
+					FROM TGW_CATEGORY 
+					WHERE COMP_ID = TGW_APP_DOC.COMP_ID AND  CATEGORY_ID = TGW_APP_DOC.DOC_TYPE
+					) CATEGORY_NAME, UNREGIST_YN, CLASS_NUMBER, DOCNUM_NAME, ASSISTANT_LINE_TYPE,
+					AUDIT_LINE_TYPE ,SECURITY_PASS, SECURITY_YN, TO_CHAR(SECURITY_START_DATE,'yyyy/MM/dd') SECURITY_START_DATE, 
+					TO_CHAR(SECURITY_END_DATE,'yyyy/MM/dd') SECURITY_END_DATE 
+				FROM TGW_APP_DOC
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppDocVO" />
+		</query>
+		
+		
+		<query id="approval.selectFileId">
+			<statement>
+			<![CDATA[
+				SELECT 
+					file_id
+					FROM TGW_FILE_INFO_HIS 
+					WHERE file_his_id = :hisId
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO" />
+		</query>
+		
+		<query id="approval.updateBodyFileInfo">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_FILE_INFO
+				SET
+					FILE_ID = :fileId
+				WHERE
+					DOC_ID = :docId AND FILE_TYPE='AFT001'
+			]]>
+			</statement>
+		</query>
+		<query id="approval.searchAppDoc">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, TITLE, DOC_TYPE, ENF_TYPE,
+					DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, DRAFTER_DEPT_ID, DRAFTER_DEPT_NAME, 
+					TO_CHAR(DRAFT_DATE, 'yyyy-mm-dd hh24:mi:ss') DRAFT_DATE, APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID,
+					APPROVER_DEPT_NAME, TO_CHAR(APPROVAL_DATE, 'yyyy-mm-dd hh24:mi:ss') APPROVAL_DATE, PROCESSOR_ID, PROCESSOR_NAME, PROCESSOR_POS,
+					PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, TO_CHAR(LAST_UPDATE_DATE, 'yyyy-mm-dd hh24:mi:ss') LAST_UPDATE_DATE, REGISTER_ID, REGISTER_NAME, 
+					TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, DOC_STATE, DEPT_CATEGORY, SERIAL_NUMBER,
+					SUBSERIAL_NUMBER, READ_RANGE, OPEN_LEVEL, OPEN_REASON, CONSERVE_TYPE, 
+					DELETE_YN, TEMP_YN, DOC_SOURCE, ORIGIN_DOC_ID, ORIGIN_DOC_NUMBER, 
+					BATCH_DRAFT_YN, BATCH_DRAFT_NUMBER, ELECTRON_DOC_YN, ATTACH_COUNT, URGENCY_YN, 
+					PUBLIC_POST, AUDIT_READ_YN, AUDIT_READ_REASON, AUDIT_YN, BINDING_ID, 
+					FNC_GET_RESOURCE_NAME(:compId, BINDING_NAME, :langType) AS BINDING_NAME,
+					BINDING_NAME AS BINDING_RESOURCE_ID, 
+					HANDOVER_YN, AUTO_SEND_YN, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE, MOBILE_YN, 
+					TRANSFER_YN, DOUBLE_YN, EXEC_DEPT_ID, EXEC_DEPT_NAME, EDITBODY_YN, 
+					EDITFILE_YN, SUMMARY,
+					(
+					SELECT
+						CATEGORY_NAME 
+					FROM TGW_CATEGORY 
+					WHERE COMP_ID = TGW_APP_DOC.COMP_ID AND  CATEGORY_ID = TGW_APP_DOC.DOC_TYPE
+					) CATEGORY_NAME, UNREGIST_YN, CLASS_NUMBER, DOCNUM_NAME, ASSISTANT_LINE_TYPE,
+					AUDIT_LINE_TYPE
+				FROM TGW_APP_DOC
+				WHERE 
+					COMP_ID = :compId AND DOC_STATE >= 'APP600' AND TRANSFER_YN = 'N' AND ELECTRON_DOC_YN = 'Y'
+					AND DECODE(SERIAL_NUMBER, 0, '', DECODE(SUBSERIAL_NUMBER, 0, DEPT_CATEGORY || '-' || SERIAL_NUMBER, DEPT_CATEGORY || '-' || SERIAL_NUMBER || '-' || SUBSERIAL_NUMBER)) = :docNum
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppDocVO" />
+		</query>		
+		
+		<query id="approval.selectCountByDocType">
+			<statement>
+			<![CDATA[
+			/* 
+				문서형태에 따른 건수 조회
+				-index 사용체크(DOC_TYPE)
+			 */
+				SELECT 
+					COUNT(*) CNT
+				FROM TGW_APP_DOC
+				WHERE COMP_ID = :compId
+				AND DOC_TYPE = :docType
+			]]>
+			</statement>
+		</query>	
+				
+		<query id="approval.selectBatchAppDoc">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID
+				FROM TGW_APP_DOC
+				WHERE
+					COMP_ID = :compId AND BATCH_DRAFT_YN = 'Y' 
+					AND ((ORIGIN_DOC_ID = :docId AND BATCH_DRAFT_NUMBER > 1) OR (DOC_ID = :docId AND BATCH_DRAFT_NUMBER = 1))
+				#if ($draftDate)	
+					AND DRAFT_DATE = TO_DATE(:draftDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end	
+				ORDER BY BATCH_DRAFT_NUMBER ASC
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteAppDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET DELETE_YN = 'Y'
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND DELETE_YN = 'N'
+				#if ($userId)	
+					AND DRAFTER_ID = :userId AND DOC_STATE IN ( {{docState}} )
+				#else
+					AND DOC_STATE IN ( {{docState}} )
+				#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteEnfDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC
+				SET DELETE_YN = 'Y'
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND DELETE_YN = 'N' AND ACCEPT_DEPT_ID = :acceptDeptId
+				AND DOC_STATE IN ( {{docState}} )
+			]]>
+			</statement>
+		</query>
+		
+		<query id="approval.restoreAppDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET DELETE_YN = 'N'
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND DELETE_YN = 'N'
+				#if ($userId)	
+					AND DRAFTER_ID = :userId AND DOC_STATE IN ( {{docState}} )
+				#else
+					AND DOC_STATE IN ( {{docState}} )
+				#end
+			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.unregistAppDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET UNREGIST_YN = :unregistYn
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteNonEleDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET DELETE_YN = 'Y'
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteNonEleEnfDoc">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_ENF_DOC
+				SET DELETE_YN = 'Y'
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.selectDocMngInfo">
+			<statement>
+			<![CDATA[
+				SELECT DOC_ID, READ_RANGE, PUBLIC_POST, AUDIT_READ_YN, AUDIT_READ_REASON, AUDIT_YN, CONSERVE_TYPE
+				FROM TGW_APP_DOC
+				WHERE
+					DOC_ID = :docId
+				AND COMP_ID =:compId 
+			]]>
+			</statement>
+		</query>		
+		
+		<query id="approval.updateDocMngInfo">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+			    SET READ_RANGE = :readRange, 
+			    PUBLIC_POST =:publicPost, 
+			    AUDIT_READ_YN =:auditReadYn, 
+			    AUDIT_READ_REASON =:auditReadReason, 
+			    AUDIT_YN =:auditYn, 
+			    CONSERVE_TYPE =:conserveType
+				WHERE
+					DOC_ID = :docId 
+				AND COMP_ID =:compId 
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.updateAttachCount">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC
+				SET
+					   ATTACH_COUNT = (SELECT COUNT(FILE_ID) 
+					   				   FROM   TGW_FILE_INFO
+									   WHERE  DOC_ID = :docId AND COMP_ID = :compId
+									   AND TEMP_YN = 'N' AND FILE_TYPE IN ('AFT004', 'AFT010'))
+				WHERE  
+					DOC_ID = :docId AND COMP_ID = :compId 			
+			]]>
+			</statement>
+		</query>	
+
+
+		<!-- TGW_APP_DOC_TEMP -->
+		<query id="approval.insertTemporary">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_DOC_TEMP
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TITLE, DOC_TYPE, 
+					ENF_TYPE, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, DRAFTER_DEPT_ID, 
+					DRAFTER_DEPT_NAME, DRAFT_DATE, APPROVER_ID, APPROVER_NAME, APPROVER_POS, 
+					APPROVER_DEPT_ID, APPROVER_DEPT_NAME, REGISTER_ID, REGISTER_NAME, REGIST_DATE,
+					DOC_STATE, DEPT_CATEGORY, SERIAL_NUMBER, READ_RANGE, OPEN_LEVEL, 
+					OPEN_REASON, 	CONSERVE_TYPE, DELETE_YN, DOC_SOURCE, ORIGIN_DOC_ID, 
+					ORIGIN_DOC_NUMBER, BATCH_DRAFT_YN, BATCH_DRAFT_NUMBER, ELECTRON_DOC_YN, ATTACH_COUNT, 
+					URGENCY_YN, PUBLIC_POST, AUDIT_READ_YN, AUDIT_READ_REASON, AUDIT_YN, BINDING_ID, 
+					BINDING_NAME, AUTO_SEND_YN, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE, DOUBLE_YN, 
+					EXEC_DEPT_ID, EXEC_DEPT_NAME, EDITBODY_YN, EDITFILE_YN, SUMMARY,
+					CLASS_NUMBER, DOCNUM_NAME,SECURITY_PASS, SECURITY_YN, SECURITY_START_DATE, SECURITY_END_DATE
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.title, :vo.docType, 
+					:vo.enfType, :vo.drafterId, :vo.drafterName, :vo.drafterPos, :vo.drafterDeptId, 
+					:vo.drafterDeptName, TO_DATE(:vo.draftDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.approverId, :vo.approverName, :vo.approverPos, 
+					:vo.approverDeptId, :vo.approverDeptName, :vo.registerId, :vo.registerName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'),
+					:vo.docState, :vo.deptCategory, :vo.serialNumber, :vo.readRange, :vo.openLevel, 
+					:vo.openReason, :vo.conserveType, :vo.deleteYn, :vo.docSource, :vo.originDocId, 
+					:vo.originDocNumber, :vo.batchDraftYn, :vo.batchDraftNumber, :vo.electronDocYn, :vo.attachCount, 
+					:vo.urgencyYn, :vo.publicPost, :vo.auditReadYn, :vo.auditReadReason, :vo.auditYn, :vo.bindingId, 
+					:vo.bindingName, :vo.autoSendYn, :vo.bizSystemCode, :vo.bizTypeCode, :vo.doubleYn, 
+					:vo.execDeptId, :vo.execDeptName, :vo.editbodyYn, :vo.editfileYn, :vo.summary,
+					:vo.classNumber, :vo.docnumName, :vo.securityPass, nvl(:vo.securityYn,'N'), TO_DATE(:vo.securityStartDate,'yyyy-mm-dd hh24:mi:ss'), 
+					TO_DATE(:vo.securityEndDate, 'yyyy-mm-dd hh24:mi:ss')
+					)
+			]]>
+			</statement>
+		</query>			
+		
+		<query id="approval.updateTemporary">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC_TEMP
+				SET
+					TITLE = :vo.title, DOC_TYPE = :vo.docType, ENF_TYPE = :vo.enfType,
+					APPROVER_ID = :vo.approverId, APPROVER_NAME = :vo.approverName, APPROVER_POS = :vo.approverPos, 
+					APPROVER_DEPT_ID = :vo.approverDeptId, APPROVER_DEPT_NAME = :vo.approverDeptName, DOC_STATE = :vo.docState, 
+					DEPT_CATEGORY = :vo.deptCategory, SERIAL_NUMBER = :vo.serialNumber,
+					READ_RANGE = :vo.readRange, OPEN_LEVEL = :vo.openLevel, OPEN_REASON = :vo.openReason, 
+					CONSERVE_TYPE = :vo.conserveType, DELETE_YN = :vo.deleteYn, DOC_SOURCE = :vo.docSource, 
+					ORIGIN_DOC_ID = :vo.originDocId, ORIGIN_DOC_NUMBER = :vo.originDocNumber, BATCH_DRAFT_YN = :vo.batchDraftYn, 
+					BATCH_DRAFT_NUMBER = :vo.batchDraftNumber, ELECTRON_DOC_YN = :vo.electronDocYn, ATTACH_COUNT = :vo.attachCount, 
+					URGENCY_YN = :vo.urgencyYn, PUBLIC_POST = :vo.publicPost, 
+					AUDIT_READ_YN = :vo.auditReadYn, AUDIT_READ_REASON = :vo.auditReadReason, AUDIT_YN = :vo.auditYn, BINDING_ID = :vo.bindingId, BINDING_NAME = :vo.bindingName, 
+					AUTO_SEND_YN = :vo.autoSendYn, BIZ_SYSTEM_CODE = :vo.bizSystemCode, BIZ_TYPE_CODE = :vo.bizTypeCode, 
+					DOUBLE_YN = :vo.doubleYn, EXEC_DEPT_ID = :vo.execDeptId, EXEC_DEPT_NAME = :vo.execDeptName, 
+					EDITBODY_YN = :vo.editbodyYn, EDITFILE_YN = :vo.editfileYn, SUMMARY = :vo.summary,
+					SECURITY_PASS = :vo.securityPass ,SECURITY_YN = nvl(:vo.securityYn,'N'),
+					SECURITY_START_DATE = TO_DATE(:vo.securityStartDate,'yyyy-mm-dd hh24:mi:ss') ,SECURITY_END_DATE = TO_DATE(:vo.securityEndDate, 'yyyy-mm-dd hh24:mi:ss'),
+					CLASS_NUMBER = :vo.classNumber, DOCNUM_NAME = :vo.docnumName					
+				WHERE DOC_ID = :vo.docId AND COMP_ID = :vo.compId
+				#if ($vo.processorId)	
+					AND PROCESSOR_ID = :vo.processorId
+				#end
+			]]>
+			</statement>
+		</query>	
+		
+	
+		<query id="approval.selectTemporary">
+			<statement>
+			<![CDATA[
+               SELECT 
+					DOC_ID, COMP_ID, TITLE, DOC_TYPE, DOC_TYPE,
+					ENF_TYPE, DRAFTER_ID, DRAFTER_NAME, DRAFTER_POS, DRAFTER_DEPT_ID, 
+					DRAFTER_DEPT_NAME, TO_CHAR(DRAFT_DATE, 'yyyy-mm-dd hh24:mi:ss') DRAFT_DATE, APPROVER_ID, APPROVER_NAME, APPROVER_POS, 
+					APPROVER_DEPT_ID, APPROVER_DEPT_NAME, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE,
+					DOC_STATE, DEPT_CATEGORY, SERIAL_NUMBER, READ_RANGE, OPEN_LEVEL, 
+					OPEN_REASON, CONSERVE_TYPE, DELETE_YN, DOC_SOURCE, ORIGIN_DOC_ID, 
+					ORIGIN_DOC_NUMBER, BATCH_DRAFT_YN, BATCH_DRAFT_NUMBER, ELECTRON_DOC_YN, ATTACH_COUNT, 
+					URGENCY_YN, PUBLIC_POST, AUDIT_READ_YN, AUDIT_READ_REASON, AUDIT_YN, BINDING_ID, 
+					FNC_GET_RESOURCE_NAME(:compId, BINDING_NAME, :langType) AS BINDING_NAME,
+					BINDING_NAME AS BINDING_RESOURCE_ID, 
+					AUTO_SEND_YN, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE, DOUBLE_YN, 
+					EXEC_DEPT_ID, EXEC_DEPT_NAME, EDITBODY_YN, EDITFILE_YN, SUMMARY, CLASS_NUMBER, DOCNUM_NAME
+					,SECURITY_PASS, SECURITY_YN, TO_CHAR(SECURITY_START_DATE,'yyyy/MM/dd') SECURITY_START_DATE, 
+					TO_CHAR(SECURITY_END_DATE,'yyyy/MM/dd') SECURITY_END_DATE 
+                FROM TGW_APP_DOC_TEMP
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($drafterId)	
+					AND DRAFTER_ID = :drafterId
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppDocVO" />
+		</query>
+		
+		
+		<query id="approval.selectBatchTemporary">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID
+				FROM TGW_APP_DOC_TEMP
+				WHERE
+					COMP_ID = :compId AND BATCH_DRAFT_YN = 'Y' AND (ORIGIN_DOC_ID = :docId OR DOC_ID = :docId)
+				#if ($draftDate)	
+					AND DRAFT_DATE = TO_DATE(:draftDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end	
+				ORDER BY BATCH_DRAFT_NUMBER ASC
+			]]>
+			</statement>
+		</query>	
+		
+		
+		<query id="approval.deleteTemporary">
+			<statement>
+			<![CDATA[
+				UPDATE TGW_APP_DOC_TEMP
+				SET
+					DELETE_YN = 'Y'
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND DELETE_YN = 'N' 
+				#if ($processorId)	
+				 	AND PROCESSOR_ID = :processorId 
+				#end
+					AND BIZ_SYSTEM_CODE IS NULL
+			]]>
+			</statement>
+		</query>	
+
+
+		<query id="approval.deleteTempAppDoc">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_DOC_TEMP
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.completelyDeleteAppDoc">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_DOC
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+
+		<!-- TGW_APP_DOC_OPT -->
+		<query id="approval.insertAppOption">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_DOC_OPT
+					(
+					DOC_ID, COMP_ID, APP_FORM_ID, BIZ_CODE, REQ_CODE, 
+					WORK_TYPE, REQUEST_TYPE, REQUEST_TIME, TAKEOUT_TARGET, TAKEOUT_CHARGER, 
+					TAKEOUT_CONTACT, TAKEOUT_CONTENT, REQUEST_REASON, ALARM_YN
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.appFormId, :vo.bizCode, :vo.reqCode, 
+					:vo.workType, :vo.requestType, :vo.requestTime, :vo.takeoutTarget, :vo.takeoutCharger, 
+					:vo.takeoutContact, :vo.takeoutContent, :vo.requestReason, :vo.alarmYn
+					)
+			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.updateOptionInfoByAdmin">
+			<statement>
+			<![CDATA[
+				MERGE INTO TGW_APP_DOC_OPT A
+					USING
+					(
+						SELECT
+							COUNT(DOC_ID) AS NUM FROM TGW_APP_DOC_OPT
+						WHERE 
+							DOC_ID = :docId AND COMP_ID = :compId
+					) B
+					ON
+					( 
+						B.NUM > 0
+					)
+					WHEN MATCHED THEN
+						UPDATE SET 
+							WORK_TYPE = :workType
+						#if ($appFormId)
+							, APP_FORM_ID = :appFormId
+						#end
+						#if ($bizCode)
+							, BIZ_CODE = :bizCode, REQ_CODE = :reqCode
+						#end
+						#if ($requestType)
+							, REQUEST_TYPE = :requestType, REQUEST_TIME = :requestTime, TAKEOUT_TARGET = :takeoutTarget
+							, TAKEOUT_CHARGER = :takeoutCharger, TAKEOUT_CONTACT = :takeoutContact, TAKEOUT_CONTENT = :takeoutContent
+							, REQUEST_REASON = :requestReason
+						#end
+						WHERE
+							DOC_ID = :docId AND COMP_ID = :compId
+					WHEN NOT MATCHED THEN
+						INSERT
+							(
+							A.DOC_ID, A.COMP_ID, A.WORK_TYPE
+						#if ($appFormId)
+							, A.APP_FORM_ID
+						#end
+						#if ($bizCode)
+							, A.BIZ_CODE, A.REQ_CODE
+						#end
+						#if ($requestType)
+							, A.REQUEST_TYPE, A.REQUEST_TIME, A.TAKEOUT_TARGET, A.TAKEOUT_CHARGER, A.TAKEOUT_CONTACT
+							, A.TAKEOUT_CONTENT, A.REQUEST_REASON
+						#end
+							)
+						VALUES
+							(
+							:docId, :compId, :workType
+						#if ($appFormId)
+							, :appFormId
+						#end
+						#if ($bizCode)
+							, :bizCode, :reqCode
+						#end
+						#if ($requestType)
+							, :requestType, :requestTime, :takeoutTarget, :takeoutCharger, :takeoutContact
+							, :takeoutContent, :requestReason
+						#end
+							)
+			]]>
+			</statement>
+		</query>		
+
+		
+		<query id="approval.deleteAppOption">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_DOC_OPT
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.selectAppOption">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, APP_FORM_ID, BIZ_CODE, REQ_CODE, 
+					WORK_TYPE, REQUEST_TYPE, REQUEST_TIME, TAKEOUT_TARGET, TAKEOUT_CHARGER, 
+					TAKEOUT_CONTACT, TAKEOUT_CONTENT, REQUEST_REASON, ALARM_YN
+				FROM TGW_APP_DOC_OPT
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppOptionVO" />
+		</query>		
+
+
+		<!-- TGW_APP_DOC_OPT_TEMP -->
+		<query id="approval.insertTempOption">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_DOC_OPT_TEMP
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, APP_FORM_ID, BIZ_CODE, 
+					REQ_CODE, WORK_TYPE, REQUEST_TYPE, REQUEST_TIME, TAKEOUT_TARGET, 
+					TAKEOUT_CHARGER, TAKEOUT_CONTACT, 	TAKEOUT_CONTENT, REQUEST_REASON
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.appFormId, :vo.bizCode, 
+					:vo.reqCode, :vo.workType, :vo.requestType, :vo.requestTime, :vo.takeoutTarget, 
+					:vo.takeoutCharger, :vo.takeoutContact, 	:vo.takeoutContent,	:vo.requestReason
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.selectTempOption">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, APP_FORM_ID, BIZ_CODE, REQ_CODE, 
+					WORK_TYPE, REQUEST_TYPE, REQUEST_TIME, TAKEOUT_TARGET, TAKEOUT_CHARGER, 
+					TAKEOUT_CONTACT, TAKEOUT_CONTENT, REQUEST_REASON
+				FROM TGW_APP_DOC_OPT_TEMP
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppOptionVO" />
+		</query>		
+
+
+		<query id="approval.deleteTempOption">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_DOC_OPT_TEMP
+				WHERE DOC_ID = :vo.docId AND COMP_ID = :vo.compId
+				AND PROCESSOR_ID = :vo.processorId
+			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.deleteTempAppOption">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_DOC_OPT_TEMP
+				WHERE DOC_ID = :docId AND COMP_ID = :compId
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+
+		<!-- TGW_APP_LINE -->
+		<query id="approval.insertAppLine">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_LINE
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, LINE_NUM,
+					LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, APPROVER_POS,
+					APPROVER_DEPT_ID, APPROVER_DEPT_NAME, APPROVER_ROLE, REPRESENTATIVE_ID, REPRESENTATIVE_NAME, 
+					REPRESENTATIVE_POS, REPRESENTATIVE_DEPT_ID, REPRESENTATIVE_DEPT_NAME, ASK_TYPE, PROC_TYPE, 
+					PROCESS_DATE, READ_DATE,	ABSENT_REASON, REGISTER_ID, REGISTER_NAME, 
+					REGIST_DATE, EDIT_BODY_YN, EDIT_ATTACH_YN, EDIT_LINE_YN, MOBILE_YN, 
+					PROC_OPINION, SIGN_FILE_NAME, LINE_HIS_ID, FILE_HIS_ID, BODY_HIS_ID
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.lineNum,
+					:vo.lineOrder, :vo.lineSubOrder, :vo.approverId, :vo.approverName, :vo.approverPos,
+					:vo.approverDeptId, :vo.approverDeptName, :vo.approverRole, :vo.representativeId, :vo.representativeName, 
+					:vo.representativePos, :vo.representativeDeptId, :vo.representativeDeptName, :vo.askType, :vo.procType, 
+					TO_DATE(:vo.processDate, 'yyyy-mm-dd hh24:mi:ss'), TO_DATE(:vo.readDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.absentReason, :vo.registerId, :vo.registerName, 
+					TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.editBodyYn, :vo.editAttachYn, :vo.editLineYn, :vo.mobileYn, 
+					:vo.procOpinion, :vo.signFileName, :vo.lineHisId, :vo.fileHisId, :vo.bodyHisId
+					)
+			]]>
+			</statement>
+		</query>	
+	
+		<query id="approval.updateAppLine">
+			<statement>
+			<![CDATA[ 
+				UPDATE TGW_APP_LINE
+				SET 
+					PROCESSOR_ID = :vo.processorId, APPROVER_ID = :vo.approverId, APPROVER_NAME = :vo.approverName, 
+					APPROVER_POS = :vo.approverPos, APPROVER_DEPT_ID = :vo.approverDeptId, APPROVER_DEPT_NAME = :vo.approverDeptName, 
+					APPROVER_ROLE = :vo.approverRole, REPRESENTATIVE_ID = :vo.representativeId, REPRESENTATIVE_NAME = :vo.representativeName, 
+					REPRESENTATIVE_POS = :vo.representativePos, REPRESENTATIVE_DEPT_ID = :vo.representativeDeptId, REPRESENTATIVE_DEPT_NAME = :vo.representativeDeptName, 
+					ASK_TYPE = :vo.askType, PROC_TYPE = :vo.procType, PROCESS_DATE = TO_DATE(:vo.processDate, 'yyyy-mm-dd hh24:mi:ss'), 
+					READ_DATE = TO_DATE(:vo.readDate, 'yyyy-mm-dd hh24:mi:ss'), ABSENT_REASON = :vo.absentReason, REGISTER_ID = :vo.registerId, 
+					REGISTER_NAME = :vo.registerName, REGIST_DATE = TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), EDIT_BODY_YN = :vo.editBodyYn, 
+					EDIT_ATTACH_YN = :vo.editAttachYn, EDIT_LINE_YN = :vo.editLineYn, MOBILE_YN = :vo.mobileYn, 
+					PROC_OPINION = :vo.procOpinion, SIGN_FILE_NAME = :vo.signFileName, LINE_HIS_ID = :vo.lineHisId, 
+					FILE_HIS_ID = :vo.fileHisId, BODY_HIS_ID = :vo.bodyHisId
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = 'N'
+					AND LINE_NUM = :vo.lineNum AND LINE_ORDER = :vo.lineOrder AND LINE_SUB_ORDER = :vo.lineSubOrder
+					AND REGIST_DATE = TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss')
+			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.updateAppLine.process">
+			<statement>
+			<![CDATA[ 
+				UPDATE TGW_APP_LINE
+				SET
+					PROC_TYPE = :vo.procType, PROCESS_DATE = TO_DATE(:vo.processDate, 'yyyy-mm-dd hh24:mi:ss'), 
+				#if ($vo.readDate.equals(""))
+					READ_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss'), 
+				#elseif (!$vo.readDate.equals("9999-12-31 23:59:59"))	
+					READ_DATE = TO_DATE(:vo.readDate, 'yyyy-mm-dd hh24:mi:ss'),
+				#end
+					PROC_OPINION = :vo.procOpinion
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = 'N'
+					AND LINE_NUM = :vo.lineNum AND LINE_ORDER = :vo.lineOrder AND LINE_SUB_ORDER = :vo.lineSubOrder
+					
+			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.updateAppLine.absent">
+			<statement>
+			<![CDATA[ 
+				UPDATE TGW_APP_LINE
+				SET
+					 REPRESENTATIVE_ID = :vo.representativeId, REPRESENTATIVE_NAME = :vo.representativeName,
+					 REPRESENTATIVE_POS = :vo.representativePos, REPRESENTATIVE_DEPT_ID = :vo.representativeDeptId, 
+					 REPRESENTATIVE_DEPT_NAME = :vo.representativeDeptName, ABSENT_REASON = :vo.absentReason
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = 'N'
+					AND LINE_NUM = :vo.lineNum AND LINE_ORDER = :vo.lineOrder AND LINE_SUB_ORDER = :vo.lineSubOrder
+					
+			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.updateAppLine.date">
+			<statement>
+			<![CDATA[ 
+				UPDATE TGW_APP_LINE
+				SET 
+				#if ($processDate)
+					PROC_TYPE = :procType, PROCESS_DATE = TO_DATE(:processDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				#if ($readDate)
+					READ_DATE = TO_DATE(:readDate, 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				WHERE 
+					DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'N'
+					AND (APPROVER_ID = :userId OR REPRESENTATIVE_ID = :userId)
+				#if ($readDate)
+					AND READ_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				#if ($processDate)
+					AND PROCESS_DATE = TO_DATE('9999-12-31 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+				#end
+				#if ($askType)
+					AND ASK_TYPE = :askType
+				#end
+			]]>
+			</statement>
+		</query>	
+				
+		<query id="approval.deleteAppLine">
+			<statement>
+			<![CDATA[ 
+				DELETE FROM TGW_APP_LINE
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND PROCESSOR_ID = :vo.processorId
+					AND TEMP_YN = 'N' AND LINE_NUM = :vo.lineNum AND LINE_ORDER = :vo.lineOrder
+					AND LINE_SUB_ORDER = :vo.lineSubOrder
+ 			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.deleteAppLineByMap">
+			<statement>
+			<![CDATA[ 
+				DELETE FROM TGW_APP_LINE
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'N'
+				#if ($processorId)
+					AND PROCESSOR_ID = :processorId
+ 				#end
+ 			]]>
+			</statement>
+		</query>	
+
+		<query id="approval.listAppLine">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, LINE_NUM,
+					LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, APPROVER_POS,
+					APPROVER_DEPT_ID, APPROVER_DEPT_NAME, APPROVER_ROLE, REPRESENTATIVE_ID, REPRESENTATIVE_NAME, 
+					REPRESENTATIVE_POS, REPRESENTATIVE_DEPT_ID, REPRESENTATIVE_DEPT_NAME, TRIM(ASK_TYPE) ASK_TYPE, TRIM(PROC_TYPE) PROC_TYPE, 
+					TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE, TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss') READ_DATE, ABSENT_REASON, REGISTER_ID, REGISTER_NAME, 
+					TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, EDIT_BODY_YN,	EDIT_ATTACH_YN, EDIT_LINE_YN, MOBILE_YN, 
+					PROC_OPINION, SIGN_FILE_NAME, LINE_HIS_ID, FILE_HIS_ID, BODY_HIS_ID
+				FROM TGW_APP_LINE
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+					ORDER BY LINE_NUM ASC, LINE_ORDER ASC, LINE_SUB_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppLineVO" />
+		</query>	
+
+
+		<query id="approval.selectAppLine">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, LINE_NUM,
+					LINE_ORDER, LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, APPROVER_POS,
+					APPROVER_DEPT_ID, APPROVER_DEPT_NAME, APPROVER_ROLE, REPRESENTATIVE_ID, REPRESENTATIVE_NAME, 
+					REPRESENTATIVE_POS, REPRESENTATIVE_DEPT_ID, REPRESENTATIVE_DEPT_NAME, TRIM(ASK_TYPE) ASK_TYPE, TRIM(PROC_TYPE) PROC_TYPE, 
+					TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE, TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss') READ_DATE, ABSENT_REASON, REGISTER_ID, REGISTER_NAME, 
+					TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, EDIT_BODY_YN,	EDIT_ATTACH_YN, EDIT_LINE_YN, MOBILE_YN, 
+					PROC_OPINION, SIGN_FILE_NAME, LINE_HIS_ID, FILE_HIS_ID, BODY_HIS_ID
+				FROM TGW_APP_LINE
+				WHERE
+					DOC_ID = vo:docId 
+					AND COMP_ID = vo:compId
+					AND APPROVER_ID = vo:approverId
+					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppLineVO" />
+		</query>	
+
+
+
+		<query id="approval.deleteTempAppLine">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_LINE
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end	
+			]]>
+			</statement>
+		</query>	
+		
+
+		<query id="approval.listAppLineHis">
+			<statement>
+			<![CDATA[
+				SELECT
+					LINE_HIS_ID, DOC_ID, COMP_ID, LINE_NUM, LINE_ORDER, 
+					LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME, APPROVER_POS, APPROVER_DEPT_ID, 
+					APPROVER_DEPT_NAME, APPROVER_ROLE, REPRESENTATIVE_ID, REPRESENTATIVE_NAME, REPRESENTATIVE_POS, 
+					REPRESENTATIVE_DEPT_ID, REPRESENTATIVE_DEPT_NAME, ASK_TYPE, PROC_TYPE, TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE, 
+					TO_CHAR(READ_DATE, 'yyyy-mm-dd hh24:mi:ss') READ_DATE, ABSENT_REASON, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, 
+					EDIT_BODY_YN, EDIT_ATTACH_YN, EDIT_LINE_YN, PROC_OPINION, SIGN_FILE_NAME					
+				FROM TGW_APP_LINE_HIS
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($registerId)	
+					AND REGISTER_ID = :registerId
+				#end
+				#if ($lineHisId)	
+					AND LINE_HIS_ID = :lineHisId
+				#end
+					ORDER BY LINE_NUM ASC, LINE_ORDER ASC, LINE_SUB_ORDER ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppLineHisVO" />
+		</query>	
+
+		<query id="approval.selectAppLineList">
+			<statement>
+			<![CDATA[
+			
+				/* 결재라인 정보 리스트 조회(결재자와 다음 결재자 조회)*/
+				SELECT 
+				    Y.DOC_ID, Y.ASK_TYPE, Y.PROC_TYPE, TO_CHAR(Y.PROCESS_DATE,'YYYY-MM-DD HH24:MI:SS') PROCESS_DATE,
+				    Y.APPROVER_ID,Y.APPROVER_NAME, Y.APPROVER_POS, Y.APPROVER_DEPT_ID,Y.APPROVER_DEPT_NAME, Y.APPROVER_ROLE,
+				    X.APPROVER_ID PROCESSOR_ID,X.APPROVER_NAME PROCESSOR_NAME, 
+				    X.APPROVER_POS PROCESSOR_POS, X.APPROVER_DEPT_ID PROCESSOR_DEPT_ID,
+				    X.APPROVER_DEPT_NAME PROCESSOR_DEPT_NAME,
+				    NVL(X.LINE_ORDER,Y.LINE_ORDER) NEXT_ORDER,
+				    Y.LINE_ORDER ,Y.LINE_SUB_ORDER
+				FROM TGW_APP_LINE  X, TGW_APP_LINE  Y
+				WHERE X.DOC_ID(+) = Y.DOC_ID
+				AND Y.DOC_ID = :vo.docId
+				AND Y.COMP_ID = :vo.compId
+				AND X.COMP_ID(+) = Y.COMP_ID
+				AND X.LINE_NUM(+) = Y.LINE_NUM
+				AND X.TEMP_YN(+) = Y.TEMP_YN
+				AND X.LINE_ORDER(+) = Y.LINE_ORDER+1
+				ORDER BY Y.LINE_ORDER ASC, Y.LINE_SUB_ORDER ASC
+			]]>
+			</statement>
+		</query>		
+			
+		<query id="approval.updateAppDocApprover">
+			<statement>
+			<![CDATA[
+				/* 기안자,결재자,처리자 수정 */
+				UPDATE TGW_APP_DOC
+				SET 
+					DRAFTER_ID = :vo.drafterId,
+					DRAFTER_NAME = :vo.drafterName,
+					DRAFTER_POS = :vo.drafterPos,
+					DRAFTER_DEPT_ID = :vo.drafterDeptId,
+					DRAFTER_DEPT_NAME = :vo.drafterDeptName,
+					DRAFT_DATE =  TO_DATE(:vo.draftDate,'YYYY-MM-DD HH24:MI:SS'),
+					APPROVER_ID= :vo.approverId,
+					APPROVER_NAME= :vo.approverName,
+					APPROVER_POS= :vo.approverPos,
+					APPROVER_DEPT_ID= :vo.approverDeptId,
+					APPROVER_DEPT_NAME= :vo.approverDeptName,
+					PROCESSOR_ID=  :vo.processorId,
+					PROCESSOR_NAME= :vo.processorName,
+					PROCESSOR_POS= :vo.processorPos,
+					PROCESSOR_DEPT_ID= :vo.processorDeptId,
+					PROCESSOR_DEPT_NAME= :vo.processorDeptName,
+					DOC_STATE = :vo.docState,
+					LAST_UPDATE_DATE = TO_DATE(:vo.lastUpdateDate,'YYYY-MM-DD HH24:MI:SS') 
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId			
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.updateAppDocTempApprover">
+			<statement>
+			<![CDATA[
+				/* 기안자,결재자 수정 */
+				UPDATE TGW_APP_DOC_TEMP
+				SET 
+					DRAFTER_ID = :vo.drafterId,
+					DRAFTER_NAME = :vo.drafterName,
+					DRAFTER_POS = :vo.drafterPos,
+					DRAFTER_DEPT_ID = :vo.drafterDeptId,
+					DRAFTER_DEPT_NAME = :vo.drafterDeptName,
+					DRAFT_DATE =  TO_DATE(:vo.draftDate,'YYYY-MM-DD :HH24:MI:SS'),
+					APPROVER_ID= :vo.approverId,
+					APPROVER_NAME= :vo.approverName,
+					APPROVER_POS= :vo.approverPos,
+					APPROVER_DEPT_ID= :vo.approverDeptId,
+					APPROVER_DEPT_NAME= :vo.approverDeptName,
+					DOC_STATE = :vo.docState
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROCESSOR_ID = :vo.processorId
+			]]>
+			</statement>
+		</query>		
+						
+		<query id="approval.insertAppLineHis">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_LINE_HIS
+					(
+					LINE_HIS_ID, DOC_ID, COMP_ID, 	LINE_NUM, LINE_ORDER, 
+					LINE_SUB_ORDER, APPROVER_ID, APPROVER_NAME,	APPROVER_POS, APPROVER_DEPT_ID,
+					APPROVER_DEPT_NAME, APPROVER_ROLE, REPRESENTATIVE_ID, REPRESENTATIVE_NAME, REPRESENTATIVE_POS, 
+					REPRESENTATIVE_DEPT_ID, REPRESENTATIVE_DEPT_NAME, ASK_TYPE, PROC_TYPE, PROCESS_DATE, 
+					READ_DATE, ABSENT_REASON, REGISTER_ID, REGISTER_NAME, REGIST_DATE, 
+					EDIT_BODY_YN, EDIT_ATTACH_YN, EDIT_LINE_YN, PROC_OPINION, SIGN_FILE_NAME					
+					)
+				VALUES
+					(
+					:vo.lineHisId, :vo.docId, :vo.compId, :vo.lineNum, :vo.lineOrder, 
+					:vo.lineSubOrder, :vo.approverId, :vo.approverName, :vo.approverPos, :vo.approverDeptId,
+					:vo.approverDeptName, :vo.approverRole, :vo.representativeId, :vo.representativeName, :vo.representativePos, 
+					:vo.representativeDeptId, :vo.representativeDeptName, :vo.askType, :vo.procType,	TO_DATE(:vo.processDate, 'yyyy-mm-dd hh24:mi:ss'), 
+					TO_DATE(:vo.readDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.absentReason, :vo.registerId, :vo.registerName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), 
+					:vo.editBodyYn, :vo.editAttachYn, :vo.editLineYn, :vo.procOpinion, :vo.signFileName
+					)
+			]]>
+			</statement>
+		</query>		
+
+
+		<!-- TGW_APP_RECV -->
+		<query id="approval.insertAppRecv">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_APP_RECV
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, RECEIVER_ORDER,
+					RECEIVER_TYPE, ENF_TYPE, RECV_COMP_ID, RECV_DEPT_ID, RECV_DEPT_NAME, 
+					REF_DEPT_ID, REF_DEPT_NAME, RECV_USER_ID, RECV_USER_NAME, POST_NUMBER, 
+					ADDRESS, TELEPHONE, FAX, RECV_SYMBOL, REGISTER_ID, 
+					REGISTER_NAME, REGIST_DATE, SENDER_ID, SENDER_NAME, SEND_DATE, 
+					RECEIVE_DATE, ACCEPTER_ID, ACCEPTER_NAME, ACCEPTER_POS, ACCEPT_DEPT_ID, 
+					ACCEPT_DEPT_NAME, ACCEPT_DATE, CHARGER_ID, CHARGER_NAME, CHARGER_POS, 
+					CHARGE_DEPT_ID, CHARGE_DEPT_NAME, CHARGE_PROC_DATE, SEND_OPINION, 
+					ENF_STATE, REF_SYMBOL, RECV_CHIEF_NAME,  REF_CHIEF_NAME
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.receiverOrder,
+					:vo.receiverType, :vo.enfType, :vo.recvCompId, :vo.recvDeptId, :vo.recvDeptName, 
+					:vo.refDeptId, :vo.refDeptName, :vo.recvUserId, :vo.recvUserName, :vo.postNumber, 
+					:vo.address, :vo.telephone, :vo.fax, :vo.recvSymbol, :vo.registerId, 
+					:vo.registerName, TO_DATE(:vo.registDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.senderId, :vo.senderName, TO_DATE(:vo.sendDate, 'yyyy-mm-dd hh24:mi:ss'), 
+					TO_DATE(:vo.receiveDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.accepterId, :vo.accepterName, :vo.accepterPos, :vo.acceptDeptId, 
+					:vo.acceptDeptName, TO_DATE(:vo.acceptDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.chargerId, :vo.chargerName, :vo.chargerPos, 
+					:vo.chargeDeptId, :vo.chargeDeptName, TO_DATE(:vo.chargeProcDate, 'yyyy-mm-dd hh24:mi:ss'), :vo.sendOpinion, 
+					:vo.enfState, :vo.refSymbol, :vo.recvChiefName, :vo.refChiefName
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.deleteAppRecv">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_RECV
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = :vo.tempYn
+					AND RECEIVER_ORDER = :vo.receiverOrder
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.deleteTempAppRecv">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_APP_RECV
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end				
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.listAppRecv">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, RECEIVER_ORDER,
+					RECEIVER_TYPE, ENF_TYPE, RECV_COMP_ID, RECV_DEPT_ID, RECV_DEPT_NAME, 
+					REF_DEPT_ID, REF_DEPT_NAME, RECV_USER_ID, RECV_USER_NAME, POST_NUMBER, 
+					ADDRESS, TELEPHONE, FAX, RECV_SYMBOL, REGISTER_ID, 
+					REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE, SENDER_ID, SENDER_NAME, TO_CHAR(SEND_DATE, 'yyyy-mm-dd hh24:mi:ss') SEND_DATE, 
+					TO_CHAR(RECEIVE_DATE, 'yyyy-mm-dd hh24:mi:ss') RECEIVE_DATE, ACCEPTER_ID, ACCEPTER_NAME, ACCEPTER_POS, ACCEPT_DEPT_ID, 
+					ACCEPT_DEPT_NAME, TO_CHAR(ACCEPT_DATE, 'yyyy-mm-dd hh24:mi:ss') ACCEPT_DATE, CHARGER_ID, CHARGER_NAME, CHARGER_POS, 
+					CHARGE_DEPT_ID, CHARGE_DEPT_NAME, TO_CHAR(CHARGE_PROC_DATE, 'yyyy-mm-dd hh24:mi:ss') CHARGE_PROC_DATE, SEND_OPINION, 
+					ENF_STATE, REF_SYMBOL, RECV_CHIEF_NAME,  REF_CHIEF_NAME
+				FROM TGW_APP_RECV
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.AppRecvVO" />
+		</query>		
+
+
+		<!-- TGW_RELATED_DOC -->
+		<query id="approval.insertRelatedDoc">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_RELATED_DOC
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, ORIGIN_DOC_ID,
+					TITLE, USING_TYPE, ELECTRON_DOC_YN, DOC_ORDER
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.originDocId,
+					:vo.title, :vo.usingType, :vo.electronDocYn, :vo.docOrder
+					)
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteRelatedDoc">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RELATED_DOC
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = :vo.tempYn
+					AND ORIGIN_DOC_ID = :vo.originDocId
+			]]>
+			</statement>
+		</query>		
+		
+		<query id="approval.deleteRelatedDocAll">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RELATED_DOC
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteTempRelatedDoc">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RELATED_DOC
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.listRelatedDoc">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, ORIGIN_DOC_ID,
+					TITLE, USING_TYPE, ELECTRON_DOC_YN, DOC_ORDER
+				FROM TGW_RELATED_DOC			
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+				ORDER BY DOC_ORDER
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.RelatedDocVO" />
+		</query>	
+		
+
+		<!-- TGW_RELATED_RULE -->
+		<query id="approval.insertRelatedRule">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_RELATED_RULE
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, RULE_ID,
+					RULE_NAME, RULE_LINK					
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.ruleId,
+					:vo.ruleName, :vo.ruleLink			
+					)
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteRelatedRule">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RELATED_RULE
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = :vo.tempYn
+					AND RULE_ID = :vo.ruleId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.deleteTempRelatedRule">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_RELATED_RULE
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.listRelatedRule">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, RULE_ID,
+					RULE_NAME, RULE_LINK					
+				FROM TGW_RELATED_RULE			
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.RelatedRuleVO" />
+		</query>	
+		
+		
+		<!-- TGW_CUSTOMER -->
+		<query id="approval.insertCustomer">
+			<statement>
+			<![CDATA[
+				INSERT INTO TGW_CUSTOMER
+					(
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, CUSTOMER_ID,
+					CUSTOMER_NAME					
+					)
+				VALUES
+					(
+					:vo.docId, :vo.compId, :vo.processorId, :vo.tempYn, :vo.customerId,
+					:vo.customerName		
+					)
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.deleteCustomer">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_CUSTOMER
+				WHERE
+					DOC_ID = :vo.docId AND COMP_ID = :vo.compId AND TEMP_YN = :vo.tempYn
+					AND CUSTOMER_ID = :vo.customerId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="approval.deleteTempCustomer">
+			<statement>
+			<![CDATA[
+				DELETE FROM TGW_CUSTOMER
+				WHERE DOC_ID = :docId AND COMP_ID = :compId AND TEMP_YN = 'Y'
+			#if ($processorId)	
+				AND PROCESSOR_ID = :processorId
+			#end
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="approval.listCustomer">
+			<statement>
+			<![CDATA[
+				SELECT
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, CUSTOMER_ID,
+					CUSTOMER_NAME					
+				FROM TGW_CUSTOMER			
+				WHERE
+					DOC_ID = :docId AND COMP_ID = :compId
+				#if ($processorId)	
+					AND PROCESSOR_ID = :processorId
+				#end
+				#if ($tempYn)	
+					AND TEMP_YN = :tempYn
+				#end
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.CustomerVO" />
+		</query>	
+		
+
+		<query id="approval.listCustomerByDocIds">
+			<statement>
+			<![CDATA[
+				SELECT
+					CUSTOMER_ID, CUSTOMER_NAME					
+				FROM TGW_CUSTOMER			
+				WHERE
+					COMP_ID = :compId AND DOC_ID IN ( {{ docIds }} ) AND TEMP_YN = 'N'
+				GROUP BY CUSTOMER_ID, CUSTOMER_NAME
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.approval.vo.CustomerVO" />
+		</query>	
+
+
+		<query id="approval.selectNextLineUserList">
+			<statement>
+			<![CDATA[
+			/* 결재자의 다음결재자들 list 조회 */
+                SELECT 
+                    DOC_ID,
+                    COMP_ID,
+                    LINE_NUM,
+					LINE_ORDER, 
+					LINE_SUB_ORDER, 
+                    APPROVER_ID,
+                    APPROVER_DEPT_ID ,
+                    APPROVER_NAME,
+                    APPROVER_POS ,
+                    APPROVER_DEPT_NAME,
+                    APPROVER_ROLE,
+                    REPRESENTATIVE_ID ,
+                    REPRESENTATIVE_DEPT_ID ,
+                    REPRESENTATIVE_NAME ,
+                    REPRESENTATIVE_POS ,
+                    REPRESENTATIVE_DEPT_NAME ,
+                    TRIM(ASK_TYPE) ASK_TYPE,
+                    TRIM(PROC_TYPE) PROC_TYPE,
+                    PROCESS_DATE,
+                    READ_DATE
+                FROM TGW_APP_LINE
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND LINE_ORDER > ( SELECT NVL(LINE_ORDER,999)
+				                   FROM TGW_APP_LINE
+				                   WHERE DOC_ID = :vo.docId
+				                   AND COMP_ID = :vo.compId
+				                   AND APPROVER_ID = :vo.approverId
+				                   AND LINE_ORDER = :vo.lineOrder
+				                  -- AND PROC_TYPE = :vo.procType
+				                  )
+				 ORDER BY LINE_ORDER, LINE_SUB_ORDER
+                   			]]>
+			</statement>
+			<result class ="com.sds.acube.app.approval.vo.AppLineVO"/>
+		</query>
+		
+		<query id= "approval.updateAppLineProcType">
+			<statement>
+			<![CDATA[
+		        /** 생산문서 결재경로 처리유형  update문 **/
+				UPDATE TGW_APP_LINE 
+				SET PROC_TYPE = :vo.procType,
+				    REPRESENTATIVE_ID =:vo.representativeId,
+                    REPRESENTATIVE_DEPT_ID = :vo.representativeDeptId,
+                    REPRESENTATIVE_NAME  = :vo.representativeName,
+                    REPRESENTATIVE_POS  = :vo.representativePos,
+                    REPRESENTATIVE_DEPT_NAME  = :vo.representativeDeptName,
+                    FILE_HIS_ID = :vo.fileHisId,
+                    BODY_HIS_ID = :vo.bodyHisId,
+                    LINE_HIS_ID = :vo.lineHisId
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND APPROVER_ID = :vo.approverId
+				AND LINE_ORDER = :vo.lineOrder
+			]]>
+			</statement>
+		</query>
+		
+		<query id="approval.selectCategoryList">
+			<statement>
+			<![CDATA[
+			/* TGW_CATEGORY 카테고리 조회 */
+                SELECT 
+			 		CATEGORY_ID , 
+					CATEGORY_NAME
+                FROM TGW_CATEGORY
+				WHERE COMP_ID = :vo.compId
+				  AND DELETE_YN = 'N'
+				ORDER BY CATEGORY_ORDER ASC
+             ]]>
+			</statement>
+			<result class ="com.sds.acube.app.approval.vo.CategoryVO"/>
+		</query>
+		
+		<query id="approval.selectCategoryInfo">
+			<statement>
+			<![CDATA[
+			/* TGW_CATEGORY 카테고리 조회 */
+                SELECT 
+			 		CATEGORY_ID , 
+					CATEGORY_NAME
+                FROM TGW_CATEGORY
+				WHERE COMP_ID = :compId
+				  AND CATEGORY_ID = :categoryId
+             ]]>
+			</statement>
+			<result class ="com.sds.acube.app.approval.vo.CategoryVO"/>
+		</query>
+		
+		<!-- 비전자문서 정보  -->		                                     
+		<query id="approval.insertNonElectorn">                      
+			<statement>                                                
+			<![CDATA[                                                  
+				INSERT INTO TGW_NON_ELECTRON                             
+					(                                                      
+						  DOC_ID                                             
+						, COMP_ID                                            
+						, ENF_TARGET                                         
+						, RECEIVERS                                          
+						, ENFORCE_DATE                                       
+						, PAGE_COUNT                                         
+						, AP_DTY                                             
+						, SPECIAL_REC                                        
+						, REC_TYPE                                           
+						, REC_SUMMARY
+						, SUMMARY                                        
+					)                                                      
+				VALUES                                                   
+					(                                                      
+						  :vo.docId                                          
+						, :vo.compId                                         
+						, :vo.enfTarget                                      
+						, :vo.receivers                                      
+						, TO_DATE(:vo.enforceDate, 'YYYY-MM-DD HH24:MI:SS')                         
+						, :vo.pageCount                                      
+						, :vo.apDty                                          
+						, :vo.specialRec                                     
+						, :vo.recType                                        
+						, :vo.recSummary 
+						, :vo.summary 
+					)                                                      
+			]]>                                                        
+			</statement>                                               
+		</query>                                                     
+		                                                             
+		<query id= "approval.updateNonElectorn">                     
+			<statement>                                                
+			<![CDATA[                                                  
+				UPDATE TGW_NON_ELECTRON                                  
+				SET                                                      
+					  DOC_ID       = :vo.docId                             
+					, COMP_ID      = :vo.compId                            
+					, ENF_TARGET   = :vo.enfTarget                         
+					, RECEIVERS    = :vo.receivers                         
+					, ENFORCE_DATE = TO_DATE(:vo.enforceDate, 'YYYY-MM-DD HH24:MI:SS')
+					, PAGE_COUNT   = :vo.pageCount                         
+					, AP_DTY       = :vo.apDty                             
+					, SPECIAL_REC  = :vo.specialRec                        
+					, REC_TYPE     = :vo.recType                           
+					, REC_SUMMARY  = :vo.recSummary 
+					, SUMMARY	   = :vo.summary                       
+				WHERE DOC_ID = :vo.docId                                 
+				AND COMP_ID = :vo.compId                                 
+			]]>                                                        
+			</statement>                                               
+		</query>       
+		                                              
+		<query id= "approval.selectNonElectorn">                     
+			<statement>                                                
+			<![CDATA[                                                  
+				SELECT                                                   
+					  DOC_ID                                               
+					, COMP_ID                                              
+					, ENF_TARGET                                           
+					, RECEIVERS                                            
+					, TO_CHAR(ENFORCE_DATE, 'yyyy-mm-dd hh24:mi:ss')                                   
+					, PAGE_COUNT                                           
+					, AP_DTY                                               
+					, SPECIAL_REC                                          
+					, REC_TYPE                                             
+					, REC_SUMMARY 
+					, SUMMARY                                         
+				FROM TGW_NON_ELECTRON                                    
+				WHERE DOC_ID = :docId                                 
+				AND COMP_ID = :compId                                 
+			]]>                                                        
+			</statement>                                               
+			<result class ="com.sds.acube.app.approval.vo.NonElectronVO"/>
+		</query> 	
+		
+		<query id="approval.absentReason">
+			<statement>
+			<![CDATA[
+		        /** 부재정보  수정**/
+				UPDATE TGW_APP_LINE 
+				SET ABSENT_REASON = :vo.absentReason,
+				READ_DATE = TO_DATE(:vo.readDate,'YYYY-MM-DD HH24:MI:SS'),
+				PROCESS_DATE = TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'),
+				PROC_TYPE = :vo.procType
+				WHERE DOC_ID = :vo.docId
+				AND COMP_ID = :vo.compId
+				AND PROCESSOR_ID = :vo.processorId
+				AND LINE_ORDER =:vo.lineOrder
+			]]>
+			</statement>
+		</query>		
+						
+	</queries>
+</queryservice>

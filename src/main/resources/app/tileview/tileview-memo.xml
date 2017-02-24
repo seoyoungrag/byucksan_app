@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+	<definition name="MemoController.list" template="/app/jsp/memo/listPage.jsp" />
+	<definition name="MemoController.menu" template="/app/jsp/memo/menuPage.jsp" />
+	<definition name="MemoController.write" template="/app/jsp/memo/writePage.jsp" />
+	<definition name="MemoController.edit" template="/app/jsp/memo/editPage.jsp" />
+	<definition name="MemoController.print" template="/app/jsp/memo/printPage.jsp" />
+	<definition name="MemoController.view" template="/app/jsp/memo/viewPage.jsp" />
+	<definition name="MemoController.popup.selectReceiver" template="/app/jsp/memo/popup_selectReceiver.jsp" />
+</tiles-definitions>
+

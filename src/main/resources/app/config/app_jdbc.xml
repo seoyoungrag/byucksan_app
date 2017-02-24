@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>APP JDBC Information</comment>
+	<entry key="app.jdbc.db.type">0</entry>
+	<entry key="app.jdbc.db.type.name">oracle</entry>
+	<entry key="app.jdbc.was.type">0</entry>
+	<entry key="app.jdbc.driver">oracle.jdbc.driver.OracleDriver</entry>
+	<!-- <entry key="app.jdbc.url">jdbc:oracle:thin:@gate:1521:ORA10</entry>
+	<entry key="app.jdbc.url">jdbc:oracle:thin:@211.209.247.228:1522:bics</entry>-->
+	
+	<entry key="app.jdbc.url">jdbc:oracle:thin:@211.168.82.39:1521:bics</entry>
+	<!-- <entry key="app.jdbc.url">jdbc:oracle:thin:@localhost:1521:bics</entry> -->
+	<entry key="app.jdbc.username">app_user</entry>
+	<entry key="app.jdbc.password">APP000</entry>
+</properties>

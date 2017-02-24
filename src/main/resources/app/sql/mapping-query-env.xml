@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="env.selectBizSystemName">
+			<statement>
+			<![CDATA[
+				SELECT  
+					COMP_ID, BIZ_SYSTEM_CODE, BIZ_SYSTEM_NAME, UNIT_ID, BIZ_TYPE_CODE, 
+					BIZ_TYPE_NAME, UNIT_NAME, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE,'YYYY-MM-DD') REGIST_DATE, 
+					USE_YN, LAST_ACK_YN, NUMBERING_YN, OVERLAP_YN, REMARK
+                FROM TGW_BIZ_SYSTEM
+				WHERE 
+					COMP_ID = :vo.compId
+					AND BIZ_SYSTEM_CODE = :vo.bizSystemCode
+					AND BIZ_TYPE_CODE	= :vo.bizTypeCode						
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.BizSystemVO"/>
+		</query>
+		
+		<query id="env.system.listBizSystem">
+			<statement>
+			<![CDATA[
+				SELECT 
+					COMP_ID, BIZ_SYSTEM_CODE, BIZ_SYSTEM_NAME, UNIT_ID, BIZ_TYPE_CODE, 
+					BIZ_TYPE_NAME, UNIT_NAME, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE,'YYYY-MM-DD') REGIST_DATE, 
+					USE_YN, LAST_ACK_YN, NUMBERING_YN, OVERLAP_YN, REMARK
+                FROM TGW_BIZ_SYSTEM
+				WHERE 1 = 1
+				#if ($vo.compId && !$vo.compId.equals(""))
+				  AND COMP_ID = :vo.compId
+				#end
+				ORDER BY BIZ_SYSTEM_CODE,BIZ_TYPE_CODE
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.BizSystemVO"/>
+		</query>
+
+		<query id="env.system.insertBizSystem">
+			<statement>
+			<![CDATA[
+					INSERT INTO TGW_BIZ_SYSTEM(
+						COMP_ID, BIZ_SYSTEM_CODE, BIZ_SYSTEM_NAME, UNIT_ID, BIZ_TYPE_CODE, 
+						BIZ_TYPE_NAME, UNIT_NAME, REGISTER_ID, REGISTER_NAME, REGIST_DATE,
+						USE_YN, LAST_ACK_YN, NUMBERING_YN, OVERLAP_YN, REMARK
+					)
+					VALUES(
+						:compId, :bizSystemCode, :bizSystemName, :unitId, :bizTypeCode, 
+						:bizTypeName, :unitName, :registerId, :registerName, 	TO_DATE(:registDate,'YYYY-MM-DD HH24:MI:SS'),
+						'Y', :lastAckYn, :numberingYn, :overlapYn, :remark
+					)
+			]]>
+			</statement>
+		</query>		
+
+
+		<query id="env.system.updateBizSystem">
+			<statement>
+			<![CDATA[
+				UPDATE  TGW_BIZ_SYSTEM
+				SET 
+					UNIT_ID = :unitId,
+					BIZ_SYSTEM_NAME = :bizSystemName,
+					BIZ_TYPE_NAME =:bizTypeName,
+					UNIT_NAME = :unitName,
+					USE_YN = :useYn,
+					LAST_ACK_YN = :lastAckYn,
+					NUMBERING_YN = :numberingYn,
+					OVERLAP_YN = :overlapYn,
+					REMARK =:remark
+				WHERE COMP_ID =:compId
+					AND BIZ_SYSTEM_CODE = :bizSystemCode
+					AND BIZ_TYPE_CODE = :bizTypeCode
+			]]>
+			</statement>
+		</query>
+				
+				
+		<query id="env.system.deleteBizSystem">
+			<statement>
+			<![CDATA[
+					DELETE FROM   TGW_BIZ_SYSTEM
+					WHERE COMP_ID =:compId
+					AND BIZ_SYSTEM_CODE = :bizSystemCode
+					AND BIZ_TYPE_CODE = :bizTypeCode
+			]]>
+			</statement>
+		</query>	
+		
+			
+		<query id="env.form.ListEnvForm">
+			<statement>
+			<![CDATA[
+				 /* 서식 목록조회 */
+					SELECT 
+					COMP_ID,
+					CATEGORY_ID,
+					FORM_ID,
+					FORM_NAME,
+					REGISTER_ID,
+					REGISTER_NAME,
+					REGISTER_DEPT_ID,
+					REGISTER_DEPT_NAME,
+					TO_CHAR(REGIST_DATE,'YYYY/MM/DD') REGIST_DATE,
+					FORM_FILE_ID,
+					BIZ_SYSTEM_CODE,
+					BIZ_TYPE_CODE,
+					NUMBERING_YN,
+					DEFAULT_YN,
+					DOUBLE_YN,
+					FORM_ORDER,
+					GROUP_TYPE,
+					CHARGER_ID,
+					CHARGER_NAME,
+					CHARGER_POS,
+					CHARGER_DEPT_ID,
+					CHARGER_DEPT_NAME,
+					REMARK,
+					EDITBODY_YN,
+					EDITFILE_YN,
+					FORM_FILE_NAME,
+					PUBDOCFORM_YN,
+					AUDITFORM_YN,
+					FORM_TYPE
+                    FROM TGW_COMMON_FORM
+					WHERE COMP_ID =:compId
+					AND CATEGORY_ID =:categoryId
+					#if ($roleType =="C")	
+						AND REGISTER_DEPT_ID = :registerDeptId 
+						AND GROUP_TYPE = 'GUT003' 
+					#end
+					#if ($roleType =="D")	
+						AND GROUP_TYPE = 'GUT002' 
+					#end
+					#if ($roleType =="T")	
+						AND (REGISTER_DEPT_ID = :registerDeptId ) 
+					#end
+					#if ($roleType =="W")	
+						AND ( (REGISTER_DEPT_ID = :registerDeptId AND GROUP_TYPE = 'GUT003') OR (REGISTER_DEPT_ID = :institutionId AND GROUP_TYPE = 'GUT002') ) 
+					#end
+					#if ($roleType =="U")	
+						AND (REGISTER_DEPT_ID = :registerDeptId OR (REGISTER_DEPT_ID = :institutionId AND GROUP_TYPE = 'GUT002')  OR  GROUP_TYPE = 'GUT001') 
+						AND ( 
+						      (:dbYn = 'N' AND DOUBLE_YN ='N') 
+						         OR
+						      (:dbYn = 'Y' AND 1=1)
+						     )
+						AND  ( 
+						      (:numberingYn = '1' AND NUMBERING_YN ='Y') 
+						         OR
+						      (:numberingYn = '2' AND 1=1)
+						     )
+					#end
+					AND FORM_TYPE in ( $formType )
+					ORDER BY FORM_TYPE ASC, GROUP_TYPE DESC, FORM_ORDER ASC
+					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO"/>
+		</query>
+		<query id="env.form.SelectEnvForm">
+			<statement>
+			<![CDATA[
+				 /* 서식조회 */
+					SELECT 
+					A.COMP_ID,
+                    A.CATEGORY_ID,
+                    B.CATEGORY_NAME,
+                    A.FORM_ID,
+                    A.FORM_NAME,
+                    A.REGISTER_ID,
+                    A.REGISTER_NAME,
+                    A.REGISTER_DEPT_ID,
+                    A.REGISTER_DEPT_NAME,
+                    A.REGIST_DATE,
+                    A.FORM_FILE_ID,
+                    C.BIZ_SYSTEM_NAME,
+                    A.BIZ_SYSTEM_CODE,
+                    A.BIZ_TYPE_CODE,
+                    C.BIZ_TYPE_NAME,
+                    A.NUMBERING_YN,
+                    A.DEFAULT_YN,
+                    A.DOUBLE_YN,
+                    A.FORM_ORDER,
+                    A.GROUP_TYPE,
+                    A.CHARGER_ID,
+                    A.CHARGER_NAME,
+                    A.CHARGER_POS,
+                    A.CHARGER_DEPT_ID,
+                    A.CHARGER_DEPT_NAME,
+                    A.REMARK,
+                    A.EDITBODY_YN,
+                    A.EDITFILE_YN,
+                    A.FORM_FILE_NAME,
+                    A.PUBDOCFORM_YN,
+                    A.AUDITFORM_YN,
+                    A.FORM_TYPE
+                    FROM TGW_COMMON_FORM A, TGW_CATEGORY B,TGW_BIZ_SYSTEM C
+					WHERE A.COMP_ID = :compId
+					AND A.COMP_ID = B.COMP_ID
+					AND A.COMP_ID = C.COMP_ID(+)
+                    AND A.BIZ_SYSTEM_CODE = C.BIZ_SYSTEM_CODE(+)
+                    AND A.BIZ_TYPE_CODE  = C.BIZ_TYPE_CODE(+)
+                    AND A.CATEGORY_ID = B.CATEGORY_ID
+					AND A.CATEGORY_ID = :categoryId
+					AND A.FORM_ID = :formId
+					ORDER BY FORM_ORDER
+					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO" />
+		</query>
+
+		<query id="env.form.SelectEnvFormById">
+			<statement>
+			<![CDATA[
+				 /* 서식조회 */
+					SELECT 
+					COMP_ID,
+                    CATEGORY_ID,
+                    FORM_ID,
+                    FORM_NAME,
+                    REGISTER_ID,
+                    REGISTER_NAME,
+                    REGISTER_DEPT_ID,
+                    REGISTER_DEPT_NAME,
+                    REGIST_DATE,
+                    FORM_FILE_ID,
+                    BIZ_SYSTEM_CODE,
+                    BIZ_TYPE_CODE,
+                    NUMBERING_YN,
+                    DEFAULT_YN,
+                    DOUBLE_YN,
+                    FORM_ORDER,
+                    GROUP_TYPE,
+                    CHARGER_ID,
+                    CHARGER_NAME,
+                    CHARGER_POS,
+                    CHARGER_DEPT_ID,
+                    CHARGER_DEPT_NAME,
+                    REMARK,
+                    EDITBODY_YN,
+                    EDITFILE_YN,
+                    FORM_FILE_NAME,
+                    FORM_TYPE
+                    FROM TGW_COMMON_FORM 
+					WHERE COMP_ID =:compId
+					AND FORM_ID =:formId	
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO"/>
+		</query>
+		
+		<query id="env.form.SelectEnvPubdocForm">
+			<statement>
+			<![CDATA[
+				 /* 서식조회 */
+					SELECT 
+					COMP_ID,
+                    CATEGORY_ID,
+                    FORM_ID,
+                    FORM_NAME,
+                    REGISTER_ID,
+                    REGISTER_NAME,
+                    REGISTER_DEPT_ID,
+                    REGISTER_DEPT_NAME,
+                    REGIST_DATE,
+                    FORM_FILE_ID,
+                    BIZ_SYSTEM_CODE,
+                    BIZ_TYPE_CODE,
+                    NUMBERING_YN,
+                    DEFAULT_YN,
+                    DOUBLE_YN,
+                    FORM_ORDER,
+                    GROUP_TYPE,
+                    CHARGER_ID,
+                    CHARGER_NAME,
+                    CHARGER_POS,
+                    CHARGER_DEPT_ID,
+                    CHARGER_DEPT_NAME,
+                    REMARK,
+                    EDITBODY_YN,
+                    EDITFILE_YN,
+                    FORM_FILE_NAME
+                    FROM TGW_COMMON_FORM 
+					WHERE COMP_ID =:compId
+					AND PUBDOCFORM_YN = 'Y'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO"/>
+		</query>
+		
+		<query id="env.form.SelectEnvAuditForm">
+			<statement>
+			<![CDATA[
+				 /* 서식조회 */
+					SELECT 
+					COMP_ID,
+                    CATEGORY_ID,
+                    FORM_ID,
+                    FORM_NAME,
+                    REGISTER_ID,
+                    REGISTER_NAME,
+                    REGISTER_DEPT_ID,
+                    REGISTER_DEPT_NAME,
+                    REGIST_DATE,
+                    FORM_FILE_ID,
+                    BIZ_SYSTEM_CODE,
+                    BIZ_TYPE_CODE,
+                    NUMBERING_YN,
+                    DEFAULT_YN,
+                    DOUBLE_YN,
+                    FORM_ORDER,
+                    GROUP_TYPE,
+                    CHARGER_ID,
+                    CHARGER_NAME,
+                    CHARGER_POS,
+                    CHARGER_DEPT_ID,
+                    CHARGER_DEPT_NAME,
+                    REMARK,
+                    EDITBODY_YN,
+                    EDITFILE_YN,
+                    FORM_FILE_NAME
+                    FROM TGW_COMMON_FORM 
+					WHERE COMP_ID =:compId
+					AND AUDITFORM_YN = 'Y'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO"/>
+		</query>
+		
+		<query id="env.form.SelectEnvFormBySystem">
+			<statement>
+			<![CDATA[
+				 /* 시스템코드, 파일 확장자에 해당하는 서식조회 */
+					SELECT 
+					COMP_ID,
+                    CATEGORY_ID,
+                    FORM_ID,
+                    FORM_NAME,
+                    FORM_FILE_ID,
+                    BIZ_SYSTEM_CODE,
+                    BIZ_TYPE_CODE,
+                    NUMBERING_YN,
+                    DEFAULT_YN,
+                    DOUBLE_YN,
+                    FORM_ORDER,
+                    GROUP_TYPE,
+                    CHARGER_ID,
+                    CHARGER_NAME,
+                    CHARGER_POS,
+                    CHARGER_DEPT_ID,
+                    CHARGER_DEPT_NAME,
+                    REMARK,
+                    EDITBODY_YN,
+                    EDITFILE_YN,
+                    FORM_FILE_NAME,
+                    FORM_TYPE
+                    FROM TGW_COMMON_FORM 
+					WHERE COMP_ID =:vo.compId
+					AND BIZ_SYSTEM_CODE =:vo.bizSystemCode	
+					AND BIZ_TYPE_CODE = :vo.bizTypeCode
+					AND FORM_TYPE = :vo.formType
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO"/>
+		</query>
+
+
+						
+		<query id="env.form.insertEnvForm">
+			<statement>
+			<![CDATA[
+				 /* 서식등록  */
+					INSERT INTO  TGW_COMMON_FORM(
+					COMP_ID,
+					CATEGORY_ID,
+					FORM_ID,
+					FORM_NAME,
+					REGISTER_ID,
+					REGISTER_NAME,
+					REGISTER_DEPT_ID,
+					REGISTER_DEPT_NAME,
+					REGIST_DATE,
+					FORM_FILE_ID,
+					BIZ_SYSTEM_CODE,
+					BIZ_TYPE_CODE,
+					NUMBERING_YN,
+					DEFAULT_YN,
+					DOUBLE_YN,
+					FORM_ORDER,
+					GROUP_TYPE,
+					CHARGER_ID,
+					CHARGER_NAME,
+					CHARGER_POS,
+					CHARGER_DEPT_ID,
+					CHARGER_DEPT_NAME,
+					REMARK,
+					EDITBODY_YN,
+					EDITFILE_YN,
+					FORM_FILE_NAME,
+					PUBDOCFORM_YN,
+					AUDITFORM_YN,
+					FORM_TYPE)
+					VALUES(
+					:compId,:categoryId,:formId,
+					:formName, :registerId, :registerName,
+					#if ($groupType.equals("GUT003")) 
+						:registerDeptId
+					#else	
+						:institutionId
+					#end
+					, :registerDeptName,
+					TO_DATE(:registDate,'YYYY-MM-DD HH24:MI:SS'), :formFileId,
+					:bizSystemCode, :bizTypeCode,
+					:numberingYn, :defaultYn, :doubleYn,
+					:formOrder, :groupType, :chargerId,
+					:chargerName, :chargerPos, :chargerDeptId,
+					:chargerDeptName, :remark, :editbodyYn,
+					:editfileYn, :formFileName, :pubdocFormYn, :auditFormYn,:formType
+					)
+			]]>
+			</statement>
+		</query>	
+		<query id="env.form.updateEnvForm">
+			<statement>
+			<![CDATA[
+				 /* 서식수정  */
+					UPDATE   TGW_COMMON_FORM
+					SET 
+					FORM_NAME =:formName,
+					FORM_FILE_ID = :formFileId,
+					BIZ_SYSTEM_CODE =:bizSystemCode,
+					BIZ_TYPE_CODE =:bizTypeCode,
+					NUMBERING_YN =:numberingYn,
+					DEFAULT_YN =:defaultYn,
+					DOUBLE_YN =:doubleYn,
+					FORM_ORDER =:formOrder,
+					GROUP_TYPE =:groupType,
+					#if ($groupType.equals("GUT003")) 
+						REGISTER_DEPT_ID = :chargerDeptId,
+					#else	
+						REGISTER_DEPT_ID = :institutionId,
+					#end
+					CHARGER_ID =:chargerId,
+					CHARGER_NAME =:chargerName,
+					CHARGER_POS =:chargerPos,
+					CHARGER_DEPT_ID =:chargerDeptId,
+					CHARGER_DEPT_NAME =:chargerDeptName,
+					REMARK =:remark,
+					EDITBODY_YN =:editbodyYn,
+					EDITFILE_YN =:editfileYn,
+					FORM_FILE_NAME =:formFileName,
+					PUBDOCFORM_YN =:pubdocformYn,
+					AUDITFORM_YN =:auditFormYn
+					WHERE COMP_ID = :compId
+					AND CATEGORY_ID =:categoryId
+					AND FORM_ID =:formId
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.form.updateFormPubDocFormYn">
+			<statement>
+			<![CDATA[
+				 /* 복수의 공문서양식이 존재하지 않도록 이전에 공문서변환양식여부는 모두 N으로 처리한다. */
+					UPDATE   TGW_COMMON_FORM
+					SET PUBDOCFORM_YN = 'N'
+					WHERE FORM_ID !=:formId
+					AND COMP_ID = :compId
+					AND PUBDOCFORM_YN = 'Y'			
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.form.updateFormAuditFormYn">
+			<statement>
+			<![CDATA[
+				 /* 복수의 감사문서양식이 존재하지 않도록 이전에 감사양식 여부는 모두 N으로 처리한다. */
+					UPDATE   TGW_COMMON_FORM
+					SET AUDITFORM_YN = 'N'
+					WHERE FORM_ID !=:formId
+					AND COMP_ID = :compId
+					AND AUDITFORM_YN = 'Y'			
+			]]>
+			</statement>
+		</query>
+
+		<query id="env.form.updateFormOrder">
+			<statement>
+			<![CDATA[
+				 /* 서식순번이 추가되었을경우 입력된 순번 이후 순번 +1증가  */
+					UPDATE   TGW_COMMON_FORM
+					SET 
+					FORM_ORDER = FORM_ORDER + 1
+					WHERE COMP_ID = :compId
+					AND FORM_ORDER <> 999
+					AND CATEGORY_ID =:categoryId
+					AND FORM_ORDER >= :formOrder
+					AND GROUP_TYPE = :groupType 
+			]]>
+			</statement>
+		</query>
+				
+		<query id="env.form.deleteEnvForm">
+			<statement>
+			<![CDATA[
+				 /* 서식삭제  */
+					DELETE   TGW_COMMON_FORM
+					WHERE COMP_ID = :compId
+					AND CATEGORY_ID =:categoryId
+					AND FORM_ID = :formId
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="env.form.getByformName">
+			<statement>
+			<![CDATA[				 
+					SELECT 
+					COMP_ID,
+                    CATEGORY_ID,
+                    FORM_ID,
+                    FORM_NAME,
+                    REGISTER_ID,
+                    REGISTER_NAME,
+                    REGISTER_DEPT_ID,
+                    REGISTER_DEPT_NAME,
+                    REGIST_DATE,
+                    FORM_FILE_ID,
+                    BIZ_SYSTEM_CODE,
+                    BIZ_TYPE_CODE,
+                    NUMBERING_YN,
+                    DEFAULT_YN,
+                    DOUBLE_YN,
+                    FORM_ORDER,
+                    GROUP_TYPE,
+                    CHARGER_ID,
+                    CHARGER_NAME,
+                    CHARGER_POS,
+                    CHARGER_DEPT_ID,
+                    CHARGER_DEPT_NAME,
+                    REMARK,
+                    EDITBODY_YN,
+                    EDITFILE_YN,
+                    FORM_FILE_NAME
+                    FROM TGW_COMMON_FORM 
+					WHERE FORM_NAME = :formName
+					AND CATEGORY_ID = :categoryId
+					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.FormVO"/>
+		</query>
+
+		<query id="env.category.insertCategory">
+			<statement>
+			<![CDATA[
+				 /* 서식함등록  */
+                    INSERT INTO  TGW_CATEGORY(
+                    COMP_ID, CATEGORY_ID, CATEGORY_NAME,REGISTER_ID,
+                    REGISTER_NAME,REGIST_DATE,DELETE_YN,CATEGORY_ORDER,REMARK
+                    )
+                    VALUES
+                    (
+					    :vo.compId,
+						:vo.categoryId,
+						:vo.categoryName,
+						:vo.registerId,
+						:vo.registerName,
+						TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS'),
+						'N',
+						(SELECT  NVL(MAX(CATEGORY_ORDER),1)+1 
+                            FROM TGW_CATEGORY
+                           WHERE COMP_ID = :vo.compId),
+						:vo.remark
+					 )
+			]]>
+			</statement>
+		</query>			
+
+		<query id="env.category.updateCategory">
+			<statement>
+			<![CDATA[
+				 /* 양식함 수정  */
+					UPDATE  TGW_CATEGORY
+					SET 
+					CATEGORY_NAME = :vo.categoryName,
+					DELETE_YN = :vo.deleteYn,
+					CATEGORY_ORDER = :vo.categoryOrder
+					WHERE COMP_ID = :vo.compId
+					AND CATEGORY_ID = :vo.categoryId  
+			]]>
+			</statement>
+		</query>			
+			
+				
+		<query id="env.category.deleteCategory">
+			<statement>
+			<![CDATA[
+				 /* 양식함 삭제  */
+					DELETE FROM  TGW_CATEGORY
+					WHERE COMP_ID = :vo.compId
+					AND CATEGORY_ID = :vo.categoryId  
+			]]>
+			</statement>
+		</query>
+		
+		<query id="env.category.updateDeleteYn">
+			<statement>
+			<![CDATA[
+				 /* 양식함 삭제 여부  */
+					UPDATE  TGW_CATEGORY
+					SET 
+						DELETE_YN = :vo.deleteYn
+					WHERE COMP_ID = :vo.compId AND CATEGORY_ID = :vo.categoryId  
+			]]>
+			</statement>
+		</query>
+		
+		
+		
+		<query id="env.category.listCategory">
+			<statement>
+			<![CDATA[
+				 /* 서식함 목록조회  */
+					SELECT 
+						COMP_ID, CATEGORY_ID, CATEGORY_NAME, REGISTER_ID, DELETE_YN, CATEGORY_ORDER
+					 FROM TGW_CATEGORY
+                     WHERE 
+                     	COMP_ID = :compId AND ( (:role = 'N' AND DELETE_YN = 'N') OR :role = 'Y' )
+                     ORDER BY CATEGORY_ORDER
+			]]>
+			</statement>
+			<result class = "com.sds.acube.app.env.vo.CategoryVO" />
+		</query>
+		
+		<!-- 다국어 추가 -->
+		<query id="env.category.listCategoryResource">
+			<statement>
+			<![CDATA[
+					SELECT COMP_ID, 
+					       CATEGORY_ID, 
+						   FNC_GET_RESOURCE_NAME(:compId, CATEGORY_NAME, :langType) AS CATEGORY_NAME,
+				       	   CATEGORY_NAME AS RESOURCE_ID, 					       
+					       REGISTER_ID, 
+					       DELETE_YN, 
+					       CATEGORY_ORDER
+					 FROM TGW_CATEGORY
+                     WHERE 
+                     	COMP_ID = :compId AND ( (:role = 'N' AND DELETE_YN = 'N') OR :role = 'Y' )
+                     ORDER BY CATEGORY_ORDER
+			]]>
+			</statement>
+			<result class = "com.sds.acube.app.env.vo.CategoryVO" />
+		</query>		
+
+		<query id="env.user.selectAuditor">
+			<statement>
+			<![CDATA[
+				 /* 감사자 조회  */
+					SELECT COMP_ID, AUDITOR_ID FROM TGW_AUDIT_DEPT
+					WHERE COMP_ID = :compId AND AUDITOR_ID = :auditorId
+						AND TARGET_ID = 'N' AND AUDITOR_TYPE = :auditorType 
+			]]>
+			</statement>
+			<result class = "com.sds.acube.app.env.vo.AuditDeptVO" />
+		</query>																	
+
+		<query id="env.user.selectAuditorList">
+			<statement>
+			<![CDATA[
+				 /* 감사자 목록 조회  */
+					SELECT 
+						DISTINCT COMP_ID, AUDITOR_ID
+					 FROM TGW_AUDIT_DEPT
+					 WHERE COMP_ID = :compId
+					 AND TARGET_ID = 'N'
+				#if (!$auditorType.equals(""))
+					 AND AUDITOR_TYPE = :auditorType 
+				#end
+			]]>
+			</statement>
+			<result class = "com.sds.acube.app.env.vo.AuditDeptVO" />
+		</query>																	
+
+		<query id="env.user.selectAuditDeptList">
+			<statement>
+			<![CDATA[
+				 /* 감사자별 담당부서 조회  */
+					SELECT 
+						COMP_ID, AUDITOR_ID, TARGET_ID, TARGET_NAME
+					 FROM TGW_AUDIT_DEPT
+					 WHERE COMP_ID = :vo.compId
+					 AND AUDITOR_ID = :vo.auditorId
+					 AND TARGET_ID <> 'N'
+				#if (!$vo.auditorType.equals(""))
+					 AND AUDITOR_TYPE = :vo.auditorType 
+				#end
+					 ORDER BY REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class = "com.sds.acube.app.env.vo.AuditDeptVO" />
+		</query>																	
+
+		<query id="env.user.insertAuditor">
+			<statement>
+			<![CDATA[
+				 /* 감사자 등록  */
+					INSERT INTO  TGW_AUDIT_DEPT(
+					COMP_ID,
+					AUDITOR_ID,
+					AUDITOR_TYPE,
+					TARGET_ID,
+					REGISTER_ID,
+					REGISTER_NAME,
+					REGIST_DATE
+					)
+					VALUES(
+					:vo.compId,:vo.auditorId,:vo.auditorType,'N',
+					:vo.registerId, :vo.registerName,
+					TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS')
+					)
+			]]>
+			</statement>
+		</query>																	
+
+		<query id="env.user.deleteAuditor">
+			<statement>
+			<![CDATA[
+				 /* 감사자 삭제  */
+					DELETE FROM  TGW_AUDIT_DEPT
+					WHERE COMP_ID =:vo.compId
+					AND AUDITOR_ID = :vo.auditorId  
+				#if (!$vo.auditorType.equals(""))
+					AND AUDITOR_TYPE = :vo.auditorType 
+				#end
+			]]>
+			</statement>
+		</query>																	
+
+		<query id="env.user.insertAuditDept">
+			<statement>
+			<![CDATA[
+				 /* 감사담당부서 등록  */
+					INSERT INTO  TGW_AUDIT_DEPT(
+					COMP_ID,
+					AUDITOR_ID,
+					AUDITOR_TYPE,
+					TARGET_ID,
+					TARGET_NAME,
+					REGISTER_ID,
+					REGISTER_NAME,
+					REGIST_DATE
+					)
+					VALUES(
+					:vo.compId,:vo.auditorId,:vo.auditorType,:vo.targetId,
+					:vo.targetName, :vo.registerId, :vo.registerName,
+					TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS')
+					)
+			]]>
+			</statement>
+		</query>																	
+
+		<query id="env.user.deleteAuditDept">
+			<statement>
+			<![CDATA[
+				 /* 감사담당부서 삭제  */
+					DELETE FROM  TGW_AUDIT_DEPT
+					WHERE COMP_ID =:vo.compId
+					AND AUDITOR_ID = :vo.auditorId  
+					AND TARGET_ID = :vo.targetId  
+				#if (!$vo.auditorType.equals(""))
+					AND AUDITOR_TYPE = :vo.auditorType 
+				#end
+			]]>
+			</statement>
+		</query>																	
+						
+		<query id="env.selectShareDept">
+			<statement>
+			<![CDATA[
+				/* 문서공유부서 조회  */
+				SELECT COMP_ID, TARGET_DEPT_ID, TARGET_DEPT_NAME, SHARE_DEPT_ID, SHARE_DEPT_NAME, REGISTER_ID, REGISTER_NAME, REGIST_DATE 
+				FROM TGW_SHARE_DOC_DEPT 
+				WHERE COMP_ID = :vo.compId 
+				#if ($vo.targetDeptId && !$vo.targetDeptId.equals(""))
+					AND TARGET_DEPT_ID = :vo.targetDeptId
+					AND SHARE_DEPT_ID != 'N'
+				#end
+				#if($vo.targetDeptId && !$vo.targetDeptId.equals(""))
+					AND TARGET_DEPT_ID = :vo.targetDeptId
+					AND SHARE_DEPT_ID != 'N'
+				#else
+					AND SHARE_DEPT_ID = 'N'
+				#end
+				ORDER BY REGIST_DATE DESC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.env.vo.ShareDocDeptVO" />
+		</query>			
+		
+		<query id="env.insertShareDept">
+			<statement>
+			<![CDATA[
+				/* 문서공유부서 등록  */
+				INSERT INTO TGW_SHARE_DOC_DEPT(
+					COMP_ID, TARGET_DEPT_ID, TARGET_DEPT_NAME, SHARE_DEPT_ID, SHARE_DEPT_NAME, REGISTER_ID, REGISTER_NAME, REGIST_DATE
+				)
+				VALUES(
+					:vo.compId, :vo.targetDeptId, :vo.targetDeptName, :vo.shareDeptId, :vo.shareDeptName, 
+					:vo.registerId, :vo.registerName, TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS')
+				)
+			]]>
+			</statement>
+		</query>	
+		
+		<query id="env.deleteShareDept">
+			<statement>
+			<![CDATA[
+				/* 문서공유부서 삭제  */
+				DELETE FROM TGW_SHARE_DOC_DEPT
+				WHERE COMP_ID =:vo.compId
+				AND TARGET_DEPT_ID = :vo.targetDeptId
+				#if ($vo.shareDeptId && !$vo.shareDeptId.equals(""))
+					AND SHARE_DEPT_ID = :vo.shareDeptId
+				#end
+			]]>
+			</statement>
+		</query>																	
+
+	</queries>
+</queryservice>

@@ -1,0 +1,114 @@
+﻿/********************************************************/
+/*                       Buttons                     */
+/********************************************************/
+
+/* Disabled elements */
+.disabled, .disabled span,
+.disabled .input, .disabled input,
+.disabled .label, .disabled label,
+.disabled .button, .disabled button,
+.disabled a,
+:disabled {
+	opacity: 0.2;  filter: alpha(opacity=0.2);  -ms-filter: "alpha(opacity=0.6)";  -khtml-opacity: 0.2;  -moz-opacity: 0.2;
+	cursor: not-allowed !important;
+}
+
+.button {
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	vertical-align: baseline;
+	*vertical-align: middle;
+	position: relative;
+	text-align: center;
+	font-weight: bold;
+	text-transform: none;
+	padding: 0px 6px 0px;
+	font-size: 12px;
+	line-height: 22px;
+	height: 24px;
+	*line-height: 24px;
+	*height: 24px;
+	-webkit-background-clip: padding-box;
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	min-width: 6px;
+	margin:0px;
+}
+
+.button img {vertical-align:middle;}
+
+.button.tiny{
+	padding: 0 4px;
+	font-size: 11px;
+	line-height: 16px;
+	height: 16px;
+	*line-height: 16px;
+	*height: 16px;
+}
+
+.button.small{
+	padding: 0px 5px 1px;
+	font-size: 11px;
+	line-height: 20px;
+	height: 18px;
+	*line-height: 19px;
+	*height: 20px;
+}
+
+.button.large{
+	padding: 0 8px 1px;
+	font-size: 13px;
+	line-height: 26px;
+	height: 26px;
+	*line-height: 26px;
+	*height: 26px;
+}
+
+.button.big{
+	padding: 0 13px 1px;
+	font-size: 14px;
+	line-height: 34px;
+	height: 34px;
+	*line-height: 34px;
+	*height: 34px;
+}
+
+.button.round {
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+.button.round2 {
+	-webkit-border-radius: 0 3px 3px 0;
+	-moz-border-radius: 0 3px 3px 0;
+	border-radius: 0 3px 3px 0;
+}
+
+a.skyblue, .button.skyblue{
+	color: white;
+	background: #95c9e2;
+	}
+	a.skyblue:hover, button.skyblue:hover{
+		color: white !important;
+		background: #85b8d0;
+	}
+
+a.blue, .button.blue{
+	color: white;
+	background: #1894d1;
+	}
+	a.blue:hover, button.blue:hover{
+		color: white !important;
+		background: #0d7fb7;
+	}
+
+a.grey, .button.grey{
+	color: white;
+	background: #959595;
+	}
+	a.grey:hover, button.grey:hover{
+		color: white !important;
+		background: #777777;
+	}

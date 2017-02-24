@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+
+	<!-- 발송용 문서열기-->
+	<definition name="SendProcController.readAppBody" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.senderAppDoc" template="/app/jsp/approval/SenderAppDoc.jsp"/>
+	
+
+    <!-- 발송 -->
+	<definition name="SendProcController.popupOrgSealList" template="/app/jsp/approval/PopupOrgSealList.jsp"/>
+	<definition name="SendProcController.selectOrgSealFile" template="/app/jsp/approval/SelectOrgSeal.jsp"/>
+	<definition name="SendProcController.popupSendinfo" template="/app/jsp/approval/PopupSendinfo.jsp"/>
+	<definition name="SendProcController.popupReturnComment" template="/app/jsp/approval/PopupReturnComment.jsp"/>
+	<definition name="SendProcController.selectOrgSealFirst" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.popupSendinfoForApproval" template="/app/jsp/approval/popupSendinfoForApproval.jsp"/>
+	
+	<!-- 발송관련 프로세스처리 -->
+	<definition name="SendProcController.TransferCall" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.RejectStamp" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.sendEnforceChk" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.updateSealType" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.stampToDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.stampToDocChk" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.sendToEnforce" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.sendToEnforceAuto" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.enableSend" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.noSend" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.reSendDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.saveToHistory" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.sendDocAppend" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.AppSendCancel" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.lastSendComment" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.saveEnfDocInfo" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="SendProcController.rejectStampChk" template="/app/jsp/approval/ProcResult.jsp"/>
+	
+	<!--  이력조회  -->
+	<definition name="SendProcController.popupProcInfo" template="/app/jsp/approval/PopupDocProc.jsp"/>
+	
+	<!--  의견 및 암호입력  -->
+	<definition name="SendProcController.popupOpinion" template="/app/jsp/approval/PopupOpinion.jsp"/>
+	<definition name="EnforceController.popupOpinion" template="/app/jsp/approval/PopupOpinion.jsp"/>
+	 
+	<!-- 접수용 문서열기-->
+	<definition name="EnforceController.EnforceDocument" template="/app/jsp/enforce/EnforceDocument.jsp"/>
+	<definition name="EnforceController.EnforceDocumentTransfer" template="/app/jsp/enforce/EnforceDocumentTransfer.jsp"/>
+
+	<!-- 접수용 문서정보-->
+	<definition name="EnforceController.popupDocInfo" template="/app/jsp/enforce/PopupDocInfo.jsp"/>
+	
+	<!-- 접수 -->
+	<definition name="EnforceController.popupViewOpinion" template="/app/jsp/enforce/PopupViewOpinion.jsp"/>
+	
+	<!-- 접수관련 프로세스처리 -->
+	<definition name="EnforceController.moveSendDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.returnSendDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.ProcessReDistDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.ProcessDistDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.reDistRequest" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.noDistribute" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.distributeWithdraw" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.ProcessEnfApproval" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.ProcessEnfDoc" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.updateBodyFileInfo" template="/app/jsp/approval/ProcResult.jsp"/>
+	<definition name="EnforceController.reSendRequest" template="/app/jsp/approval/ProcResult.jsp"/>
+	
+
+</tiles-definitions>

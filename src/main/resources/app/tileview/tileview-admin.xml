@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 전자결재 관리자 처리 -->
+	<definition name="AdminController.updateDocInfo" template="/app/jsp/admin/UpdateDocInfo.jsp"/>
+	<definition name="AdminController.modifyDocInfo" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.modifyAppLine" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.modifyBody" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.changeBody" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.modifyAttach" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.withdrawAppDoc" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.deleteAppDoc" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.unregistAppDoc" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.registAppDoc" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.sendImpossibleDoc" template="/app/jsp/admin/ProcResult.jsp"/>
+	
+	<definition name="AdminController.sendToDoc" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.selectAppConfig" template="/app/jsp/admin/SelectAppConfig.jsp"/>
+	<definition name="AdminController.selectCompanyConfig" template="/app/jsp/admin/SelectCompanyConfig.jsp"/>
+	<definition name="AdminController.selectAppOption" template="/app/jsp/admin/SelectAppOption.jsp" />
+	<definition name="AdminController.insertOrgImage" template="/app/jsp/admin/InsertOrgImage.jsp" />
+	<definition name="AdminController.updateImage" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.selectFileInfo" template="/app/jsp/admin/SelectFileInfo.jsp"/>
+	<definition name="AdminController.listFileInfo" template="/app/jsp/admin/ListFileInfo.jsp"/>
+	<definition name="AdminController.selectEnfRecvList" template="/app/jsp/enforce/PopupEnfRecvList.jsp"/>
+
+	<definition name="AdminServlet.createReason" template="/app/jsp/admin/InsertAdminReason.jsp"/>
+
+	<!-- 결재경로 변경(관리자) -->
+	<definition name="AdminController.modifyEnfLineByAdmin" template="/app/jsp/admin/ProcResult.jsp"/>
+	<definition name="AdminController.withdrawByAdmin" template="/app/jsp/admin/ProcResult.jsp"/>
+</tiles-definitions>

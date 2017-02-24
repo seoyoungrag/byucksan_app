@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+
+	<!--//////////////////////-->
+	<!--        접수관리               -->
+	<!--//////////////////////-->
+	
+	
+	
+	<!-- 접수 -->
+	
+	<!-- 공람 -->
+	<definition name="EnforceAppController.pubreader" template="/app/jsp/appcom/AppResult.jsp"/>
+	<!-- 선람 처리 -->	
+	<definition name="EnforceAppController.preread" template="/app/jsp/appcom/AppResult.jsp"/>
+	<!-- 담당 처리 -->	
+	<definition name="EnforceAppController.approval" template="/app/jsp/appcom/AppResult.jsp"/>
+	<!-- 담당자 반려 처리 -->	
+	<definition name="EnforceAppController.resend" template="/app/jsp/appcom/AppResult.jsp"/>
+	<!-- 회수 처리 -->	
+	<definition name="EnforceAppController.withdraw" template="/app/jsp/appcom/AppResult.jsp"/>
+	
+	
+	
+	<!-- 담당자지정처리 -->	
+	<definition name="EnforceAppController.insertEnfLine" template="/app/jsp/appcom/AppResult.jsp"/>
+
+	
+	<!-- 조회 -->
+	<definition name="EnforceAppController.selectEnfLine" template="/app/jsp/enforce/enfline.jsp"/>
+
+	<!-- 접수경로 수정 -->
+	<definition name="EnforceServlet.selectEnfLine" template="/app/jsp/enforce/SelectEnfLine.jsp"/>
+	
+	<!-- 문서정보 조회 -->
+	<definition name="DocMngInfoController.enf.selectDocMngInfo" template="/app/jsp/appcom/UpdateAppDocMngInfo.jsp"/>
+
+	<!-- 문서정보 조회 -->
+	<definition name="EnforceController.selectDocInfo" template="/app/jsp/enforce/SelectDocInfo.jsp"/>
+	
+	<!-- 결재라인이력 조회 -->
+	<definition name="EnfLineHisController.getLineHisList" template="/app/jsp/enforce/ListEnfLineHis.jsp"/>
+	
+		
+	<!-- 접수용 비전자 문서 --> 
+	<definition name="EnfNonEleDocController.InsertEnfNonEleDoc" template="/app/jsp/enforce/InsertEnfNonEleDoc.jsp" />	
+	<definition name="EnfNonEleDocController.UpdateEnfNonEleDoc" template="/app/jsp/enforce/UpdateEnfNonEleDoc.jsp" />	
+	
+	
+	
+</tiles-definitions>

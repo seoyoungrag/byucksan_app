@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>나모 크로스에디터 설치 도움말</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="author" content="namo interactive inc." />
+	<meta name="author" content="namo crosseditor" />
+	<link href="../common.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div id="wrap">
+		<h1 id="logo">CrossEditor</h1>
+			<div class="contents_caution">
+				<p>본 문서는 WAS를 사용하는 SERVLET 환경을 중심으로 설명하고 있습니다.</p>
+			</div>
+			<h2><a name="basic" id="basic">기본 가이드</a></h2>
+				<div class="contents_box2">
+					<p><a href="./ig_content_install.html#install">설치 방법</a>를 참조하여 하나의 웹 서버, WAS에만 크로스에디터를 설치합니다.</p>
+					<div class="indent">
+						<p>- 웹 서버 : 크로스에디터 빌드 파일 전체를 복사합니다.</p>
+						<p>- WAS : &quot;크로스에디터 빌드 폴더/websource/&quot; 폴더를 복사합니다.</p>
+						<p class="tab1">SERVLET의 경우 &quot;크로스에디터 빌드 폴더/websource/servlet/&quot; 하위의 폴더들을 &quot;$WebApplication_Root/WEB-INF/&quot;에 복사합니다.</p>
+					</div>
+					<p>웹 서버와 WAS가 분리되어 있는 경우 WAS에서 웹 서버를 접근할 수 있도록 mount 설정을 해 줍니다.</p>
+					<div class="indent">
+						<p>- 크로스에디터는 기본적으로 웹 서버에서 돌아가지만 관리자 페이지, 몇 가지의 플러그인 기능에서 서버사이드 기술을 사용하고 있습니다. 따라서 WAS에서 웹 서버의 파일에 접근을 하기 위해 반드시 mount가 필요합니다.</p>
+					</div>
+					<p>나머지 서버에서는 크로스에디터를 설치한 서버의 파일을 호출하여 크로스에디터를 사용합니다.</p>
+					<img src="images/multi1.jpg" alt="multi1.jpg" />
+				</div>
+			<h2><a name="multi" id="multi">각각의 서버에 설치</a></h2>
+				<div class="contents_box2">
+					<p>각각의 웹 서버와 WAS에 크로스에디터 빌드 파일을 복사합니다.</p>
+					<div class="indent">
+						<p>- 웹 서버 : 크로스에디터 빌드 파일 전체를 복사합니다.</p>
+						<p>- WAS : &quot;크로스에디터 빌드 폴더/websource/&quot; 폴더를 복사합니다.</p>
+						<p class="tab1">SERVLET의 경우 &quot;크로스에디터 빌드 폴더/websource/servlet/&quot; 하위의 폴더들을 &quot;$WebApplication_Root/WEB-INF/&quot;에 복사합니다.</p>
+					</div>
+					<p>여러 대의 서버에 각각 크로스에디터를 설치하는 경우에는 관리자 페이지를 사용할 수 없습니다.</p>
+					<p>SERVLET의 경우에는 <a href="./ig_content_install.html#install_websource_servlet">관리자 페이지에서 입력해야하는 설치 정보</a>를 수동으로 입력하셔야 합니다.</p>
+					<div class="indent">
+						<ol class="contents_order">
+							<li>
+								<p>&quot;크로스에디터 설치 폴더/js/ext/namo_servletContextPath.js&quot;</p>
+								<div class="contents_code">
+									<p>var contextPath = '<b>/crosseditor/</b>';</p>
+									<p>// 올바른 Context 경로 입력</p>
+								</div>
+							</li>
+							<li>
+								<p>&quot;$WebApplication_Root/WEB-INF/classes/NamoCommand.properties&quot;</p>
+								<div class="contents_code">
+									<p>crosseditorInstallPath=D\:\\workspace\\crosseditor\\</p>
+									<p>imageUrlPath=http\://test.namo.co.kr/crosseditor/IMAGE2</p>
+									<p>imageSavePath=D\:\\workspace\\crosseditor\\IMAGE2</p>
+								</div>
+							</li>
+						</ol>
+					</div>
+					<p>크로스에디터 관리자의 기능은 &quot;크로스에디터 설치 폴더/config/xmls/Config.xml&quot;을 직접 수정하거나,</p>
+					<p>개발자용 API를 이용하여 크로스에디터 호출 페이지에서 직접 적용을 하시면 됩니다.</p>
+					<div class="contents_code">
+						<p>&lt;script type=&quot;text/javascript&quot;&gt;</p>
+						<p class="tab1">var CrossEditor = new NamoSE(&quot;crosseditor&quot;);</p>
+						<p class="tab1" style="font-weight:bold">CrossEditor.params.Width = &quot;100%&quot;</p>
+						<p class="tab1" style="font-weight:bold">CrossEditor.params.LineHeight = &quot;200&quot;;</p>
+						<p class="tab1">CrossEditor.EditorStart();</p>
+						<p>&lt;/script&gt;</p>
+					</div>
+				</div>
+			<h2><a name="image" id="image">이미지 서버</a></h2>
+				<div class="contents_box2">
+					<p>별도의 이미지 서버를 사용하는 경우에 아래의 방법을 적용하시길 바랍니다.</p>
+				</div>
+				<h3><a name="image_other" id="image_other">ASP, ASP.NET, JSP</a></h3>
+					<div class="contents_box2">
+						<p>JSP의 경우 기본적으로는 mount설정을 사용해서 이미지 서버의 경로를 잡아주셔야 합니다.</p>
+						<p>ASP, ASP.NET, 부득이하게 mount설정을 사용할 수 없는 JSP의 경우 다음의 순서대로 진행 합니다.</p>
+						<ol class="contents_order">
+							<li><a href="./ig_content_faq.html#inquire">문의하기</a>를 통해 이미지 서버 세팅에 필요한 패치파일을 받습니다.</li>
+							<li>
+								<p>패치 파일을 크로스에디터 설치 폴더에 덮어쓰기 합니다.</p>
+								<p>이미지 서버에 아래의 웹 소스를 실행할 수 있도록 웹 서버(JSP의 경우 WAS까지)를 설치합니다.</p>
+								<p>아래의 파일들을 이미지 서버의 웹 소스가 실행될 수 있는 위치로 복사합니다.</p>
+								<div class="indent">
+									<p>- ASP : ImageUpload.asp, Util.asp, NamoProperty.asp</p>
+									<p>- ASP.NET : ImageUpload.aspx, ImageUpload.aspx.cs, NamoProperty.aspx</p>
+									<p>- JSP : ImageUpload.jsp, Util.jsp, NamoProperty.jsp</p>
+								</div>
+							</li>
+							<li>
+								<p>이미지 서버로 복사한 NamoProperty 파일을 열어 이미지 저장 물리적 경로와 URL 경로를 입력합니다.</p>
+								<p>해당파일에 주석으로 설명이 되어 있습니다.</p>
+							</li>
+							<li>
+								<p>크로스에디터를 호출하는 페이지에서 API를 이용하여 설정을 합니다.</p>
+								<div class="indent">
+									<p>- UploadFileExecutePath : ImageUpload 파일이 실행될 URL 경로를 FULL URL로 설정합니다.</p>
+									<p>- ImageSavePath : 해당 API의 기본 기능은 이미지 저장 경로를 설정하는 것이지만 해당 경우에는 무시가 되며, NamoPropery 파일에서 참조하여 동적 경로 설정을 할 때 필요한 설정으로 설정하지 않아도 무방합니다.</p>
+								</div>
+								<div class="contents_code">
+									<p>&lt;script type=&quot;text/javascript&quot;&gt;</p>
+									<p class="tab1">var CrossEditor = new NamoSE(&quot;crosseditor&quot;);</p>
+									<p class="tab1" style="font-weight:bold">CrossEditor.params.ImageSavePath = &quot;IMAGE2&quot;;</p>
+									<p class="tab1" style="font-weight:bold">CrossEditor.params.UploadFileExecutePath = &quot;http://image.namo.co.kr/ImageTest/ImageUpload.aspx&quot;;</p>
+									<p class="tab1">CrossEditor.EditorStart();</p>
+									<p>&lt;/script&gt;</p>
+								</div>
+							</li>
+						</ol>
+					</div>
+				<h3><a name="image_php" id="image_php">PHP</a></h3>
+					<div class="contents_box2">
+						<p>PHP는 해당 기능을 제공하지 않습니다.</p>
+					</div>
+				<h3><a name="image_servlet" id="image_servlet">SERLVET</a></h3>
+					<div class="contents_box2">
+						<p>이미지 서버를 mount를 통해 접근 가능하도록 설정해 줍니다.</p>
+					</div>
+	</div>
+</body>
+</html>

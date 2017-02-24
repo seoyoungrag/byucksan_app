@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+
+	<!-- 빈페이지 리턴 -->
+	<definition name="ListBlankReturn" template="about:blank"/>
+	
+	<!-- 엑셀 다운 페이지 -->
+	<definition name="ListController.ListExcelDown" template="/app/jsp/list/common/excelDown.jsp"/>
+	
+	<!-- 메인 리스트 -->	
+	<definition name="ListMainController.listMain" template="/app/jsp/main/mainList.jsp"/>
+	
+	<!-- 임시저장함 관련 -->
+	<definition name="ListDraftController.listTempApprovalBox" template="/app/jsp/list/ListTempApprovalBox.jsp"/>
+	
+	<!-- 연계기암함 관련 -->
+	<definition name="ListDraftController.listBizDraftBox" template="/app/jsp/list/ListBizDraftBox.jsp"/>
+	
+	<!-- 결재대기함 관련 -->
+	<definition name="ListApprovalController.listApprovalWaitBox" template="/app/jsp/list/ListApprovalWaitBox.jsp"/>
+	<definition name="ListApprovalController.printApprovalWaitBox" template="/app/jsp/list/PrintApprovalWaitBox.jsp"/>
+	<definition name="ListApprovalController.countApprovalWaitBox" template="/app/jsp/list/CountApprovalWaitBox.jsp"/>
+	
+	<!-- 진행문서함 관련 -->
+	<definition name="ListApprovalController.listProgressDocBox" template="/app/jsp/list/ListProgressDocBox.jsp"/>
+	<definition name="ListApprovalController.printProgressDocBox" template="/app/jsp/list/PrintProgressDocBox.jsp"/>
+	
+	<!-- 협조문서함 관련 -->
+	<definition name="ListApprovalController.listAssistantDocBox" template="/app/jsp/list/ListAssistantDocBox.jsp"/>
+	<definition name="ListApprovalController.printAssistantDocBox" template="/app/jsp/list/PrintAssistantDocBox.jsp"/>
+	
+	<!-- 발송대기함 관련 -->
+	<definition name="ListSendController.listSendWaitBox" template="/app/jsp/list/ListSendWaitBox.jsp"/>
+	<definition name="ListSendController.printSendWaitBox" template="/app/jsp/list/PrintSendWaitBox.jsp"/>
+	
+	<!-- 발송심사함 관련 -->
+	<definition name="ListSendController.listSendJudgeBox" template="/app/jsp/list/ListSendJudgeBox.jsp"/>
+	<definition name="ListSendController.printSendJudgeBox" template="/app/jsp/list/PrintSendJudgeBox.jsp"/>
+	
+	<!-- 배부대기함 관련 -->
+	<definition name="ListReceiveController.listDistributionWaitBox" template="/app/jsp/list/ListDistributionWaitBox.jsp"/>
+	<definition name="ListReceiveController.printDistributionWaitBox" template="/app/jsp/list/PrintDistributionWaitBox.jsp"/>
+	
+	<!-- 재배부요청함 관련 -->
+	<definition name="ListReceiveController.listDistributionRemindBox" template="/app/jsp/list/ListDistributionRemindBox.jsp"/>
+	<definition name="ListReceiveController.printDistributionRemindBox" template="/app/jsp/list/PrintDistributionRemindBox.jsp"/>
+	
+	<!-- 접수대기함 관련 -->
+	<definition name="ListReceiveController.listReceiveWaitBox" template="/app/jsp/list/ListReceiveWaitBox.jsp"/>
+	<definition name="ListReceiveController.printReceiveWaitBox" template="/app/jsp/list/PrintReceiveWaitBox.jsp"/>
+	
+	<!-- 기안문서함 관련 -->
+	<definition name="ListCompleteController.listDraftBox" template="/app/jsp/list/ListDraftBox.jsp"/>
+	<definition name="ListCompleteController.printDraftBox" template="/app/jsp/list/PrintDraftBox.jsp"/>
+	
+	<!-- 결재완료함 관련 -->
+	<definition name="ListCompleteController.listApprovalCompleteBox" template="/app/jsp/list/ListApprovalCompleteBox.jsp"/>
+	<definition name="ListCompleteController.printApprovalCompleteBox" template="/app/jsp/list/PrintApprovalCompleteBox.jsp"/>
+	
+	<!-- 접수완료함 관련 -->
+	<definition name="ListCompleteController.listReceiveCompleteBox" template="/app/jsp/list/ListReceiveCompleteBox.jsp"/>
+	<definition name="ListCompleteController.printReceiveCompleteBox" template="/app/jsp/list/PrintReceiveCompleteBox.jsp"/>	
+	
+	<!-- 공람문서함 관련 -->
+	<definition name="ListCompleteController.listDisplayBox" template="/app/jsp/list/ListDisplayBox.jsp"/>
+	<definition name="ListCompleteController.printDisplayBox" template="/app/jsp/list/PrintDisplayBox.jsp"/>
+	
+	<!-- 후열문서함 관련 -->
+	<definition name="ListCompleteController.listRearBox" template="/app/jsp/list/ListRearBox.jsp"/>
+	<definition name="ListCompleteController.printRearBox" template="/app/jsp/list/PrintRearBox.jsp"/>
+	
+	<!-- 통보문서함 관련 -->
+	<definition name="ListCompleteController.listInformBox" template="/app/jsp/list/ListInformBox.jsp"/>
+	<definition name="ListCompleteController.printInformBox" template="/app/jsp/list/PrintInformBox.jsp"/>
+
+	<!-- 통보문서함 관련  20160418 공람기능 동일 -->
+	<definition name="ListCompleteController.listInformBoxModified" template="/app/jsp/list/ListInformBoxModified.jsp"/>
+	<definition name="ListCompleteController.printInformBoxModified" template="/app/jsp/list/PrintInformBoxModified.jsp"/>
+
+	<!-- 검사부열람함 관련 -->
+	<definition name="ListCompleteController.listExamReadingBox" template="/app/jsp/list/ListExamReadingBox.jsp"/>
+	<definition name="ListCompleteController.printExamReadingBox" template="/app/jsp/list/PrintExamReadingBox.jsp"/>
+	
+	<!-- 임원문서함 관련 -->
+	<definition name="ListCompleteController.listOfficerBox" template="/app/jsp/list/ListOfficerBox.jsp"/>
+	<definition name="ListCompleteController.printOfficerBox" template="/app/jsp/list/PrintOfficerBox.jsp"/>
+	
+	<!-- 임원결재함 관련 -->
+	<definition name="ListCompleteController.listOfficerApprovalBox" template="/app/jsp/list/ListOfficerApprovalBox.jsp"/>
+	<definition name="ListCompleteController.printOfficerApprovalBox" template="/app/jsp/list/PrintOfficerApprovalBox.jsp"/>
+	
+	<!-- 신청서완료함 관련 -->
+	<definition name="ListCompleteController.listConductTeamBox" template="/app/jsp/list/ListConductTeamBox.jsp"/>
+	<definition name="ListCompleteController.printConductTeamBox" template="/app/jsp/list/PrintConductTeamBox.jsp"/>
+	
+	<!-- 본부문서함 관련 -->
+	<definition name="ListCompleteController.listHQBox" template="/app/jsp/list/ListHQBox.jsp"/>
+	<definition name="ListCompleteController.printHQBox" template="/app/jsp/list/PrintHQBox.jsp"/>
+	
+	<!-- 기관문서함 관련 -->
+	<definition name="ListCompleteController.listInstitutionBox" template="/app/jsp/list/ListInstitutionBox.jsp"/>
+	<definition name="ListCompleteController.printInstitutionBox" template="/app/jsp/list/PrintInstitutionBox.jsp"/>
+
+	<!-- 회사문서함 관련 -->
+	<definition name="ListCompleteController.listCompanyBox" template="/app/jsp/list/ListCompanyBox.jsp"/>
+	<definition name="ListCompleteController.printCompanyBox" template="/app/jsp/list/PrintCompanyBox.jsp"/>
+	
+	<!--  여신문서함 -->
+	<definition name="ListCompleteController.listLoanBusinessBox" template="/app/jsp/list/ListLoanBusinessBox.jsp"/>
+	<definition name="ListCompleteController.printLoanBusinessBox" template="/app/jsp/list/PrintLoanBusinessBox.jsp"/>
+	
+	<!-- 협조부서열람함 -->
+	<definition name="ListCompleteController.listDeptAssistantBox" template="/app/jsp/list/ListDeptAssistantBox.jsp"/>
+	<definition name="ListCompleteController.printDeptAssistantBox" template="/app/jsp/list/PrintDeptAssistantBox.jsp"/>
+	
+	
+	<!-- 문서등록대장 관련 -->
+	<definition name="ListRegistController.listDocRegist" template="/app/jsp/list/ListDocRegist.jsp"/>
+	<definition name="ListRegistController.printDocRegist" template="/app/jsp/list/PrintDocRegist.jsp"/>
+	
+	<!-- 문서배부대장 관련 -->
+	<definition name="ListRegistController.listDistributionRegist" template="/app/jsp/list/ListDistributionRegist.jsp"/>
+	<definition name="ListRegistController.printDistributionRegist" template="/app/jsp/list/PrintDistributionRegist.jsp"/>
+	
+	<!-- 하위번호 채번을 위한 목록 -->
+	<definition name="ListRegistController.listRowRankDocRegist" template="/app/jsp/list/ListRowRankDocRegist.jsp"/>
+	
+	<!-- 관련문서 등록을 위한 목록 -->
+	<definition name="ListRegistController.listRelationDocRegist" template="/app/jsp/list/ListRelationDocRegist.jsp"/>	
+	
+	<!-- 미등록문서대장 관련 -->
+	<definition name="ListRegistController.listNoDocRegist" template="/app/jsp/list/ListNoDocRegist.jsp"/>
+	<definition name="ListRegistController.printNoDocRegist" template="/app/jsp/list/PrintNoDocRegist.jsp"/>
+	
+	<!-- 서명인날인대장 관련 -->
+	<definition name="ListRegistController.listStampSealRegist" template="/app/jsp/list/ListStampSealRegist.jsp"/>
+	<definition name="ListRegistController.printStampSealRegist" template="/app/jsp/list/PrintStampSealRegist.jsp"/>
+	
+	<!-- 직인날인대장 관련 -->
+	<definition name="ListRegistController.listSealRegist" template="/app/jsp/list/ListSealRegist.jsp"/>
+	<definition name="ListRegistController.printSealRegist" template="/app/jsp/list/PrintSealRegist.jsp"/>
+	
+	<!-- 일일감사대장 관련 -->
+	<definition name="ListRegistController.listDailyAuditRegist" template="/app/jsp/list/ListDailyAuditRegist.jsp"/>
+	<definition name="ListRegistController.printDailyAuditRegist" template="/app/jsp/list/PrintDailyAuditRegist.jsp"/>
+	
+	<!-- 일상감사일지 관련 -->
+	<definition name="ListRegistController.listDailyAudit" template="/app/jsp/list/ListDailyAudit.jsp"/>
+	<definition name="ListRegistController.printDailyAudit" template="/app/jsp/list/PrintDailyAudit.jsp"/>
+	
+	
+	<!-- 감사직인날인대장 관련 -->
+	<definition name="ListRegistController.listAuditSealRegist" template="/app/jsp/list/ListAuditSealRegist.jsp"/>
+	<definition name="ListRegistController.listAuditSealRegistDetailSearch" template="/app/jsp/list/ListAuditSealRegistDetailSearch.jsp"/>
+	<definition name="ListRegistController.printAuditSealRegist" template="/app/jsp/list/PrintAuditSealRegist.jsp"/>
+	
+	<!-- 거래처 완료문서 관련 -->
+	<definition name="ListCompleteController.listCustomerComplete" template="/app/jsp/list/ListCustomerComplete.jsp"/>
+	
+	<!-- 서명인/직인날인기록 등록 -->
+	<definition name="NonEleStampSealController.insertNonEleStampSeal" template="/app/jsp/list/InsertNonEleStampSeal.jsp"/>
+	<definition name="NonEleStampSealController.updateNonEleStampSeal" template="/app/jsp/list/UpdateNonEleStampSeal.jsp"/>
+	
+	<!-- 공람게시판 관련 -->
+	<definition name="ListEtcController.listDisplayNotice" template="/app/jsp/list/ListDisplayNotice.jsp"/>
+	<definition name="ListEtcController.leftDisplayNotice" template="/app/jsp/list/leftDisplayNotice.jsp"/>	
+	
+	
+	<!-- 문서전체(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminAll" template="/app/jsp/list/ListAdminAll.jsp"/>
+	<definition name="ListAdminController.printAdminAll" template="/app/jsp/list/PrintAdminAll.jsp"/>
+	
+	<!-- 직인날인목록(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminSeal" template="/app/jsp/list/ListAdminSeal.jsp"/>
+	<definition name="ListAdminController.printAdminSeal" template="/app/jsp/list/PrintAdminSeal.jsp"/>
+	
+	<!--  서명인날인목록(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminStampSeal" template="/app/jsp/list/ListAdminStampSeal.jsp"/>
+	<definition name="ListAdminController.printAdminStampSeal" template="/app/jsp/list/PrintAdminStampSeal.jsp"/>
+	
+	<!-- 일상감사일지(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminAudit" template="/app/jsp/list/ListAdminAudit.jsp"/>
+	<definition name="ListAdminController.printAdminAudit" template="/app/jsp/list/PrintAdminAudit.jsp"/>
+	
+	<!-- 연계처리결과(관리자) 관련 -->
+	<definition name="ListAdminController.listBizResult" template="/app/jsp/list/ListAdminBizResult.jsp"/>
+	<definition name="ListAdminController.listBizResultDoc" template="/app/jsp/list/ListAdminBizResultDoc.jsp"/>
+	<definition name="ListAdminController.bizResultXmlDoc" template="/app/jsp/list/ListAdminBizResultXmlDoc.jsp"/>
+	
+	<!-- 문서관리연계(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminDocmgrResult" template="/app/jsp/list/ListAdminDocmgrResult.jsp"/>
+	<definition name="ListAdminController.listAdminDocmgrResultDoc" template="/app/jsp/list/ListAdminDocmgrResultDoc.jsp"/>
+	
+	<!-- 문서유통연계이력(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminRelayResult" template="/app/jsp/list/ListAdminRelayResult.jsp"/>
+	<definition name="ListAdminController.listAdminRelayResultDetail" template="/app/jsp/list/ListAdminRelayResultDetail.jsp"/>
+	
+	<!-- 문서유통응답이력(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminRelayAckResult" template="/app/jsp/list/ListAdminRelayAckResult.jsp"/>
+	<definition name="ListAdminController.listAdminRelayAckResultDetail" template="/app/jsp/list/ListAdminRelayAckResultDetail.jsp"/>
+	<definition name="ListAdminController.listAdminRelayAckResultDetailXmlDoc" template="/app/jsp/list/ListAdminRelayResultXmlDoc.jsp"/>
+	
+	<!-- 접속이력(관리자) 관련 -->
+	<definition name="ListAdminController.listAdminAccHis" template="/app/jsp/list/ListAdminAccHis.jsp"/>
+	
+	<!-- 배부대기함(관리자) 관련  -->
+	<definition name="ListAdminController.listAdminDistributionWaitBox" template="/app/jsp/list/ListAdminDistributionWaitBox.jsp"/>
+	<definition name="ListAdminController.printAdminDistributionWaitBox" template="/app/jsp/list/PrintAdminDistributionWaitBox.jsp"/>
+	
+	<!-- 접수대기함(관리자) 관련  -->
+	<definition name="ListAdminController.listAdminReceiveWaitBox" template="/app/jsp/list/ListAdminReceiveWaitBox.jsp"/>
+	<definition name="ListAdminController.printAdminReceiveWaitBox" template="/app/jsp/list/PrintAdminReceiveWaitBox.jsp"/>
+	
+	<!-- 결재진행중 목록(편철) -->
+	<definition name="ListEtcController.listAppIngBind" template="/app/jsp/list/ListAppIngBind.jsp"/>
+	
+	<!-- 이력 삭제관련 -->
+	<definition name="ListEtcController.deleteAccHis" template="/app/jsp/approval/ProcResult.jsp"/>
+	
+	
+	<!-- 결재 포틀릿 관련 -->
+	<definition name="ListEtcController.listPortlet" template="/app/jsp/list/ListPortlet.jsp"/>
+		
+	<!-- 일상감사 등록 -->
+	<definition name="NonEleAuditController.insertNonEleAudit" template="/app/jsp/list/InsertNonEleAudit.jsp"/>
+	<definition name="NonEleAuditController.updateNonEleAudit" template="/app/jsp/list/UpdateNonEleAudit.jsp"/>
+	
+	<!-- 감사직인 날인 등록 -->
+	<definition name="NonEleStampSealController.insertAuditSeal" template="/app/jsp/list/InsertAuditSeal.jsp"/>
+	
+	<!-- 빈편철함 목록 -->
+	<definition name="ListAdminController.listDocMgrEmptyBind" template="/app/jsp/list/ListDocMgrEmptyBind.jsp"/>
+	
+	<!-- 대결함 관련 -->
+	<definition name="ListCompleteController.listRepresentativeBox" template="/app/jsp/list/ListRepresentativeBox.jsp"/>
+	<definition name="ListCompleteController.printRepresentativeBox" template="/app/jsp/list/PrintRepresentativeBox.jsp"/>
+	
+	<!-- 반려함 관련 -->
+	<definition name="ListApprovalController.ListApprovalrejectBox" template="/app/jsp/list/ListApprovalrejectBox.jsp"/>
+	<definition name="ListApprovalController.printApprovalrejectBox" template="/app/jsp/list/printApprovalrejectBox.jsp"/>
+	
+	<!-- 폐기함 관련 -->
+	<definition name="ListApprovalController.ListApprovalDeleteBox" template="/app/jsp/list/ListApprovalDeleteBox.jsp"/>
+	<definition name="ListApprovalController.printApprovalDeleteBox" template="/app/jsp/list/printApprovalDeleteBox.jsp"/>
+	
+	<!-- 구등록대장 목록 -->
+	<definition name="ListMigrationController.listMigRegDoc" template="/app/jsp/list/ListMigRegDoc.jsp"/>
+	<!-- 구접수대장 목록 -->
+	<definition name="ListMigrationController.listMigRecvDoc" template="/app/jsp/list/ListMigRecvDoc.jsp"/>
+	
+</tiles-definitions>

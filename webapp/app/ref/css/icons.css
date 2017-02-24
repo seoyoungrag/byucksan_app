@@ -1,0 +1,60 @@
+
+.x-tree-node-expanded .x-tree-node-icon{
+	background-image:url(/ep/app/ref/image/icon/folder_open.gif);
+}
+
+.x-tree-node-leaf .x-tree-node-icon{
+	background-image:url(/ep/app/ref/image/icon/folder.gif);
+}
+
+.x-tree-node-collapsed .x-tree-node-icon{
+	background-image:url(/ep/app/ref/image/icon/folder.gif);
+}
+
+.icon-doc-root {
+	background-image: url(/ep/app/ref/image/icon/doc_root.gif) !important;
+}
+
+.icon-folder {
+	background-image: url(/ep/app/ref/image/icon/folder.gif) !important;
+}
+
+.icon-folder-gray {
+	background-image: url(/ep/app/ref/image/icon/folder_gray.gif) !important;
+}
+
+.icon-folder-add {
+	background-image: url(/ep/app/ref/image/icon/folder_add.png) !important;
+}
+
+.icon-folder-edit {
+	background-image: url(/ep/app/ref/image/icon/folder_edit.png) !important;
+}
+
+.icon-folder-del {
+	background-image: url(/ep/app/ref/image/icon/folder_delete.png) !important;
+}
+
+.icon-add {
+	background-image: url(/ep/app/ref/image/icon/add.png) !important;
+}
+
+.icon-edit {
+	background-image: url(/ep/app/ref/image/icon/pencil.png) !important;
+}
+
+.icon-delete {
+	background-image: url(/ep/app/ref/image/icon/delete.png) !important;
+}
+
+.icon-unit {
+	background-image: url(/ep/app/ref/image/icon/application_view_list.png) !important;
+}
+
+.icon-book {
+	background-image: url(/ep/app/ref/image/icon/book.png) !important;
+}
+
+.icon-group-list {
+	background-image: url(/ep/app/ref/image/icon/group_list.gif) !important;
+}

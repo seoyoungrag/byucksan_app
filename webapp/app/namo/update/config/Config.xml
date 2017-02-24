@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+	<Product>
+		<Name>Namo CrossEditor</Name>
+		<Logo></Logo>
+		<Help></Help>
+		<Info></Info>
+	</Product>
+	<General>
+		<WebServerOS></WebServerOS>
+		<WebServerInfo></WebServerInfo>
+		<WebLanguage></WebLanguage>
+		<ImageSavePath></ImageSavePath>
+		<Width></Width>
+		<Height></Height>
+		<UploadFileNameType></UploadFileNameType>
+		<UploadFileViewer></UploadFileViewer>
+		<UploadFileSizeLimit></UploadFileSizeLimit>
+		<UploadFileSubDir></UploadFileSubDir>
+	</General>
+	<Editor>
+		<SetFocus></SetFocus>
+		<LineHeight></LineHeight>
+		<UnloadWarning></UnloadWarning>
+		<SetDebug></SetDebug>
+		<HTMLTabByTableLock></HTMLTabByTableLock>
+		<HTMLTabContents></HTMLTabContents>
+		<AccessibilityOption></AccessibilityOption>
+	</Editor>
+	<Document>
+		<CharSet></CharSet>
+		<DocBaseURL></DocBaseURL>
+		<DocTitle></DocTitle>
+		<AllowContentScript></AllowContentScript>
+		<AllowContentIframe></AllowContentIframe>
+	</Document>
+	<UI>
+		<Skin></Skin>
+		<UserSkinColor></UserSkinColor>
+		<Css></Css>
+		<UserToolbar></UserToolbar>
+		<CreateToolbar></CreateToolbar>
+		<CreateTab></CreateTab>
+	</UI>
+	<User>
+		<AddMenu></AddMenu>
+	</User>
+</Configuration>
+

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="exchange.insertBizProc">
+			<statement>
+			<![CDATA[
+					INSERT INTO TGW_BIZ_PROC
+					(
+						DOC_ID, COMP_ID, PROC_ORDER, EX_PROC_DIRECTION, EX_PROC_TYPE, 
+						PROCESSOR_ID, 	PROCESSOR_NAME, PROCESSOR_POS, PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, 
+						PROCESS_DATE, DOC_STATE,	PROC_OPINION, PROC_TYPE, BIZ_SYSTEM_CODE, 
+						BIZ_TYPE_CODE, EX_PROC_STATE, EX_PROC_ID, ORIGIN_DOC_ID, EXCHANGE_XML
+					)
+					VALUES
+					(
+					    :vo.docId, :vo.compId, :vo.procOrder, :vo.exProcDirection, :vo.exProcType,
+					    :vo.processorId, :vo.processorName,:vo.processorPos,:vo.processorDeptId, :vo.processorDeptName, 
+					    TO_DATE(:vo.processDate,'YYYY-MM-DD HH24:MI:SS'), :vo.docState, :vo.procOpinion, :vo.procType, :vo.bizSystemCode, 
+					    :vo.bizTypeCode, :vo.exProcState, :vo.exProcId, :vo.originDocId, :vo.exchangeXml
+					)
+			]]>
+			</statement>
+		</query>
+		
+		<query id="exchange.updateBizProc">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_BIZ_PROC
+					SET	DOC_STATE = :vo.docState,
+						EX_PROC_STATE =:vo.exProcState,
+						EX_PROC_DATE = TO_DATE(:vo.exProcDate,'YYYY-MM-DD HH24:MI:SS'),
+						EX_PROC_COUNT = :vo.exProcCount,
+						PROC_OPINION = :vo.procOpinion
+					WHERE
+					    DOC_ID = :vo.docId
+					    AND COMP_ID = :vo.compId
+					    AND PROC_ORDER = :vo.procOrder
+					    AND EX_PROC_DIRECTION = :vo.exProcDirection
+			]]>
+			</statement>
+		</query>
+				
+		
+		<query id="exchange.updateExchangeXml">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_BIZ_PROC
+					SET
+						EXCHANGE_XML = :vo.exchangeXml, ORIGIN_DOC_ID = :vo.originDocId
+					WHERE
+					    DOC_ID = :vo.docId
+					    AND COMP_ID = :vo.compId
+					    AND PROC_ORDER = :vo.procOrder
+					    AND EX_PROC_DIRECTION = :vo.exProcDirection
+			]]>
+			</statement>
+		</query>
+		
+		<query id="exchange.selectBizProc">
+			<statement>
+			<![CDATA[
+					SELECT
+						DOC_ID, COMP_ID, PROC_ORDER, EX_PROC_DIRECTION, EX_PROC_TYPE, 
+						PROCESSOR_ID,	PROCESSOR_NAME, PROCESSOR_POS, PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME, 
+						TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE, PROC_OPINION, PROC_TYPE, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE, 
+						EX_PROC_ID, ORIGIN_DOC_ID, EXCHANGE_XML
+					FROM  TGW_BIZ_PROC
+					WHERE DOC_ID = :vo.docId
+					  AND COMP_ID = :vo.compId
+					  AND EX_PROC_DIRECTION = :vo.exProcDirection
+					  AND ROWNUM = 1							
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.BizProcVO"/>
+		</query>
+		
+		
+		<query id="exchange.ListBizProc">
+			<statement>
+			<![CDATA[
+					SELECT
+						DOC_ID, COMP_ID, PROC_ORDER, EX_PROC_DIRECTION, EX_PROC_TYPE,
+						PROCESSOR_ID,	PROCESSOR_NAME, PROCESSOR_POS, PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME,
+						TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE,	PROC_OPINION, PROC_TYPE, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE,
+						EX_PROC_ID, DOC_STATE, ORIGIN_DOC_ID
+					FROM  TGW_BIZ_PROC
+					WHERE  EX_PROC_STATE IN ('BPS001','BPS003')
+					  AND  EX_PROC_DIRECTION ='BPD002'
+					AND ROWNUM  <  :vo.exProcCount
+					ORDER BY PROCESS_DATE ASC
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.BizProcVO"/>
+		</query>		
+		
+		<query id="exchange.selectBizProcByOriginDocId">
+			<statement>
+			<![CDATA[
+					SELECT 
+						DOC_ID, COMP_ID, PROC_ORDER, EX_PROC_DIRECTION, EX_PROC_TYPE,
+						PROCESSOR_ID,	PROCESSOR_NAME, PROCESSOR_POS, PROCESSOR_DEPT_ID, PROCESSOR_DEPT_NAME,
+						TO_CHAR(PROCESS_DATE, 'yyyy-mm-dd hh24:mi:ss') PROCESS_DATE,	PROC_OPINION, PROC_TYPE, BIZ_SYSTEM_CODE, BIZ_TYPE_CODE,
+						EX_PROC_ID, DOC_STATE, ORIGIN_DOC_ID
+					FROM TGW_BIZ_PROC
+					WHERE COMP_ID = :vo.compId AND ORIGIN_DOC_ID = :vo.originDocId AND DOC_STATE > 'APP110'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.BizProcVO"/>
+		</query>		
+					
+		<query id="exchange.deleteBizProc">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_BIZ_PROC
+					WHERE COMP_ID = :vo.compId AND DOC_ID = :vo.docId AND ORIGIN_DOC_ID = :vo.originDocId
+			]]>
+			</statement>
+		</query>	
+					
+		<query id="exchange.selectMaxProcOrder">
+			<statement>
+			<![CDATA[
+					SELECT NVL(MAX(PROC_ORDER)+1,1) PROC_ORDER
+                    FROM TGW_BIZ_PROC
+					WHERE DOC_ID = :vo.docId
+					AND COMP_ID = :vo.compId					
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.BizProcVO"/>
+		</query>
+
+
+		<query id="exchange.updatePrevDocLineState">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_BIZ_PROC
+					SET	
+						EX_PROC_STATE ='BPS004',
+						EX_PROC_DATE = TO_DATE(:vo.exProcDate,'YYYY-MM-DD HH24:MI:SS')
+					WHERE
+					        DOC_ID = :vo.docId
+					    AND COMP_ID = :vo.compId
+					    AND PROC_ORDER < :vo.procOrder
+					    AND EX_PROC_DIRECTION = :vo.exProcDirection					
+						AND EX_PROC_STATE IN ('BPS001', 'BPS003')
+			]]>
+			</statement>
+		</query>
+		
+		
+		<query id="exchange.selectMaxCount">
+			<statement>
+			<![CDATA[
+					SELECT NVL(MAX(EX_PROC_COUNT)+1,1) EX_PROC_COUNT
+                    FROM TGW_BIZ_PROC
+					WHERE DOC_ID = :vo.docId
+					AND COMP_ID = :vo.compId
+					AND PROC_ORDER = :vo.procOrder							
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.BizProcVO"/>
+		</query>
+		
+		
+		<query id="exchange.updateAppDocDeleteYn">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_APP_DOC_TEMP
+					SET DELETE_YN =:vo.deleteYn
+					WHERE DOC_ID = :vo.docId
+					AND COMP_ID = :vo.compId		
+										
+			]]>
+			</statement>
+		</query>
+
+
+		<query id="exchange.updateBizProcState">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_BIZ_PROC
+					   SET EX_PROC_STATE =:vo.exProcState
+						 , EX_PROC_COUNT  =:vo.exProcCount
+						 , EX_PROC_DATE = TO_DATE(:vo.exProcDate,'YYYY-MM-DD HH24:MI:SS')
+					WHERE DOC_ID = :vo.docId
+					  AND COMP_ID = :vo.compId
+					  AND PROC_ORDER = :vo.procOrder
+			]]>
+			</statement>
+		</query>
+
+		
+		<query id="exchange.selectQueueToDocmgr">
+			<statement>
+			<![CDATA[
+				SELECT 
+					  DOC_ID
+					, COMP_ID
+					, STATE_ORDER
+					, TITLE
+					, CHANGE_REASON
+					, PROC_STATE
+					, PROC_DATE
+					, USING_TYPE
+					, REGIST_DATE
+					, PROC_MESSAGE
+				FROM (
+					SELECT
+					      DOC_ID
+						, COMP_ID
+						, STATE_ORDER
+						, TITLE
+						, CHANGE_REASON
+						, PROC_STATE
+						, PROC_DATE
+						, USING_TYPE
+						, REGIST_DATE
+						, PROC_MESSAGE
+						, ROWNUM NUM
+					FROM (
+										SELECT
+											  A.DOC_ID
+											, A.COMP_ID
+											, A.STATE_ORDER
+											, A.TITLE
+											, A.CHANGE_REASON
+											, A.PROC_STATE
+											, A.PROC_DATE
+											, A.USING_TYPE
+											, A.REGIST_DATE
+											, A.PROC_MESSAGE
+					
+										FROM TGW_QUEUE_TO_DOCMGR A
+										,(
+											SELECT
+												  DOC_ID
+												, COMP_ID
+												, MAX(REGIST_DATE) REGIST_DATE
+											FROM TGW_QUEUE_TO_DOCMGR
+											WHERE  PROC_STATE IN ('BPS001', 'BPS003')
+											GROUP BY DOC_ID
+												, COMP_ID
+											)B
+										WHERE A.DOC_ID = B.DOC_ID
+										  AND A.COMP_ID = B.COMP_ID
+										  AND A.REGIST_DATE = B.REGIST_DATE
+										  AND PROC_STATE IN ('BPS001', 'BPS003')
+										ORDER BY A.PROC_STATE ,A.REGIST_DATE
+					) A
+				)
+				WHERE 1 = 1
+				AND NUM > :vo.startNumber AND NUM <= :vo.endNumber
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.common.vo.QueueToDocmgrVO"/>
+		</query>
+
+		<query id="exchange.selectQueueToDocmgrCnt">
+			<statement>
+			<![CDATA[
+					SELECT
+						COUNT(1) CNT
+					FROM TGW_QUEUE_TO_DOCMGR A
+					,(
+						SELECT
+							  DOC_ID
+							, COMP_ID
+							, MAX(REGIST_DATE) REGIST_DATE
+						FROM TGW_QUEUE_TO_DOCMGR
+						WHERE  PROC_STATE IN ('BPS001', 'BPS003')
+						GROUP BY DOC_ID
+							, COMP_ID
+						)B
+					WHERE A.DOC_ID = B.DOC_ID
+					  AND A.COMP_ID = B.COMP_ID
+					  AND A.REGIST_DATE = B.REGIST_DATE
+					  AND PROC_STATE IN ('BPS001', 'BPS003')
+			]]>
+			</statement>
+		</query>
+		
+		<query id="exchange.selectQueueToDocmgrErrCnt">
+			<statement>
+			<![CDATA[
+					SELECT
+						COUNT(1) CNT
+					FROM TGW_QUEUE_TO_DOCMGR A
+					,(
+						SELECT
+							  DOC_ID
+							, COMP_ID
+							, MAX(REGIST_DATE) REGIST_DATE
+						FROM TGW_QUEUE_TO_DOCMGR
+						WHERE  PROC_STATE ='BPS003'
+						GROUP BY DOC_ID
+							, COMP_ID
+						)B
+					WHERE A.DOC_ID = B.DOC_ID
+					  AND A.COMP_ID = B.COMP_ID
+					  AND A.REGIST_DATE = B.REGIST_DATE
+					  AND PROC_STATE = 'BPS003'
+			]]>
+			</statement>
+		</query>
+		
+		<query id="exchange.updateQueueToDocmgr">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_QUEUE_TO_DOCMGR
+						SET   PROC_STATE =:vo.procState
+					    , PROC_DATE = TO_DATE(:vo.procDate,'YYYY-MM-DD HH24:MI:SS')
+					    , PROC_MESSAGE = :vo.procMessage
+					WHERE DOC_ID = :vo.docId
+					  AND COMP_ID = :vo.compId
+					  AND STATE_ORDER = :vo.stateOrder
+					  AND PROC_STATE NOT IN ('BPS002', 'BPS004')
+			]]>
+			</statement>
+		</query>
+
+		<query id="exchange.updateQueueToDocmgrOld">
+			<statement>
+			<![CDATA[
+					UPDATE TGW_QUEUE_TO_DOCMGR
+						SET   PROC_STATE =:vo.procState
+					    , PROC_DATE = TO_DATE(:vo.procDate,'YYYY-MM-DD HH24:MI:SS')
+					WHERE DOC_ID = :vo.docId
+					  AND COMP_ID = :vo.compId
+					  AND REGIST_DATE < TO_DATE(:vo.registDate,'YYYY-MM-DD HH24:MI:SS')
+					  AND PROC_STATE NOT IN ('BPS002', 'BPS004')
+			]]>
+			</statement>
+		</query>
+			
+		<query id="exchange.deleteQueueToDocmgr">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_QUEUE_TO_DOCMGR
+					WHERE PROC_STATE IN ('BPS002', 'BPS004')
+					  AND REGIST_DATE <= (TO_DATE(:vo.registDate, 'YYYY-MM-DD HH24:MI:SS') - :vo.subDays)
+			]]>
+			</statement>
+			
+		</query>
+		
+		<query id="exchage.getFileInfo">
+			<statement>
+			<![CDATA[
+					SELECT DOC_ID,COMP_ID, FILE_ID,FILE_NAME, DISPLAY_NAME, FILE_TYPE FROM TGW_FILE_INFO
+					WHERE DOC_ID = :vo.docId 
+					  AND COMP_ID = :vo.compId
+					  AND FILE_ID = :vo.fileId
+					  AND TEMP_YN ='N'
+			]]>
+			</statement>
+			<result class="com.sds.acube.app.appcom.vo.FileVO"/>
+		</query>	
+							
+		<query id="exchange.deleteExchangeHistory">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_BIZ_PROC
+					WHERE DOC_ID IN
+					(
+						SELECT DOC_ID
+						FROM TGW_BIZ_PROC
+						WHERE EX_PROC_DATE < TO_DATE(:useDate, 'yyyy-MM-dd hh24:mi:ss') AND
+                        (
+                            ( DOC_STATE IN ('APP110', 'APP600') AND EX_PROC_STATE IN ('BPS002') ) 
+                            OR ( DOC_STATE IS NULL AND EX_PROC_TYPE = 'BPT001' AND EX_PROC_STATE = 'BPS003' )
+                        )
+					)
+			]]>
+			</statement>
+		</query>		
+
+		<query id="exchange.deleteAppDoc">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_APP_DOC
+					WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="exchange.deleteAppDocTemp">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_APP_DOC_TEMP
+					WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="exchange.deleteAppLine">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_APP_LINE
+					WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="exchange.deleteAppLineHis">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_APP_LINE_HIS
+					WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="exchange.deleteFileInfo">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_FILE_INFO
+					WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+
+		<query id="exchange.deleteFileInfoHis">
+			<statement>
+			<![CDATA[
+					DELETE FROM TGW_FILE_INFO_HIS
+					WHERE DOC_ID = :docId AND COMP_ID = :compId
+			]]>
+			</statement>
+		</query>		
+	</queries>
+</queryservice>

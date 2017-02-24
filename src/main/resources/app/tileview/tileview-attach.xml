@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       	
+<tiles-definitions>
+	<!-- 첨부파일 처리 -->
+	<definition name="AttachController.downloadAttach" template="/app/jsp/appcom/attach/DownloadAttach.jsp"/>
+	<definition name="AttachController.generatePdf" template="/app/jsp/appcom/attach/DownloadAttach.jsp"/>
+	<definition name="AttachController.uploadAttach" template="/app/jsp/appcom/attach/UploadAttach.jsp"/>
+	<definition name="AttachController.updateAttach" template="/app/jsp/appcom/attach/UpdateAttach.jsp"/>
+	<definition name="AttachController.updateBody" template="/app/jsp/appcom/attach/UpdateBody.jsp"/>
+	<definition name="AttachController.selectBody" template="/app/jsp/approval/OpenAppBody.jsp"/>
+	<definition name="AttachController.selectBodyHis" template="/app/jsp/approval/OpenAppBody.jsp"/>
+	<definition name="AttachController.listAttach" template="/app/jsp/appcom/attach/ListAttach.jsp"/>
+	<definition name="AttachController.listAttachHis" template="/app/jsp/appcom/attach/ListAttachHis.jsp"/>
+	<definition name="AttachController.listAttach4Ajax" template="/app/jsp/appcom/attach/ListAttach4Ajax.jsp"/>
+	<definition name="AttachController.listAttachErp" template="/app/jsp/appcom/attach/esb/ListAttachErp.jsp"/>
+	
+</tiles-definitions>

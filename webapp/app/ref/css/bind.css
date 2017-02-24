@@ -1,0 +1,40 @@
+﻿
+
+.tab_sch_wrap      {float:left;width:100%; background: url("../../ref/image/bind/tab_sch_bg.gif") repeat-x 0px 0px;clear:both; height:27px;padding-bottom:10px;}
+
+
+.tab_sch_off       {display:inline; float:left; background: url("../../ref/image/bind/tab_sch_off.gif") no-repeat; text-align:center; cursor:pointer; font-size:12px}
+.tab_sch_off span  {display:inline; float:left; background: url("../../ref/image/bind/tab_sch_off_end.gif") no-repeat right top; padding:4px 20px 8px 20px; cursor:pointer;  font-size:12px}  
+.tab_sch_off span a:link, .tab_sch_off span a:visited { font-weight:bold;color:#707070; letter-spacing:0; text-decoration:none;}
+.tab_sch_off span a:hover,.tab_sch_off span a:active  {color:#000000;}
+
+.tab_sch_on        {display:inline; float:left; background: url("../../ref/image/bind/tab_sch_on.gif") no-repeat; text-align: center; cursor:pointer;  font-size:12px; font-weight:bold; color:#000}
+.tab_sch_on span   {display:inline; float:left; background: url("../../ref/image/bind/tab_sch_on_end.gif") no-repeat right top; padding:4px 20px 8px 20px; cursor:pointer;  font-size:12px; color:#000}
+.tab_sch_on span a {color:#000000; font-weight:bold; text-decoration:none;}
+.tab_sch_on span a:hover,.tab_sch_on span a:active  {color:#555d79;}
+
+
+.tab_sch_btn {float:right;}
+.tab_sch_btn span { margin-left:2px;background:url(../../ref/image/bind/sbtn_bg12.gif) no-repeat left top; height:24px; line-height:24px; width:44px; display:block; text-align:center; float:left; font-size:12px}
+
+
+/* .tablelist {border-top:1px solid #e4e4e4; margin-top:5px; font-size:12px}
+.tablelist th { background:url(../../ref/img/bg_thbar.gif) no-repeat left top #f4f4f4; border-bottom:1px solid #ccd9ec; text-align:center; color:#1d4787; font-size:12px; height:26px; line-height:26px; padding-top:2px;}
+.tablelist td { text-align:left}
+.tablelistleft {border-bottom:1px solid #e4e4e4; height:30px; line-height: 30px; padding-left:3px; text-align:left}
+.tablelistleft img { margin-bottom:-4px}
+.tablelistcenter {border-bottom:1px solid #e4e4e4;  height:30px; line-height: 30px;text-align:center}
+.tablelistcenter  img { margin-bottom:-4px}
+.tablelistright {border-bottom:1px solid #e4e4e4;  height:30px; line-height: 30px; padding-right:3px; text-align:right}
+.tablelist11px {border-bottom:1px solid #e4e4e4;  height:30px; line-height: 30px; padding-right:3px; text-align:right; font-size:11px; color:#999} */
+
+/* .main_btn_s04 * {display:inline-block; cursor:pointer; font-size:12px;}
+.main_btn_s04 {background:url(../../ref/image/bind/sbtn_bg04.gif) no-repeat left top; height:26px; line-height:26px;padding-left:10px;display:inline-block;cursor:pointer; font-size:12px;}
+.main_btn_s04 a {display:inline-block; white-space:nowrap; background:url(../../ref/image/bind/sbtn_bg04.gif) no-repeat right top; padding-right:10px; color:#666666;  height:26px; line-height:26px; font-size:12px; text-decoration:none; font-weight:bold;}
+.main_btn_s04 a:hover {color:#000000; text-decoration:none; font-size:12px;} */
+
+.main_btn_s04 * {display:inline-block; cursor:pointer; font-size:12px;}
+.main_btn_s04 {cursor:pointer; font-size:12px;}
+.main_btn_s04 a {display:block; white-space:nowrap; color:#666666;  height:24px; line-height:24px; font-size:12px; text-decoration:none;}
+.main_btn_s04 a:hover {color:#000000; text-decoration:none; font-size:12px;}
+

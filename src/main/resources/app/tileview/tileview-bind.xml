@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+
+	<!-- 편철 -->
+	<definition name="BindController.bindManager" template="/app/jsp/bind/bindManager.jsp" />
+	<definition name="BindController.bindShareManager" template="/app/jsp/bind/bindShareManager.jsp" />
+	<definition name="BindController.bindList" template="/app/jsp/bind/bindListPage.jsp" />
+	<definition name="BindController.bindListShare" template="/app/jsp/bind/bindListSharePage.jsp" />
+	<definition name="BindController.bindEtc" template="/app/jsp/bind/bindEtcPage.jsp" />
+	<definition name="BindController.list" template="/app/jsp/bind/listPage.jsp" />
+	<!-- <definition name="BindController.add" template="/app/jsp/bind/addPage.jsp" /> -->
+	<definition name="BindController.add" template="/app/jsp/bind/bindAddPage.jsp" />
+	<definition name="BindController.addShare" template="/app/jsp/bind/bindAddSharePage.jsp" />
+	<!-- <definition name="BindController.edit" template="/app/jsp/bind/editPage.jsp" /> -->
+	<definition name="BindController.edit" template="/app/jsp/bind/bindEditPage.jsp" />
+	<definition name="BindController.editShare" template="/app/jsp/bind/bindEditSharePage.jsp" />
+	<definition name="BindController.view" template="/app/jsp/bind/viewPage.jsp" />
+	<definition name="BindController.transfer" template="/app/jsp/bind/bindTransferPage.jsp" />
+	<!-- <definition name="BindController.bindTransfer" template="/app/jsp/bind/bindTransferPage.jsp" /> -->
+	<definition name="BindController.job" template="/app/jsp/bind/jobPage.jsp" />
+	<definition name="BindController.bindJob" template="/app/jsp/bind/bindJobPage.jsp" />
+	<!-- <definition name="BindController.select" template="/app/jsp/bind/selectPage.jsp" /> -->
+	<definition name="BindController.select" template="/app/jsp/bind/bindSelectPage.jsp" />
+	<definition name="BindController.selectOrgPop" template="/app/jsp/bind/selectOrgPop.jsp" />
+	<definition name="BindController.selectAuthorityPop" template="/app/jsp/bind/selectAuthorityPop.jsp" />
+	<definition name="BindController.print" template="/app/jsp/bind/printPage.jsp" />
+	<definition name="BindController.menu" template="/app/jsp/bind/menuPage.jsp" />
+	<definition name="BindController.sharedList" template="/app/jsp/bind/sharedListPage.jsp" />
+	<definition name="BindController.sharedPrint" template="/app/jsp/bind/sharedPrintPage.jsp" />
+	<definition name="BindController.order" template="/app/jsp/bind/orderPage.jsp" />
+	<definition name="BindController.bindBatchList" template="/app/jsp/bind/bindBatchListPage.jsp" />
+	<definition name="BindController.bindBatchAdd" template="/app/jsp/bind/bindBatchAddPage.jsp" />
+	<definition name="BindController.bindBatchEdit" template="/app/jsp/bind/bindBatchEditPage.jsp" />
+
+
+	<!-- 단위업무 -->
+	<definition name="BindUnitController.unitManager" template="/app/jsp/bind/unit/unitManager.jsp" />
+	<definition name="BindUnitController.unitList" template="/app/jsp/bind/unit/unitListPage.jsp" />
+	<definition name="BindUnitController.unitListTree" template="/app/jsp/bind/unit/unitListTree.jsp" />
+	<definition name="BindUnitController.list" template="/app/jsp/bind/unit/listPage.jsp" />
+	<definition name="BindUnitController.add" template="/app/jsp/bind/unit/addPage.jsp" />
+	<definition name="BindUnitController.edit" template="/app/jsp/bind/unit/editPage.jsp" />
+	<definition name="BindUnitController.info" template="/app/jsp/bind/unit/infoPage.jsp" />
+	<definition name="BindUnitController.select" template="/app/jsp/bind/unit/selectPage.jsp" />
+
+
+	<!-- 편철이력 -->
+	<definition name="BindHistoryController.list" template="/app/jsp/bind/history/listPage.jsp" />
+	<definition name="BindHistoryController.view" template="/app/jsp/bind/history/viewPage.jsp" />
+	
+	
+	<!-- 문서목록 -->
+	<definition name="BindDocumentController.list" template="/app/jsp/bind/document/listPage.jsp" />
+	<definition name="BindDocumentController.view" template="/app/jsp/bind/document/viewPage.jsp" />
+	<definition name="BindDocumentController.move" template="/app/jsp/bind/document/movePage.jsp" />
+	<definition name="BindDocumentController.print" template="/app/jsp/bind/document/printPage.jsp" />
+	<definition name="BindDocumentController.nonBind" template="/app/jsp/bind/document/nonBindPage.jsp" />
+	<definition name="BindDocumentController.nonBindPrint" template="/app/jsp/bind/document/nonBindPrintPage.jsp" />
+	<definition name="BindDocumentController.transfer" template="/app/jsp/bind/document/transferPage.jsp" />
+	<definition name="BindDocumentController.transferPrint" template="/app/jsp/bind/document/transferPrintPage.jsp" />
+	
+	
+	<!-- 일괄등록 -->
+	<definition name="BindBatchController.list" template="/app/jsp/bind/batch/listPage.jsp" />
+
+</tiles-definitions>
