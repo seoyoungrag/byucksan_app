@@ -3343,11 +3343,14 @@ com.sds.acube.app.relay.vo.LineInfoVO
     //의견 및 결재암호 팝업
     function popOpinion(returnFunction, btnName, opinionYn) {
 
-    	var width = 500;
+    	//var width = 500;
+		var width = 800;
 <% if ("1".equals(opt301)) { %> // 암호입력이면
-    	var height = 240;
+    	//var height = 240;
+		var height = 460;
 <% } else { %>  
-		var height = 200;
+		//var height = 200;
+		var height = 420;
 <% } %>  
         
     	if(opinionYn=="N") {

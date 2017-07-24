@@ -84,6 +84,7 @@
 	String roleId30 = AppConfig.getProperty("role_officecoordinationreader", "", "role");
 	String roleId31 = AppConfig.getProperty("role_ceo", "", "role");
 	String roleId32 = AppConfig.getProperty("role_officer", "", "role");
+	String roleId40 = AppConfig.getProperty("role_old_doc_reader", "", "role");
 
 	String optAppDisplay = appCode.getProperty("OPT334", "OPT334", "OPT");
 	String optEnfDisplay = appCode.getProperty("OPT334", "OPT334", "OPT");
@@ -419,6 +420,7 @@ function bbsUrl(boardId) {
 			<%}
 			}
 			%>
+			
 			<!-- 타이틀 end -->
 			<% if(concurrentList.size()>1) { %>
 				<ul class="submenu1step">
@@ -427,7 +429,7 @@ function bbsUrl(boardId) {
 							    UserVO userVO = concurrentList.get(i);
 							    String displayPosition = CommonUtil.nullTrim(userVO.getDisplayPosition());
 					%>
-								<li class="<%=userId.equals(userVO.getUserUID())?"submenu1step11":"submenu1step10"%>" onclick="changeConcurrent('<%= userVO.getUserUID() %>');"><%=userVO.getCompName()%> - <%=userVO.getDeptName()%>[<%=userVO.getDisplayPosition()%>]</li>
+								<li class="<%=userId.equals(userVO.getUserUID())?"submenu1step11":"submenu1step10"%>" onclick="changeConcurrent('<%= userVO.getUserUID() %>');"><%=userVO.getCompName()%> - <%=userVO.getDeptName()%>[<%=userVO.getDisplayPosition()%>] (<%=userVO.getApprovalWaitCount()%>)</li>
 					<%
 							 }
 					%>
@@ -435,7 +437,20 @@ function bbsUrl(boardId) {
 				</ul>
         	<% } %>
 			
-			
+			<!-- 구문서 대장 열람자는 구문서 대장의 등록대장만 보임 시작 -->
+			<%
+			if (roleCodes.indexOf(roleId40)>=0) {
+			%>
+				<% if(!isExtWeb){ // 구문서대장 %>
+					<ul class="submenu1step">
+						<li class="submenu1step02" id="OldRead">(구)문서대장</li>
+					</ul>
+					<ul  class="submenu2step" id="oldRead_sub_menu" style="display:none">
+						<li class="submenu2step02"><a href="javascript:linkUrl('<%=webUri%>/app/list/mig/ListMigRegDoc.do');">등록대장</a></li>
+		
+					</ul>
+				<% } %>	
+			<%}else{%>
 			
 			
                            			
@@ -651,6 +666,7 @@ function bbsUrl(boardId) {
 							</li>
 						</ul>
 	<% } %>
+<!-- 구문서 대장 열람자는 구문서대장의 등록대장만 보임 끝 -->	
 		<% if(!isExtWeb){ // 구문서대장 %>
 			<ul class="submenu1step">
 				<li class="submenu1step02" id="OldRead">(구)문서대장</li>
@@ -658,9 +674,10 @@ function bbsUrl(boardId) {
 			<ul  class="submenu2step" id="oldRead_sub_menu" style="display:none">
 				<li class="submenu2step02"><a href="javascript:linkUrl('<%=webUri%>/app/list/mig/ListMigRegDoc.do');">등록대장</a></li>
 				<li class="submenu2step02"><a href="javascript:linkUrl('<%=webUri%>/app/list/mig/ListMigRecvDoc.do');">접수대장</a></li>
-
+	
 			</ul>
-	<% } %>	
+		<% } %>	
+	<%}%>
 	</li></ul>
 	
 	

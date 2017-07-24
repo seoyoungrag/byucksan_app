@@ -624,13 +624,15 @@ function initializeOfficeInfo(){
 							<table width="100%" border="0" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="40%">
-										<input type="text" id="displayZipCode" name="displayZipCode" value="${vo.officeZipCode}" group="readOnly" readOnly class="input_read" style="width:95%;"/>
-										<input type="hidden" id="officeZipCode" name="officeZipCode" value="${vo.officeZipCode}" />
+										<!-- <input type="text" id="displayZipCode" name="displayZipCode" value="${vo.officeZipCode}" group="readOnly" readOnly class="input_read" style="width:95%;"/> -->
+										<input type="text" id="officeZipCode" name="officeZipCode" value="${vo.officeZipCode}" style="width:95%;"/>
 									</td>
 									<td width="*">
+									<!-- 
 										<acube:buttonGroup align="left">
 											<acube:button id="zipCodeButton" disabledid="" onclick="winZipCode();" value="<%=buttonZipcode%>" type="4" class="gr" />
 										</acube:buttonGroup>
+									 -->
 									</td>
 								</tr>
 							</table>				
@@ -642,7 +644,8 @@ function initializeOfficeInfo(){
 							<nobr><spring:message code="env.deptinfo.form.05"/></nobr><!-- 주소 -->
 						</td>
 						<td class="tb_left_bg" colspan="3">
-							<nobr><input type="text" id="officeAddress" name="officeAddress" value="${vo.officeAddr}" group="readOnly" readOnly class="input_read" style="width:100%;"/></nobr>
+							<!-- <nobr><input type="text" id="officeAddress" name="officeAddress" value="${vo.officeAddr}" group="readOnly" readOnly class="input_read" style="width:100%;"/></nobr> -->
+							<nobr><input type="text" id="officeAddress" name="officeAddress" value="${vo.officeAddr}" style="width:100%;"/></nobr> 
 						</td>
 					</tr>
 					<tr bgcolor="#ffffff">

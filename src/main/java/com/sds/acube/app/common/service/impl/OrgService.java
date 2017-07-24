@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.anyframe.pagination.Page;
+import org.anyframe.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 import com.sds.acube.app.common.service.IOrgService;
@@ -52,6 +54,9 @@ import com.sds.acube.app.idir.org.user.UserImage;
 import com.sds.acube.app.idir.org.user.UserManager;
 import com.sds.acube.app.idir.org.user.UserPassword;
 import com.sds.acube.app.idir.org.user.UserStatus;
+import com.sds.acube.app.list.service.IListApprovalService;
+import com.sds.acube.app.list.util.ListUtil;
+import com.sds.acube.app.list.vo.SearchVO;
 import com.sds.acube.app.login.security.EnDecode;
 
 
@@ -69,6 +74,12 @@ public class OrgService extends BaseService implements IOrgService {
 
     //@Autowired
     //private OrgProvider4WS orgService;
+
+    /**
+	 */
+    @Inject
+    @Named("listApprovalService")
+    private IListApprovalService listApprovalService;
     
     /**
 	 */
@@ -1023,6 +1034,81 @@ public class OrgService extends BaseService implements IOrgService {
 	orgUtil.setDisplayPositionOrder(displayPositionOrder);
 	List<UserVO> userVOList = orgUtil.getConcurrentUsersByID(loginId);
 	userVOList.add(userVO);
+	
+	//170608 겸직자별 수신함 정보 가져오기
+	String deptAdminYn = "N";
+	String deptAdminReceiveYn = "N";
+	int totalCountApprovalWait		= 0;
+	Page pageApprovalWait = new Page();
+	String mobileYn = "N";
+	int cPage = 1;
+	int pageSize = 5;
+	String roleId11 = AppConfig.getProperty("role_doccharger", "", "role");
+	String opt103 = appCode.getProperty("OPT103", "OPT103", "OPT");
+	ListUtil defaultListUtil = new ListUtil();
+	String startDate 	= "";
+	String endDate 	= "";
+	String docAppState 		= ListUtil.TransString("APP100,APP200,APP250,APP300,APP302,APP305,APP350,APP360,APP362,APP365,APP370,APP400,APP402,APP405,APP500,APP550","APP");
+	String docAppStateDept 		= ListUtil.TransString("APP201,APP301,APP351,APP361,APP371,APP401","APP");
+	String docEnfState 		= ListUtil.TransString("ENF400,ENF500","ENF");
+	String docEnfReciveStateDept 	= ListUtil.TransString("ENF200","ENF");
+	String docEnfReciveAppWaitState	= ListUtil.TransString("ENF100,ENF200,ENF250","ENF");
+	String docEnfDisplyWaitState 	= ListUtil.TransString("ENF300,ENF310","ENF");
+	String procType 		= ListUtil.TransString("APT003,APT004","APT");
+	String apprProcType		= appCode.getProperty("APT003", "APT003","APT");
+	String processorProcType	= appCode.getProperty("APT004", "APT004","APT");
+	String docReturnAppState 	= appCode.getProperty("APP110", "APP110","APP");
+	for(UserVO user : userVOList){
+		String userId = user.getUserUID();
+		String compId = user.getCompID();
+		String roleCodes 	= user.getRoleCodes();
+		String searchBasicPeriod = envOptionAPIService.selectOptionValue(compId, appCode.getProperty("OPT331", "OPT331", "OPT"));
+		HashMap<String, String> returnDate = defaultListUtil.returnDate(searchBasicPeriod, startDate, endDate);
+		startDate	= (String)returnDate.get("startDate");
+		startDate = "2016-02-01 00:00:00"; //2월1일고정 by 0418
+		endDate		= (String)returnDate.get("endDate");
+
+		String opt103Yn = envOptionAPIService.selectOptionValue(compId, opt103);
+		
+		if("Y".equals(opt103Yn)) {
+
+		    if (roleCodes.indexOf(roleId11) != -1 ) {
+				deptAdminYn = "Y";  //ListMainController.java(/app/list/main/mainList.do)에는 있으나 여긴 없었음 by 2016-01-31
+			    deptAdminReceiveYn = "Y"; //ListMainController.java(/app/list/main/mainList.do)에는 있으나 여긴 없었음 by 2016-01-31
+		    }
+		    
+		    // 문서수신대상
+		    String opt333 = appCode.getProperty("OPT333", "OPT333","OPT"); 
+		    String recvObject = envOptionAPIService.selectOptionValue(compId,opt333);
+		    
+		    SearchVO searchVO = new SearchVO();
+		    
+		    searchVO.setCompId(compId);
+		    searchVO.setUserId(userId);
+		    searchVO.setDeptId(user.getDeptID());
+		    searchVO.setStartDate(startDate);
+		    searchVO.setEndDate(endDate);
+		    searchVO.setDocAppState(docAppState);
+		    searchVO.setDocAppStateDept(docAppStateDept);
+		    searchVO.setDocReturnAppState(docReturnAppState);
+		    searchVO.setDocEnfState(docEnfState);
+		    searchVO.setDocEnfReciveState(docEnfReciveAppWaitState);
+		    searchVO.setDocEnfReciveStateDept(docEnfReciveStateDept);
+		    searchVO.setDocEnfDisplyWaitState(docEnfDisplyWaitState);
+		    searchVO.setProcType(procType);
+		    searchVO.setApprProcType(apprProcType);
+		    searchVO.setProcessorProcType(processorProcType);
+		    searchVO.setMobileYn(mobileYn);
+		    searchVO.setDeptAdminYn(deptAdminYn);
+		    searchVO.setRecvObject(recvObject);
+
+
+		    pageApprovalWait = listApprovalService.listApprovalWait(searchVO, cPage, pageSize);
+		    totalCountApprovalWait = pageApprovalWait.getTotalCount();
+		}
+		user.setApprovalWaitCount(totalCountApprovalWait);
+		
+	}
 	return userVOList;
     }
 

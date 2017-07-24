@@ -157,6 +157,7 @@
 				}
 				
 				$.ajax({
+					cache: false,
 					url : url,
 					dataType : 'json',
 					data: {
@@ -230,7 +231,7 @@
 	function fncBindTreeRefresh() {
 		var param;
 		var searchYear = $('#searchYear').val();
-		params = 'deptId=' + deptId + '&bindType=ALL' + '&searchYear=' + searchYear;
+		params = 'deptId=' + deptId + '&bindType=ALL' + '&searchYear=' + searchYear  + '&isManager=Y';
 		var url = '<%=webUri%>/app/bind/bindList.do?'+params;
 		$.ajaxSetup ({
 		    cache: false
@@ -255,7 +256,7 @@
 	}
 	
 	fncBindTreeReload = function() {
-		var param = 'bindType=ALL';
+		var param = 'bindType=ALL&isManager=Y';
 	    var url = '<%=webUri%>/app/bind/bindList.do'+param;
 	    $("#bind_tree").load(url, "");
 	}

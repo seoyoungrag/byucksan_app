@@ -124,9 +124,9 @@ public class MigController {
 				logger.info("docList.size : " + docList.size());
 				if(docList!=null && docList.size() > 0){
 					// 이관 대상 문서들 loop
-					for(int i = 0; i < docList.size(); i++){
+					for(int i = 0; i < docList.size(); i++){/*
 						// 3.0서버가 파일을 다 생성했는지 재확인하는 카운트. 문서정보가 변경될때마다 초기화 시킨다.
-						this._reConnectCount = 0;
+						this._reConnectCount = 0;*/
 						MigVO migVo = new MigVO();
 						
 						RegDocVO regDocVO = docList.get(i);
@@ -143,7 +143,42 @@ public class MigController {
 								this.connectOldAcube(regDocVO.getDocId(),cabinet);
 								
 								List<MigFileVO>  filelist = (List<MigFileVO>)filePage.getList();
-								
+
+								boolean isSuc = false;
+					    		for(int j = 0; j < filelist.size(); j++){
+									// 3.0서버가 파일을 다 생성했는지 재확인하는 카운트. 문서정보가 변경될때마다 초기화 시킨다.
+									this._reConnectCount = 0;
+					    			MigFileVO migFileVO = (MigFileVO)filelist.get(j);
+									if(this.checkProcessDoneOldAcube(migFileVO)){
+										// 각 파일의 스트림을 받아오자.
+										if(this.copyFilesFromOldAcube(migFileVO)){
+											isSuc = true;
+										}else{
+											isSuc = false;
+											logger.error("copyFilesFromOldAcube Error: "+migFileVO.getDocId()+" "+migFileVO.getFileName());
+											break;
+										}
+									}else{
+										isSuc = false;
+										logger.error("copyFilesFromOldAcube Error: "+migFileVO.getDocId()+" "+migFileVO.getFileName());
+										break;
+									}
+					    		}
+								if(isSuc){
+									//NDISC에 저장하고 디비에 저장하자.
+									List<FileVO> fileVOs = this.makeFileVos(filelist);
+									if(this.insertFileInfo(fileVOs)){
+										migVo.setStatus("0");
+										migVo.setMsg("마이그레이션 완료");
+									}else{
+										migVo.setStatus("-5");
+										migVo.setMsg("파일정보 입력시 오류 발생");
+									}
+								}else{
+									migVo.setStatus("-4");
+									migVo.setMsg("3.0 was에서 파일을 찾을 수 없음.");
+								}
+					    		/*
 								// 필요한 첨부 파일이 모두 생성되었는지 확인한다.
 								if(this.checkProcessDoneOldAcube(filelist)){
 									// 각 파일의 스트림을 받아오자.
@@ -162,6 +197,7 @@ public class MigController {
 									migVo.setStatus("-4");
 									migVo.setMsg("3.0 was에서 파일을 찾을 수 없음.");
 								}
+								*/
 							}else{
 								migVo.setStatus("-3");
 								migVo.setMsg("로그인실패");
@@ -199,7 +235,7 @@ public class MigController {
 			mav.put("durTime", (System.currentTimeMillis() - startTime) / 1000);
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		response.setContentType("application/x-json; charset=utf-8");
@@ -207,7 +243,45 @@ public class MigController {
 
     }
     
-    public boolean insertFileInfo(List<FileVO> fileVOs) {
+    /**
+	 * <pre> 
+	 *  설명
+	 * </pre>
+	 * @param migFileVO
+	 * @return
+	 * @see  
+	 * */ 
+	
+	private boolean checkProcessDoneOldAcube(MigFileVO migFileVO) {
+    	if(this._reConnectCount < 5){
+        		boolean retVal = true;
+        		try {
+        			URL url = new URL("http://bics.bsco.co.kr/cnupload/useformiguseformigg/" + migFileVO.getFileName());
+        			logger.info("http://bics.bsco.co.kr/cnupload/useformiguseformigg/" + migFileVO.getFileName());
+        			
+        			this._connection = (HttpURLConnection)url.openConnection();
+        			this._connection.setRequestMethod("GET");
+        			this._connection.connect();
+
+                    int code = this._connection.getResponseCode();
+                    
+                    if(code != 200 && code != 304){
+                    	Thread.sleep(1000);
+                    	this._reConnectCount++;
+                    	this.checkProcessDoneOldAcube(migFileVO);
+                    }
+				} catch (Exception e) {
+					logger.error("fail to check file existence : " + e.getMessage());
+					retVal = false;
+				}
+    		return retVal;
+    	}else{
+    		logger.error("fail to get files from acube 3.0. retry over 5. docId: "+migFileVO.getDocId()+" fileName: "+migFileVO.getFileName());
+    		return false;
+    	}
+	}
+
+	public boolean insertFileInfo(List<FileVO> fileVOs) {
     	try {
     		DrmParamVO drmParamVO = new DrmParamVO();
 			drmParamVO.setCompId("A10000");
@@ -234,7 +308,6 @@ public class MigController {
 		}
     	
     }
-    
     public List<FileVO> makeFileVos(List<MigFileVO> filelist) {
     	List<FileVO> fileVOs = new ArrayList<FileVO>();
     	
@@ -280,6 +353,46 @@ public class MigController {
     	return fileVOs;
     }
     
+
+    public FileVO makeFileVo(MigFileVO migFileVO, int order) {
+    	
+    		FileVO fileVO = new FileVO();
+    		
+    		fileVO.setDocId(migFileVO.getDocId());
+		    fileVO.setCompId("useformiguseformigg");
+		    fileVO.setProcessorId("Ua67c9c6aa7ac4031ff9");
+		    fileVO.setTempYn("N");
+		    fileVO.setFileName(migFileVO.getFileName());
+		    fileVO.setDisplayName(migFileVO.getFileName());
+		    String fileType = migFileVO.getAttachType();
+		    
+		    if(fileType!=null){
+		    	if(fileType.equals("0")){
+		    		fileVO.setFileType("AFT001");
+		    	}else if(fileType.equals("1")){
+		    		fileVO.setFileType("AFT007");
+		    	}else if(fileType.equals("2")){
+		    		fileVO.setFileType("AFT004");
+				    int index = fileVO.getFileName().lastIndexOf( "." );
+				    if(index > -1 ){
+				    	String extension = fileVO.getFileName().substring( index );
+					    fileVO.setDisplayName(migFileVO.getDisplayName()+extension);
+				    }
+		    	}
+		    }
+			fileVO.setFileSize(fileVO.getFileSize());
+		   
+		    String uploadTemp = AppConfig.getProperty("upload_temp", "", "attach");
+		    fileVO.setFilePath(uploadTemp + File.separator + "migOldData" + File.separator + migFileVO.getFileName());
+		    fileVO.setImageWidth(0);
+		    fileVO.setImageHeight(0);
+		    fileVO.setFileOrder(order);
+		    fileVO.setRegisterId("U2c4ee314eac04031ffd");
+		    fileVO.setRegisterName("관리자");
+		    fileVO.setDocVersion("");
+    	
+    	return fileVO;
+    }
     
     
     public boolean getStartConnection() {
@@ -318,6 +431,23 @@ public class MigController {
 				logger.error("fail to check file existence : " + e.getMessage());
 			}
     	}
+		return true;
+    }
+
+    public boolean copyFilesFromOldAcube(MigFileVO migFileVO) {
+    		
+    		try {
+    			String uploadTemp = AppConfig.getProperty("upload_temp", "", "attach");
+				
+				URL url1 = new URL("http://bics.bsco.co.kr/cnupload/useformiguseformigg/" + migFileVO.getFileName());
+		    	String path = uploadTemp + File.separator + "migOldData" + File.separator + migFileVO.getFileName();  // 구문서대장은 comp_id와 상관없이 간다. temp경로 인식을 위해 가상으로 만들어준다.
+		    	File file = new File(path); file.deleteOnExit(); 
+		    	FileUtils.copyURLToFile(url1, file);
+		    	
+			} catch (Exception e) {
+				logger.error("fail to check file existence : " + e.getMessage());
+			}
+    		
 		return true;
     }
     

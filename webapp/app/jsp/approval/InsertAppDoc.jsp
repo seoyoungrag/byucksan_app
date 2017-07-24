@@ -1755,6 +1755,57 @@ if(formName == "QBA-0000-01 회사표준갑지" || formName == "QBB-0000-01 회�
 	}
 	
 	var auditcount = getAuditCount(line, "<%=opt304%>");
+	//170427 TAA-5000-01 (물질안전보건자료 MSDS) 추가
+}else if(formName.indexOf("물질안전보건자료 MSDS")>0){
+	var baseDraftLine = 3;
+	var baseExecLine = 2;
+	var assistancecount = 5;
+	
+	var line = getApproverList(appline);
+	var tobeDraftLine = getApproverCountByLine(line, 1);
+	var tobeExecLine = getApproverCountByLine(line, 2);
+	var assistancecount = getAssistantCount(line, "<%=opt054%>");
+	tobeDraftLine -= assistancecount;
+	if (baseDraftLine == 0 && baseExecLine == 0) {
+		alert("<spring:message code='approval.msg.noapprovertable'/>");
+		return;
+	} else if (tobeDraftLine > baseDraftLine || tobeExecLine > baseExecLine) {
+		if (!confirm("<spring:message code='approval.msg.exceed.double.appline'/>")) {
+			selectAppLine();
+			return;
+		}
+	}
+	for (var loop = 0; loop < itemCount; loop++) {
+		var itemnum = loop + 1;
+		$("#appLine", "#approvalitem" + itemnum).val(appline);
+		
+		var hwpCtrl = Document_HwpCtrl;
+		if (currentItem != itemnum) {
+			hwpCtrl = Enforce_HwpCtrl;
+			reloadHiddenBody($("#bodyFile", "#approvalitem" + itemnum).val());
+		}
+		if (tobeDraftLine == asisDraftLine || tobeDraftLine == 0) {
+			clearApprTable(hwpCtrl);
+		} else {
+			var draftSignFile = "<%=webUrl%><%=webUri%>/app/ref/rsc/<%=compId%>/AppLineFormD" + tobeDraftLine + ".hwp";
+			replaceApprTable(hwpCtrl, draftSignFile, HwpConst.Field.DraftDeptLine);
+		}
+		if (tobeExecLine == asisExecLine || tobeExecLine == 0) {
+			clearApprTable(hwpCtrl);
+		} else {
+			var execSignFile = "<%=webUrl%><%=webUri%>/app/ref/rsc/<%=compId%>/AppLineFormE" + tobeExecLine + ".hwp";
+			replaceApprTable(hwpCtrl, execSignFile, HwpConst.Field.ExecDeptLine);
+		}
+		var assistantlinetype = $("#assistantLineType", "#approvalitem" + itemnum).val();
+		var auditlinetype = $("#auditLineType", "#approvalitem" + itemnum).val();
+		resetApprover(hwpCtrl, getApproverUser(line), 2, "<%=docType%>", assistantlinetype, auditlinetype);
+		setOpenLevel(hwpCtrl);
+		if (currentItem != itemnum) {
+			arrangeBody(hwpCtrl, itemnum, false);
+		}
+	}
+	
+	var auditcount = getAuditCount(line, "<%=opt304%>");
 }else{
 		var baseDraftLine = 10;
 		var baseExecLine = 10;

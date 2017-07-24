@@ -392,7 +392,7 @@ function closePopup() {
 <% */ %>
 				</td> 
 				<td width="70%" class="tb_left_bg" valign="top" > 
-					<textarea id="popComment" name="popComment" cols="60" rows="9" style="width:100%;height:100px;overflow:auto;ime-mode:active;" ><%=popComment%></textarea>
+					<textarea id="popComment" name="popComment" cols="60" rows="9" style="width:100%;height:320px;overflow:auto;ime-mode:active;" ><%=popComment%></textarea>
 				</td>
 			</tr>  
 		</table>

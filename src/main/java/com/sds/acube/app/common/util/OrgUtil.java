@@ -1938,6 +1938,7 @@ public class OrgUtil extends DataHandler {
 	    userVO.setDelegate(employee.getIsDelegate());
 	    userVO.setExistence(employee.getIsExistence());
 	    userVO.setUserRID(employee.getUserRID());
+	    userVO.setRoleCodes(employee.getRoleCodes());
 
 	    String displayPosition = "";
 	    for(int p=0; p< displayPositionOrderSize; p++) {

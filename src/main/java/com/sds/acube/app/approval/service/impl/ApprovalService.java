@@ -3882,8 +3882,12 @@ public class ApprovalService extends BaseService implements IApprovalService {
 	// 본문파일저장
 	List<FileVO> bodyFileVOs = new ArrayList<FileVO>();
 	List<FileHisVO> bodyFileHisVOs = new ArrayList<FileHisVO>();
+    String uploadTemp = AppConfig.getProperty("upload_temp", "", "attach");
 	for (int loop = 0; loop < fileCount; loop++) {
 	    FileVO fileVO = fileVOs.get(loop);
+	    //0413 파일패스가 null이다.
+	    fileVO.setFilePath(uploadTemp + "/" + compId + "/" + fileVO.getFileName());
+	    logger.info("returnappdoc before upload attach: "+fileVO.getFilePath());
 	    //added by jkkim : 감사기안문 관련 fileType 추가함(aft014.equals(fileVO.getFileType()))
 	    if (aft001.equals(fileVO.getFileType()) || aft002.equals(fileVO.getFileType()) || aft014.equals(fileVO.getFileType())) {
 	    	bodyFileVOs.add(fileVO);

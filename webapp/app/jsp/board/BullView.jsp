@@ -214,7 +214,7 @@ function version(){
 		isDownload = '${isDownload2}';
 	}
 	var param = 'bullId=<%=boardVO.getBullId()%>&docVersion=' + version + '&selectBindId=' + selectBindId + '&isModified=' + isModified + '&isDownload=' + isDownload;
-	location.href = "<%=webUri%>/app/board/BullVersion.do?" + param; //이전이력조회
+	location.href = "<%=webUri%>/app/board/BullViewShare.do?" + param; //이전이력조회
 }
 
 function printRetentionPeriod(retentionPeriod) {

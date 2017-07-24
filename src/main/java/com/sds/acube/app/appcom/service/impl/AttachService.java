@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -295,6 +296,11 @@ public class AttachService extends BaseService implements IAttachService {
 		FileVO fileVO = list.get(loop);
 		filePaths[loop] = fileVO.getFilePath();
 		fileTypes[loop] = checkFileType(fileVO.getFileType());
+		if(!docId.equals("")){
+			logger.info("mobile uploadAttach docId: "+docId);
+			logger.info("mobile uploadAttach filePath: "+filePaths[loop]);
+			logger.info("mobile uploadAttach fileTypes: "+fileTypes[loop]);
+		}
 	    }
 	    applyDrm(filePaths, fileTypes, drmParamVO, "decode");
 	    fileIds = jStor.regFiles(filePaths);

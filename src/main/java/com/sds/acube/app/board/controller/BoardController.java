@@ -1137,6 +1137,7 @@ public class BoardController extends BaseController {
 		Map<String,String> map = new HashMap<String, String>();
 		map.put("bullId",boardVO.getBullId());
 		map.put("compId",compId);
+		map.put("docVersion",boardVO.getDocVersion());
 		String change = "same";
 		List<FileVO> prevFileVOs = boardService.listFile(map);
 		List<FileVO> nextFileVOs = new ArrayList<FileVO>();
@@ -1162,11 +1163,11 @@ public class BoardController extends BaseController {
 		    FileVO prevFileVO = prevFileVOs.get(loop);
 		    String compare = ApprovalUtil.compareFile(fileVOs, prevFileVO, false);
 		    if ("change".equals(compare)) {
-			change = compare;
+		    	change = compare;
 		    } else if ("order".equals(compare)) {
-			if ("same".equals(change)) {
-			    change = compare;
-			}
+				if ("same".equals(change)) {
+				    change = compare;
+				}
 		    }
 		}
 

@@ -96,6 +96,10 @@
 <jsp:include page="/app/jsp/list/common/ListCommon.jsp" flush="true" />
 
 <%@ include file="/app/jsp/common/calendarPopup.jsp"%>
+<%
+String roleCodes = (String) session.getAttribute("ROLE_CODES"); // 역할코드
+String roleId40 = AppConfig.getProperty("role_old_doc_reader", "", "role");
+%>
 <script>
 
 function goSearchDoc(){
@@ -117,12 +121,41 @@ function goSearchDoc(){
 	.submit();
 
 }
+<%
+if (roleCodes.indexOf(roleId40)>=0) {
+%>
+$(document).delegate("#calYearSelect", "change",  function(){
+	$('#calYearSelect option').each(function(index,value){
+		if(this.value!='2014' && this.value!='2015'){
+			$(this).remove();	
+		}
+			
+	})
+});
 
+$(window).load(function(){
+	cal.addDisabledDates(null, "2013-12-31");
+	cal.addDisabledDates("2016-01-01", null);
+	
+	$('#calendarBTN1,#calendarBTN2').click(function(){
+	
+		$('#calYearSelect option').each(function(index,value){
+			if(this.value!='2014' && this.value!='2015'){
+				$(this).remove();	
+			}  
+				
+		})
+	
+	});
+	
+});
+<%}%>
 
 </script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-
+<input type="hidden" id="startDt" value="2001/01/01">
+<input type="hidden" id="endDt" value="2013/12/31">
 <acube:outerFrame>
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 		<tr>
@@ -263,7 +296,7 @@ function goSearchDoc(){
 								row.setAttribute(rowIndex, "title",rsDocCategory);	
 					
 								if("Y".equals(rsIsAttached)) {
-									row.setData(++rowIndex, "<a href=\"#\"   onclick=\"javascript:fncShowAttach('"+rsDocId+"','N','useformiguseformig');fncMoveAttachDiv(event);\"><img src=\"" + webUri + "/app/ref/image/icon_clip.gif\" border='0'>");
+									row.setData(++rowIndex, "<a href=\"#\"   onclick=\"javascript:fncShowAttach('"+rsDocId+"','N','useformiguseformigg');fncMoveAttachDiv(event);\"><img src=\"" + webUri + "/app/ref/image/icon_clip.gif\" border='0'>");
 								}else{
 								    row.setData(++rowIndex, "");
 								}

@@ -554,6 +554,9 @@
 				#if ($tempYn)	
 					AND TEMP_YN = :tempYn
 				#end
+				#if ($docVersion)	
+					AND DOC_VERSION = :docVersion
+				#end
 				#if ($fileType)	
 					AND FILE_TYPE = :fileType
 				#end
@@ -567,12 +570,16 @@
 			<statement>
 			<![CDATA[
 				SELECT
-					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID, 
+					DOC_ID, COMP_ID, PROCESSOR_ID, TEMP_YN, FILE_ID,
 					FILE_NAME, DISPLAY_NAME, FILE_TYPE, FILE_SIZE, IMAGE_WIDTH, 
-					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE 
+					IMAGE_HEIGHT, FILE_ORDER, REGISTER_ID, REGISTER_NAME, TO_CHAR(REGIST_DATE, 'yyyy-mm-dd hh24:mi:ss') REGIST_DATE,
+					DOC_VERSION  
 				FROM TGW_FILE_INFO
 				WHERE 
 					DOC_ID = :bullId AND COMP_ID = :compId
+				#if ($docVersion)
+					AND DOC_VERSION =:docVersion 
+				#end	
 				#if ($processorId)	
 					AND PROCESSOR_ID = :processorId
 				#end

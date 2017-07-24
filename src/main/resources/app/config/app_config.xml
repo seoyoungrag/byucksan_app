@@ -15,6 +15,7 @@
 			<prefix>file_</prefix>										<!-- 회사별 config 파일을 정의한 element prefix  -->			
 			<!-- <file_1000001>app-config-1000001.xml</file_1000001> --> 		<!-- 산업은행 config 파일 -->
 			<!-- <file_2000001>app-config-2000001.xml</file_2000001> --> 		<!-- 테스트회사 config 파일 -->
+			<!-- <file_ESIS000>app-config-ESIS000.xml</file_ESIS000> -->
 		</category>
 	</category>
 
@@ -114,6 +115,7 @@
 		<role_dailyinpectreader>7203</role_dailyinpectreader> 				<!-- 감사문서 조회자(role_dailyinpecttarget)이 처리한 문서를 보는 사람) -->
   		<role_dailyinpecttarget>7204</role_dailyinpecttarget> 				<!-- 감사문서 대상자 -->
   		<role_officecoordinationreader>7205</role_officecoordinationreader> <!-- 부서협조 열람자(부서에서 협조처리한 문서를 열람하는 권한) -->
+  		<role_old_doc_reader>7206</role_old_doc_reader> 					<!-- 구문서대장열람자 -->
 	</category>
 
 	<category name="etc">

@@ -258,15 +258,20 @@
 				    TAPPRLINE.DRAFTER_ID   AS DRAFT_UID,
 				    TAPPRLINE.CHIEF_ID     AS CHIEF_UID,
 				    TAPPRLINE.CHIEF_NAME   AS CHIEF_NAME,
-				    TAPPRLINE.COMP_DATE    AS COMPLETED_DATE
+				    TAPPRLINE.COMP_DATE    AS COMPLETED_DATE,
+				    TAPP.COMP_ID AS COMP_ID
 				  FROM TGW_REGI_DOC TDOC,
-				    TGW_REGI_APPRLINE TAPPRLINE
+				    TGW_REGI_APPRLINE TAPPRLINE,
+				    (SELECT APPROVER_DEPT_ID, COMP_ID FROM TGW_APP_LINE GROUP BY APPROVER_DEPT_ID, COMP_ID) TAPP
 				  WHERE TDOC.REGISTRY_TYPE='Y'
 				  AND TDOC.KEEP_STATUS    = 0
 				  AND TDOC.DOC_ID         = TAPPRLINE.DOC_ID
 				  AND TAPPRLINE.LINE_NAME = '0'
+				  AND TAPP.APPROVER_DEPT_ID(+)=TAPPRLINE.DRAFT_DEPT_CODE
 				#if ($vo.deptId && !$vo.deptId.equals(""))
-				  -- AND DRAFT_PROC_DEPT_CODE = :vo.deptId
+				  AND DRAFT_PROC_DEPT_CODE = :vo.deptId
+			    #elseif ($vo.compId && !$vo.compId.equals(""))
+			      AND TAPP.COMP_ID = :vo.compId
 				#end
 				  )
 				WHERE 1=1
@@ -356,12 +361,17 @@
 				    tDOC.DRAFT_ORG_NAME       AS SENDER_COMPANY,
 				    tDOC.CHARGER_ID           AS CHARGER_ID,
 				    tDOC.CHARGER_NAME         AS CHARGER_NAME,
-				    tDOC.SERIAL_NUMBER        AS SERIAL_NUMBER
-				  FROM TGW_RECV_DOC tDOC
+				    tDOC.SERIAL_NUMBER        AS SERIAL_NUMBER,
+				    TAPP.COMP_ID              AS COMP_ID
+				  FROM TGW_RECV_DOC tDOC,
+				  (SELECT APPROVER_DEPT_ID, COMP_ID FROM TGW_APP_LINE GROUP BY APPROVER_DEPT_ID, COMP_ID) TAPP
 				  WHERE tDOC.FLOW_STATUS IN ( 10, 12, 13, 15, 16, 17 ,18, 19, 20 )
+				  AND TAPP.APPROVER_DEPT_ID(+) = TDOC.ENFORCE_PROC_DEPT_CODE
 				  AND tDOC.KEEP_STATUS    = 0
 				#if ($vo.deptId && !$vo.deptId.equals(""))
 				  AND ENFORCE_PROC_DEPT_CODE = :vo.deptId
+				#elseif ($vo.compId && !$vo.compId.equals(""))
+			      AND TAPP.COMP_ID = :vo.compId
 				#end
 				  ) vTOTALRECEPTION
 				WHERE 1=1

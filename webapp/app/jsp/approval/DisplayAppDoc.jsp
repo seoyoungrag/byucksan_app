@@ -161,6 +161,11 @@
 
 		FileVO signFileVO = (FileVO) request.getAttribute("sign");
 		ArrayList<FileVO> signList = (ArrayList<FileVO>) request.getAttribute("signList");
+
+		//20161120
+		ArrayList<FileVO> signListTempVO = (ArrayList<FileVO>) request.getAttribute("signListTempVO");
+		//20161215
+		ArrayList<AppLineVO> appLineVOsTemp = (ArrayList<AppLineVO>) request.getAttribute("appLineTempVO");
 		
 		FileVO bodyVO = (FileVO) request.getAttribute("bodyfile");
 		String itemNum = (String) request.getAttribute("itemnum");
@@ -551,7 +556,44 @@ function initialize() {
 	// 문서위치 조정
 	setTimeout(function(){moveStartPosition();}, 100);
 
-	
+
+	 /* 20161215 */
+	var signListTemp = new Array();
+	var fileListTempCount = 0;
+	<% if (signListTempVO != null) { 
+			int signCountTemp = signListTempVO.size();
+			if (signCountTemp > 0) { %>
+	<%		for (int loop = 0; loop < signCountTemp; loop++) {
+				    FileVO signVO = (FileVO) signListTempVO.get(loop);		%>
+					var signTemp = new Object();
+					signTemp.filename = "<%=CommonUtil.nullTrim(signVO.getFileName())%>";
+					signTemp.displayname = "<%=CommonUtil.nullTrim(signVO.getFileName())%>";
+					signListTemp[fileListTempCount++] = signTemp;
+				<%		} %>
+			<%		} %>
+	 <% } %>
+	 /* 20161215 */
+if (signListTemp.length > 0) {
+	var resultlistTemp = FileManager.savefilelist(signListTemp);
+	<% if (signListTempVO != null) { %>
+		var itemCount = getItemCount();
+		 for (var loop = 0; loop < itemCount; loop++) {
+			var itemnum = loop + 1;
+			var applineTemp = $("#appLineTemp", "#approvalitem" + itemnum).val();
+			var assistantlinetype = $("#assistantLineType", "#approvalitem" + itemnum).val();
+			var auditlinetype = $("#auditLineType", "#approvalitem" + itemnum).val();
+			<% if ("Y".equals(doubleYn)) { %>
+						resetApprover(Document_HwpCtrl, getApproverUser(applineTemp), 2, "<%=docType%>", assistantlinetype, auditlinetype);
+			<% } else { %>
+						resetApprover(Document_HwpCtrl, getApproverUser(arrangeAssistant(applineTemp, auditlinetype)), 1, "<%=docType%>", assistantlinetype, auditlinetype);
+			<% } %>
+			$("#appLine", "#approvalitem" + itemnum).val(applineTemp);
+		} 
+		
+		//나중에 이부분만 주석하면 문서 영향 없음
+	<%}%>
+	}
+		//도장찍기 끝
 }
 
 //기안자 보고경로
@@ -3301,6 +3343,7 @@ function insertStatement() {
 		<input id="auditLineType" name="auditLineType" type="hidden" value="<%=StringUtil.null2str(appDocVO.getAuditLineType(), opt304)%>"></input><!-- 감사라인유형 --> 
 		<!-- 보고경로 --> 
 		<input id="appLine" name="appLine" type="hidden" value="<%=EscapeUtil.escapeHtmlTag(AppTransUtil.transferAppLine(appLineVOs))%>"></input>
+		<input id="appLineTemp" name="appLine" type="hidden" value="<%=EscapeUtil.escapeHtmlTag(AppTransUtil.transferAppLine(appLineVOsTemp))%>"></input>
 		<!-- 수신자 --> 
 		<input id="appRecv" name="appRecv" type="hidden" value="<%=EscapeUtil.escapeHtmlTag(AppTransUtil.transferAppRecv(appRecvVOs))%>"></input>
 		<!-- 결재의견 -->

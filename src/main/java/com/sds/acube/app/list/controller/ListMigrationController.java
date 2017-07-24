@@ -118,6 +118,7 @@ public class ListMigrationController extends BaseController{
 	String listType = appCode.getProperty("OPT111", "OPT111", "OPT");
 	String lobCode	= appCode.getProperty("LOB010", "LOB010","LOB");
 	String roleId11 = AppConfig.getProperty("role_doccharger", "", "role");
+	String roleId40 = AppConfig.getProperty("role_old_doc_reader", "", "role");
 	String deptAdminYn = "N";
 	String roleCodes = StringUtil.null2str((String) session.getAttribute("ROLE_CODES"), "");
 	userId = StringUtil.null2str((String) session.getAttribute("USER_ID"), ""); // 사용자 userId
@@ -147,8 +148,15 @@ public class ListMigrationController extends BaseController{
 	ListUtil defaultListUtil = new ListUtil();
     String searchBasicPeriod = envOptionAPIService.selectOptionValue(compId, appCode.getProperty("OPT331", "OPT331", "OPT"));
 	HashMap<String, String> returnDate = defaultListUtil.returnDate(searchBasicPeriod, startDate, endDate);
+	if (roleCodes.indexOf(roleId40)>=0){
+		
+	}
 	if(startDate.equals("")&&endDate.equals("")){
 	    startDate	= DateUtil.addYears(DateUtil.string2String((String)returnDate.get("startDate"),"yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"),-1) +" 00:00:00";
+	    if (roleCodes.indexOf(roleId40)>=0){
+	    	returnDate = defaultListUtil.returnDate(searchBasicPeriod, "2014-01-01", "2015-12-31");
+	    	startDate	= DateUtil.addYears(DateUtil.string2String((String)returnDate.get("startDate"),"yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"),0) +" 00:00:00";
+	    }
 		endDate		= (String)returnDate.get("endDate");
 	}else{
 		startDate	= (String)returnDate.get("startDate");
@@ -161,9 +169,15 @@ public class ListMigrationController extends BaseController{
 	searchVO.setStartDate(startDate);
 	searchVO.setEndDate(endDate);
 	searchVO.setLobCode("LOB004");
-	searchVO.setCompId(compId);
-	searchVO.setUserId(userId);
-	searchVO.setDeptId(deptId);
+	if (roleCodes.indexOf(roleId40)>=0){
+		searchVO.setCompId(compId);
+		searchVO.setUserId(userId);
+		searchVO.setDeptId(null);
+	}else{
+		searchVO.setCompId(compId);
+		searchVO.setUserId(userId);
+		searchVO.setDeptId(deptId);
+	}
 	searchVO.setSearchType(searchType);
 	searchVO.setSearchWord(searchWord);
 	searchVO.setListType(listType);
@@ -260,6 +274,7 @@ public class ListMigrationController extends BaseController{
 	String listType = appCode.getProperty("OPT111", "OPT111", "OPT");
 	String lobCode	= appCode.getProperty("LOB004", "LOB004","LOB");
 	String roleId11 = AppConfig.getProperty("role_doccharger", "", "role");
+	String roleId40 = AppConfig.getProperty("role_old_doc_reader", "", "role");
 	String deptAdminYn = "N";
 	
 	String roleCodes = StringUtil.null2str((String) session.getAttribute("ROLE_CODES"), "");
@@ -291,8 +306,15 @@ public class ListMigrationController extends BaseController{
 	ListUtil defaultListUtil = new ListUtil();
     String searchBasicPeriod = envOptionAPIService.selectOptionValue(compId, appCode.getProperty("OPT331", "OPT331", "OPT"));
     HashMap<String, String> returnDate = defaultListUtil.returnDate(searchBasicPeriod, startDate, endDate);
+
+	if (roleCodes.indexOf(roleId40)>=0){
+	}
 	if(startDate.equals("")&&endDate.equals("")){
 	    startDate	= DateUtil.addYears(DateUtil.string2String((String)returnDate.get("startDate"),"yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"),-1) +" 00:00:00";
+	    if (roleCodes.indexOf(roleId40)>=0){
+			returnDate = defaultListUtil.returnDate(searchBasicPeriod, "2014-01-01", "2015-12-31");
+	    	startDate	= DateUtil.addYears(DateUtil.string2String((String)returnDate.get("startDate"),"yyyy-MM-dd HH:mm:ss","yyyy-MM-dd"),0) +" 00:00:00";
+	    }
 		endDate		= (String)returnDate.get("endDate");
 	}else{
 		startDate	= (String)returnDate.get("startDate");
@@ -301,9 +323,16 @@ public class ListMigrationController extends BaseController{
 	
 	List<SearchVO> registList = new ArrayList<SearchVO>();	
 	SearchVO searchVO = new SearchVO();
-	searchVO.setCompId(compId);
-	searchVO.setUserId(userId);
-	searchVO.setDeptId(deptId);
+
+	if (roleCodes.indexOf(roleId40)>=0){
+		searchVO.setCompId(compId);
+		searchVO.setUserId(userId);
+		searchVO.setDeptId(null);
+	}else{
+		searchVO.setCompId(compId);
+		searchVO.setUserId(userId);
+		searchVO.setDeptId(deptId);
+	}
 	searchVO.setTitle(title);
 	searchVO.setDrafterName(drafterName);
 	searchVO.setStartDate(startDate);
@@ -336,7 +365,7 @@ public class ListMigrationController extends BaseController{
 	
 	if(curCount == 0 && totalCount != 0) {
 	    cPage = cPage - 1;
-	    page = listMigService.listMigDocRegist(searchVO, cPage, pageSize);
+	    page = listMigService.listMigDocDist(searchVO, cPage, pageSize);
 	}
 	
 	ModelAndView mav = null;

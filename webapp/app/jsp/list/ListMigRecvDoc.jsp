@@ -30,6 +30,8 @@
  */ 
 %>
 <%
+	String roleCodes = (String) session.getAttribute("ROLE_CODES"); // 역할코드
+	String roleId40 = AppConfig.getProperty("role_old_doc_reader", "", "role");
 	response.setHeader("pragma","no-cache");
 
 	String dateFormat = AppConfig.getProperty("date_format", "yyyy-MM-dd", "date");
@@ -117,6 +119,37 @@ function goSearchDoc(){
 	.submit();
 
 }
+
+<%
+if (roleCodes.indexOf(roleId40)>=0) {
+%>
+$(document).delegate("#calYearSelect", "change",  function(){
+	$('#calYearSelect option').each(function(index,value){
+		if(this.value!='2014' && this.value!='2015'){
+			$(this).remove();	
+		}
+			
+	})
+});
+
+$(window).load(function(){
+	cal.addDisabledDates(null, "2013-12-31");
+	cal.addDisabledDates("2016-01-01", null);
+	
+	$('#calendarBTN1,#calendarBTN2').click(function(){
+	
+		$('#calYearSelect option').each(function(index,value){
+			if(this.value!='2014' && this.value!='2015'){
+				$(this).remove();	
+			}  
+				
+		})
+	
+	});
+	
+});
+
+<%}%>
 
 
 </script>
@@ -262,7 +295,7 @@ function goSearchDoc(){
 								row.setAttribute(rowIndex, "title",rsFlowStatus);	
 								
 								if("Y".equals(rsIsAttached)) {
-									row.setData(++rowIndex, "<a href=\"#\"   onclick=\"javascript:fncShowAttach('"+rsDocId+"','N','useformiguseformig');fncMoveAttachDiv(event);\"><img src=\"" + webUri + "/app/ref/image/icon_clip.gif\" border='0'>");
+									row.setData(++rowIndex, "<a href=\"#\"   onclick=\"javascript:fncShowAttach('"+rsDocId+"','N','useformiguseformigg');fncMoveAttachDiv(event);\"><img src=\"" + webUri + "/app/ref/image/icon_clip.gif\" border='0'>");
 								}else{
 								    row.setData(++rowIndex, "");
 								}

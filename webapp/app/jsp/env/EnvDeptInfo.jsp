@@ -237,14 +237,19 @@ function winZipCode() {
 				<table width="100%" border="0" cellpadding="0" cellspacing="0">
 					<tr>
 						<td width="40%">
+							<input type="text" id="zipCode" name="zipCode" value="${vo.zipCode}" style="width:<%=addressStyleInfo%>%;"/>
+							<!-- 
 							<input type="text" id="displayZipCode" name="displayZipCode" value="${vo.zipCode}" group="readOnly" readOnly class="input_read" style="width:<%=addressStyleInfo%>%;"/>
 							<input type="hidden" id="zipCode" name="zipCode" value="${vo.zipCode}" />
+							 -->
 						</td>
 						<td width="*">
 							<%if ("Y".equals(addressButtonViewYn)) { %>
+								<!-- 
 								<acube:buttonGroup align="left">
 									<acube:button id="sendOk" disabledid="" onclick="winZipCode();" value="<%=buttonZipcode%>" type="4" class="gr"/>
 								</acube:buttonGroup>
+								-->
 							<%} %>
 						</td>
 					</tr>
@@ -257,7 +262,8 @@ function winZipCode() {
 				<nobr><spring:message code="env.deptinfo.form.05"/></nobr><!-- 주소 -->
 			</td>
 			<td class="tb_left_bg">
-				<nobr><input type="text" id="address" name="address" value="${vo.address}" group="readOnly" readOnly class="input_read" style="width:100%;"/></nobr>
+				<!-- <nobr><input type="text" id="address" name="address" value="${vo.address}" group="readOnly" readOnly class="input_read" style="width:100%;"/></nobr> -->
+				<nobr><input type="text" id="address" name="address" value="${vo.address}" style="width:100%;"/></nobr>
 			</td>
 			<td class="tb_tit_left">
 				<nobr><spring:message code="env.deptinfo.form.06"/></nobr><!-- 상세주소 -->

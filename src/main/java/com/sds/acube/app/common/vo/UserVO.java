@@ -275,8 +275,22 @@ public class UserVO {
 	 */
     private String emptyEndDate = "";
     
+    private int approvalWaitCount = 0;
+    
     
     /**
+	 * @return the approvalWaitCount
+	 */
+	public int getApprovalWaitCount() {
+		return approvalWaitCount;
+	}
+	/**
+	 * @param approvalWaitCount the approvalWaitCount to set
+	 */
+	public void setApprovalWaitCount(int approvalWaitCount) {
+		this.approvalWaitCount = approvalWaitCount;
+	}
+	/**
 	 * @return  the userID
 	 */
     public String getUserID() {

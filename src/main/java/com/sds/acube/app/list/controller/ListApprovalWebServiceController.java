@@ -2780,6 +2780,7 @@ response.getWriter().write(jsonresult.toString());
  */
 @RequestMapping("/app/list/webservice/approval/makeHwpForProcessDoc.do")
 public void makeHwpForProcessDoc(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	logger.info("========================makeHwpForProcessDoc started :"+DateUtil.getCurrentTime()+"====================");
 	JSONObject jsonresult = new JSONObject();
 	HttpSession session = request.getSession();
 	String compId = (String) session.getAttribute("COMP_ID"); // 사용자 소속 회사 아이디
@@ -2789,8 +2790,6 @@ public void makeHwpForProcessDoc(HttpServletRequest request, HttpServletResponse
 	//
 	String appLineNum = CommonUtil.nullTrim(request.getParameter("appLineNum"));
 	//
-	String web_url = AppConfig.getProperty("web_url", "", "path");
-	String web_uri = AppConfig.getProperty("web_uri", "", "path");
 	String fileName = GuidUtil.getGUID();
 	String signFileName = "";
 	
@@ -2826,32 +2825,51 @@ public void makeHwpForProcessDoc(HttpServletRequest request, HttpServletResponse
 		 
 		String position = currentPos[currentUserPos][1];					//lineNum을
 		String askType = currentPos[currentUserPos][2];;
-		 
+		
+		//현재 결재자 정보 로깅
+		String[] currentInfo = currentPos[currentUserPos];
+		StringBuffer currentInfoLog = new StringBuffer("current line info: ");
+		for(int i = 0 ; i < currentInfo.length; i++){
+			currentInfoLog.append(currentInfo[i]+" ");
+		}
+		logger.info(currentInfoLog.toString());
 		// 한글문서에 직인을 찍기 위해 필요한건 원본 한글파일의 url, 직인 이미지의 url, 그리고 한글 API를 사용하기 위한 action xml이 생성된 url이다.
 		//String hwpUrl = web_url + web_uri + "/temp/A10000/532EB14E15C04a06B37C90938ECAA41D.hwp";
 		//String signUrl = web_url + web_uri + "/temp/A10000/74986FCCB8353DCF1520BED3661FFFF8.jpg";
 		
+		StringBuffer signFileLog = new StringBuffer("current line signfile info: "+compId+" "+userId+" ");
 	    FileVO signFileVO = approvalService.selectUserSeal(compId, userId);
 	    if (signFileVO != null) {
 	    	if (!"".equals(CommonUtil.nullTrim(signFileVO.getFileName()))) {
 	    		signFileName = signFileVO.getFileName();
+	    		signFileLog.append("|| "+signFileName);
+	    	}else{
+	    		signFileLog.append("|| \"\".equals(CommonUtil.nullTrim(signFileVO.getFileName()) = true");
 	    	}
+	    }else{
+	    	signFileLog.append("|| signFileVO = null");
 	    }
-		
-		xmlUrl = this.makeHwpActionXml(fileName,signFileName,appLineNum,position,askType,doubleYn, compId); //xml 생성하는 메서드 구현완료 해야 한다.	
+
+		logger.info("makeHwpActionXml started :"+DateUtil.getCurrentTime());
+		xmlUrl = this.makeHwpActionXml(fileName,signFileName,appLineNum,position,askType,doubleYn, compId); //xml 생성하는 메서드 구현완료 해야 한다.
+		logger.info("makeHwpActionXml ended :"+DateUtil.getCurrentTime());
 		
 	}catch(Exception e){
-		
+		logger.error("in Reading line info ~ makeHwpActionXml, occur error");
+		logger.error(e.getMessage());
+		e.printStackTrace();
 	}
 	
 	String hwpUrl = AppConfig.getProperty("web_url", "http://smart.bsco.co.kr:81", "path") + "/ep/temp/"+compId+"/"+bodyFileName;
-	
+	logger.info("hwp file location: "+hwpUrl);
+	logger.info("xml file location:"+xmlUrl);
 	try {
 	    	
 		String url = AppConfig.getProperty("hwpurl", "http://211.168.82.26:8088", "mail") + "/hermes/convert?";
 		url += "inputfile="+hwpUrl+"&filter=hwp-hwp&ignorecache=true&actionfile="+xmlUrl+"&urlencoding=utf-8";
-	
-		
+		logger.info("heremes convert request url :"+url);
+
+		logger.info("/hermes/convert started :"+DateUtil.getCurrentTime());
 		URL u = new URL(url);
         HttpURLConnection  huc = (HttpURLConnection) u.openConnection();
         huc.setRequestMethod("GET");
@@ -2862,6 +2880,7 @@ public void makeHwpForProcessDoc(HttpServletRequest request, HttpServletResponse
         //os.write( requestBody.getBytes("euc-kr") );
         os.flush();
         os.close();
+		logger.info("/hermes/convert ended :"+DateUtil.getCurrentTime());
         BufferedReader br = new BufferedReader( new InputStreamReader( huc.getInputStream(), "UTF-8" ), huc.getContentLength() );
         StringBuffer res = new StringBuffer();
         String buf;
@@ -2885,6 +2904,7 @@ public void makeHwpForProcessDoc(HttpServletRequest request, HttpServletResponse
              * 
              * </response>
              */
+    		logger.info("/hermes/convert result(xml) parsing start: "+DateUtil.getCurrentTime());
         	InputSource  is = new InputSource(new StringReader(res.toString())); 
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
             
@@ -2895,42 +2915,59 @@ public void makeHwpForProcessDoc(HttpServletRequest request, HttpServletResponse
             status = xpath.compile(expression).evaluate(document);
             jsonresult.put("status", status);	
             
+    		logger.info("/hermes/convert result(xml) - status: "+ status);
+            
             if(status.equals("0")){
             	expression = "//*/resource";
             	NodeList  cols = (NodeList) xpath.compile(expression).evaluate(document, XPathConstants.NODESET);
             	
             	jsonresult.put("totalCount", cols.getLength());
+        		logger.info("/hermes/convert result(xml) - converted file count: "+ cols.getLength());
             	
 				for( int idx=0; idx<cols.getLength(); idx++ ){
+	        		logger.info("/hermes/convert result(xml) - copy converted file in heremes to system temp upload path, file idx: "+ idx);
 					String uploadTemp = AppConfig.getProperty("upload_temp", "", "attach");
 					
-					URL url1 = new URL(AppConfig.getProperty("hwpurl", "http://211.168.82.26:8088", "mail") + "/hermes/resource/store/"+cols.item(idx).getTextContent()); 
+					URL url1 = new URL(AppConfig.getProperty("hwpurl", "http://211.168.82.26:8088", "mail") + "/hermes/resource/store/"+cols.item(idx).getTextContent());
+	        		logger.info("/hermes/convert result(xml) - heremes url: "+ url1); 
 			    	String path = uploadTemp+File.separator+compId+File.separator+fileName+".hwp"; 
+	        		logger.info("/hermes/convert result(xml) - temp upload url: "+ path);
 			    	File file = new File(path); file.deleteOnExit(); 
 			    	FileUtils.copyURLToFile(url1, file);
 			    	
 			    	jsonresult.put("fileName", fileName+".hwp");
 				}
             }else{
+        		logger.info("/hermes/convert result(xml) - file converting failed");
             	expression = "//*/code";
 	            String code = xpath.compile(expression).evaluate(document);
 	            jsonresult.put("code", code);	
+        		logger.info("/hermes/convert result(xml) - file converting failed, code: "+code);
 	            
 	            expression = "//*/description";
 	            String description = xpath.compile(expression).evaluate(document);
 	            jsonresult.put("description", description);	
+        		logger.info("/hermes/convert result(xml) - file converting failed, description: "+description);
             	
             }
             
         } catch(Exception e){
+        	logger.error("during /hermes/convert result(xml), occur error");
+        	logger.error(e.getMessage());
+        	e.printStackTrace();
     	}
     } catch (Exception e) {
+    	logger.error("during /hermes/convert, occur error");
+    	logger.error(e.getMessage());
+    	e.printStackTrace();
     }
 	
 	
 	
 	response.setContentType("application/x-json; charset=utf-8");
 	response.getWriter().write(jsonresult.toString());
+	logger.info("makeHwpForProcessDoc return: "+jsonresult.toString());
+	logger.info("========================makeHwpForProcessDoc ended :"+DateUtil.getCurrentTime()+"====================");
 }
 
 public String makeHwpActionXml(String fileName,String signFileName, String appLineNum,String position,String askType,String doubleYn, String compId){
@@ -2952,10 +2989,12 @@ public String makeHwpActionXml(String fileName,String signFileName, String appLi
 			}
 		}
 		
-		System.out.println("직인의 위치 pos = " + pos);
-		System.out.println("직인의 위치 appLineNum = " + appLineNum);
-		System.out.println("직인의 위치 position = " + position);
-		System.out.println("직인의 위치 askType = " + askType);
+		logger.info("signfile appline-pos = " + pos);
+		logger.info("signfile appline-appLineNum = " + appLineNum);
+		logger.info("signfile appline-position = " + position);
+		logger.info("signfile appline-askType = " + askType);
+		logger.info("signfile appline-doubleYn = " + doubleYn);
+		logger.info("signfile appline-compId = " + compId);
 		
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -2986,6 +3025,8 @@ public String makeHwpActionXml(String fileName,String signFileName, String appLi
 		param1_2.appendChild(doc.createTextNode(AppConfig.getProperty("web_url", "http://smart.bsco.co.kr:81", "path") + "/ep/temp/"+compId+"/"+signFileName));
 		action1.appendChild(param1_2);
 
+		logger.info("signfile imagePath = " + AppConfig.getProperty("web_url", "http://smart.bsco.co.kr:81", "path") + "/ep/temp/"+compId+"/"+signFileName);
+		
 		Attr attr1_2 = doc.createAttribute("id");
 		attr1_2.setValue("imagePath");
 		param1_2.setAttributeNode(attr1_2);
@@ -3025,13 +3066,23 @@ public String makeHwpActionXml(String fileName,String signFileName, String appLi
 		Transformer transformer = transformerFactory.newTransformer();
 		DOMSource source = new DOMSource(doc);
 		//StreamResult result = new StreamResult(new File(web_url + web_uri + "/temp/A10000/532EB14E15C04a06B37C90938ECAA41D.xml"));
+		logger.info("signfile xmlPath = " + "/app/applications/luxor_collaboration/webapp/collaboration/upload_images/hwpxml/"+fileName+".xml");
 		StreamResult result = new StreamResult(new File("/app/applications/luxor_collaboration/webapp/collaboration/upload_images/hwpxml/"+fileName+".xml"));
+		logger.info("signfile xmlPath stream result = "+result);
 		transformer.transform(source, result);
 		
 	} catch (ParserConfigurationException pce) {
+		logger.error("during makeHwpActionXml, occur ParserConfigurationException");
+		logger.error(pce.getMessage());
 		pce.printStackTrace();
 	} catch (TransformerException tfe) {
+		logger.error("during makeHwpActionXml, occur TransformerException");
+		logger.error(tfe.getMessage());
 		tfe.printStackTrace();
+	} catch (Exception e){
+		logger.error("during makeHwpActionXml, occur error");
+		logger.error(e.getMessage());
+		e.printStackTrace();
 	}
 	
 	return AppConfig.getProperty("portal_url", "http://smart.bsco.co.kr", "portal") + "/luxor_collaboration/collaboration/upload_images/hwpxml/"+fileName+".xml";

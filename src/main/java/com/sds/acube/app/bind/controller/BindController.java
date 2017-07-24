@@ -2902,14 +2902,17 @@ public class BindController extends BindBaseController {
 		
 		bindVO.setBindType(CommonUtil.nullTrim(request.getParameter("bindType")));
 		*/
-
+		String isManager = CommonUtil.nullTrim(request.getParameter("isManager"));
 		BindVO bindVO = new BindVO();
 		
 		bindVO.setCompId(compId);
 		bindVO.setDeptId(deptId);
 		bindVO.setCreateYear(searchYear);
-		bindVO.setBinding(N);
-		bindVO.setArrange(N);
+		if(isManager.equals("Y")){
+		}else{
+			bindVO.setBinding(N);
+			bindVO.setArrange(N);
+		}
 		bindVO.setLangType(AppConfig.getCurrentLangType());
 
 		

@@ -1934,12 +1934,14 @@ function onMoveDown(){
 //확인버튼 클릭
 function sendOk(){
 	var appline = "";
-	
 	//결재라인 롤을 체크한다.
 	if(! checkLineRole()){
 		return;
 	}
  	appline = makeApprovalLine();
+ 	/* if(formName.indexOf("물질안전보건자료")>0){
+ 		return false;
+ 	} */
 <% if ("Y".equals(adminFlag)) { %>	
 	if (opener != null && opener.setAppLineByAdmin) {
 		var msg = opener.setAppLineByAdmin(appline, false);
@@ -2009,7 +2011,8 @@ function setLineOrder(lines){
 			isArt130 = false;
 		} 
 		 //20160419
-		 if(formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지"){
+		 //20170427 양식추가
+		 if(formName != "TAA-5000-01 (물질안전보건자료 MSDS)" && formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지"){
 			 if(isArt130){
 					subline[i].setAttribute('lineOrder' , lineOrder);
 					subline[i].setAttribute('lineSubOrder', "1");
@@ -2095,7 +2098,7 @@ function setLineOrder(lines){
 			 if(askType == ART130 || askType == ART131){
 				 if(lineOrder<3){
 						lineOrder = 3;
-					}
+					}	
 			 }
 			subline[i].setAttribute('lineOrder' , lineOrder);
 			subline[i].setAttribute('lineSubOrder', "1");
@@ -2153,6 +2156,50 @@ function setLineOrder(lines){
 		
 		
 	}
+	//20170427 양식추가
+	if(formName == "TAA-5000-01 (물질안전보건자료 MSDS)"){
+		for( var i = max; i>=0 ; i--){
+			if(subline[i-1]){
+				if(subline[i-1].getAttribute('lineNum')){
+					var lineN  = subline[i].getAttribute('lineNum');
+					if(lineN =='1' && 'ART050' == subline[i].getAttribute('askType')){ // 1번째 라인의 마지막 결재칸 인덱스와 현재 결재권자의 lineOrder가 다르면
+						subline[i].setAttribute('lineOrder' , 4 );
+					} else{
+						lineOrder = subline[i].getAttribute('lineOrder');
+					}
+				}
+			}
+			if(subline[i+1]){
+				if(subline[i+1].getAttribute('lineNum')){
+					if(subline[i].getAttribute('lineNum')=='2' ){
+						//if(subline[i+1].getAttribute('askType')=='ART130' || subline[i+1].getAttribute('lineOrder')=='3')
+						if(subline[i+1].getAttribute('lineNum')=='1')
+						{
+							aLinerOrder = 1;
+						}else{
+							aLinerOrder++;
+						}
+						if(i==0){
+							asisConsider = opener.getLineApproverCount(opener.Document_HwpCtrl, 2);
+							aLinerOrder = asisConsider;
+						}
+						subline[i].setAttribute('lineOrder' , aLinerOrder );
+						subline[i].setAttribute('lineSubOrder', "1");
+					}
+				}
+			}
+		}
+		aLinerOrder = 1;
+		for( var i = max; i>=0 ; i--){
+			if(subline[i].getAttribute('askType')=='ART130' || subline[i].getAttribute('askType')=='ART131')  {
+				subline[i].setAttribute('lineOrder' , 3 );
+				subline[i].setAttribute('lineSubOrder' , aLinerOrder );
+				aLinerOrder++;
+			}
+		}
+		
+	}
+	
 	//20170220
 	if(formName.indexOf("교육신청서")>0){
 		var arrLine = [];
@@ -2425,7 +2472,8 @@ function checkLineRole(){
 			isExist = true;
 		}
 		//20160419
-		if(formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지" && isExist && itemCheck.getAttribute("askType") == ART020
+	    //20170427 양식추가
+		if(formName != "TAA-5000-01 (물질안전보건자료 MSDS)" && formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지" && isExist && itemCheck.getAttribute("askType") == ART020
 				&&formName.indexOf("교육신청서")<0){
 			alert('<spring:message code="approval.msg.applines.after.noorder3" />');
 			return false;
@@ -2442,7 +2490,8 @@ function checkLineRole(){
 				ARTSING = oldItem.getAttribute('askType');
 			}
 			//20160419
-			if(formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지" && ARTSING === ART050 //결재 이후에는 협조, 부서협조, 후열,통보만  올수 있다.
+		    //20170427 양식추가
+			if(formName != "TAA-5000-01 (물질안전보건자료 MSDS)" && formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지" && ARTSING === ART050 //결재 이후에는 협조, 부서협조, 후열,통보만  올수 있다.
 					&&formName.indexOf("교육신청서")<0 
 				<c:if test='${options["OPT336"].useYn == "Y"}'>
 					&& tmpItem.getAttribute('askType') !== ART030 //협조
@@ -3709,7 +3758,7 @@ function goSearch(){
 										
 										<!-- 20160419 -->
 										<c:choose>
-										<c:when test='${options["OPT003"].useYn == "Y" && formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지"}'>
+										<c:when test='${options["OPT003"].useYn == "Y" && formName != "TAA-5000-01 (물질안전보건자료 MSDS)" && formName != "QBA-0000-01 회사표준갑지" && formName != "QBB-0000-01 회사표준갑지" && formName != "QBA-0000-01 회사표준 갑지" && formName != "QBB-0000-01 회사표준 갑지"}'>
 										<span class="range"  >
 										<input id='ART030' name="options1" type="radio"  value='<%=appCode.getProperty("ART030", "ART030", "APP") %>' codeNm='${options["OPT003"].optionValue}' onclick="optClick(this)" />${options["OPT003"].optionValue}
 										</span>
